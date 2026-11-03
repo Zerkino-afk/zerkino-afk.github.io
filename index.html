@@ -245,6 +245,8 @@ button{cursor:pointer;touch-action:manipulation}
 .chip{min-height:38px;padding:0 13px;border-radius:3px;border:2px solid var(--line);background:var(--paper);font:700 15px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;transition:transform .15s var(--spring),background .15s,color .15s,border-color .15s}
 .chip:active{transform:scale(.94)}
 .chips.scroll{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}
+.food-set{margin:10px 0 2px}
+.food-cat{margin:16px 0 4px}
 .chips.scroll .chip{flex:none}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .preview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:var(--paper);border-top:3px solid var(--ink);border-radius:0 0 3px 3px;padding:12px}
@@ -490,6 +492,8 @@ button{cursor:pointer;touch-action:manipulation}
 .pwa-tip{margin-top:6px}
 .pwa-tip span{font-size:16px}
 
+.tabbar nav{grid-template-columns:repeat(4,1fr)}
+.tabbar nav::before{width:25%}
 </style></head><body>
 <main class="wrap" id="view" aria-live="off"></main>
 
@@ -681,7 +685,7 @@ const INP = {};
 
 /* ================= date inițiale: alimente comune + exerciții ================= */
 /* Valori medii la 100 g (tipice, de tip USDA). Produsele de marcă diferă: verifică-le pe etichetă. */
-const SEED_VER = 1;
+const SEED_VER = 2;   /* 2: meniul McDonald's România */
 const SEED_ROWS = [
   /* carne, pește, ouă */
   ['Piept de pui, crud', 120, 22.5, 0, 2.6],
@@ -758,10 +762,140 @@ const SEED_ROWS = [
   ['Cola', 42, 0, 10.6, 0],
   ['Suc de portocale', 45, 0.7, 10.4, 0.2]
 ];
+/* ---- meniul McDonald's România ----
+   Valorile oficiale din „Gramaje, Ingrediente, Alergeni, Nutriție” (mcdonalds.ro, ediția septembrie 2026; micul dejun
+   din ediția iunie 2026). Rând: [id, nume, la câte g/ml sunt valorile, kcal, proteine, glucide, grăsimi, porția oficială
+   în g/ml (0 = nespecificată), numele porției]. În aplicație se țin la 100 g, cu porția oficială ca porție.
+   Excepții față de document: sosul dulce-acrișor are acolo 1,6 g glucide la 67 kcal (greșeală evidentă); aici 16 g,
+   cât să se potrivească cu caloriile. La McSundae porția e 150 g înghețată + 30 ml topping (aici 180 g în total). */
+const MCD_MENU = [
+  ["Burgeri", [
+    ["hamburger", "Hamburger", 100, 254, 13, 30, 8.8, 100, "bucată"],
+    ["cheeseburger", "Cheeseburger", 113, 304, 16, 30, 13, 113, "bucată"],
+    ["cheeseburger-dublu", "Cheeseburger dublu", 165, 448, 27, 31, 24, 165, "bucată"],
+    ["qpc", "Quarter Pounder with Cheese", 200, 506, 31, 36, 26, 200, "bucată"],
+    ["qp-jalapeno", "Cheesy Jalapeno Bacon Quarter Pounder", 180, 401, 22, 22, 23, 180, "bucată"],
+    ["fresh-deluxe", "Fresh Deluxe", 239, 591, 33, 36, 34, 239, "bucată"],
+    ["big-tasty", "Big Tasty", 321, 828, 44, 48, 50, 321, "bucată"],
+    ["big-mac", "Big Mac", 204, 503, 27, 42, 25, 204, "bucată"],
+    ["hamburger-fresh", "Hamburger Fresh", 110, 251, 12.35, 23.46, 11.73, 110, "bucată"],
+    ["iberico-wrap", "Iberico Beef Wrap", 190, 570, 30, 34, 34.17, 190, "bucată"],
+    ["ny-deli", "New York Deli Burger", 185, 490, 23, 50, 21, 185, "bucată"],
+    ["big-tasty-pork", "Big Tasty Pork Bacon", 310, 808, 41, 70, 39, 310, "bucată"],
+    ["mctoast", "McToast", 85, 259, 13, 28, 10, 85, "bucată"],
+    ["filet-o-fish", "Filet-O-Fish", 136, 331, 15, 36, 13, 136, "bucată"]
+  ]],
+  ["Pui", [
+    ["veneto-cbo", "Veneto CBO Burger", 185, 501, 23, 51, 22, 185, "bucată"],
+    ["siciliano-wrap", "Siciliano Chicken Wrap", 210, 593, 30.2, 36, 35, 210, "bucată"],
+    ["mcpuisor", "McPuișor", 109, 272, 10, 34, 10, 109, "bucată"],
+    ["mcpuisor-fresh", "McPuișor Fresh", 115, 286, 9.26, 46, 6.39, 115, "bucată"],
+    ["mcchicken", "McChicken", 181, 426, 21, 45, 17, 181, "bucată"],
+    ["mcchicken-bbq", "McChicken Bacon BBQ", 180, 350, 19, 36, 13, 180, "bucată"],
+    ["mccrispy", "McCrispy", 185, 569, 25.11, 51.2, 29, 185, "bucată"],
+    ["mccrispy-cream", "McCrispy Cream & Chives", 210, 533, 19.56, 60.1, 22.1, 210, "bucată"],
+    ["mccrispy-spicy", "McCrispy Spicy Bacon", 195, 525, 24, 58, 21, 195, "bucată"],
+    ["mccrispy-pesto", "McCrispy Red Pesto", 210, 584, 27, 62, 24, 210, "bucată"],
+    ["nuggets-4", "Chicken McNuggets (4 buc.)", 72, 179, 11, 12, 9.3, 72, "porție"],
+    ["nuggets-6", "Chicken McNuggets (6 buc.)", 107, 268, 17, 18, 14, 107, "porție"],
+    ["nuggets-9", "Chicken McNuggets (9 buc.)", 161, 402, 25, 27, 21, 161, "porție"],
+    ["garlic-6", "Garlic Pepper Chicken McNuggets (6 buc.)", 107, 220, 14, 18, 11, 107, "porție"],
+    ["garlic-9", "Garlic Pepper Chicken McNuggets (9 buc.)", 161, 330, 20, 27, 16, 161, "porție"],
+    ["aripi-3", "Aripi de pui în pane (3 buc.)", 100, 239, 15, 9.3, 15.6, 100, "porție"],
+    ["aripi-5", "Aripi de pui în pane (5 buc.)", 180, 430, 26.6, 16.74, 27.9, 180, "porție"],
+    ["aripi-7", "Aripi de pui în pane (7 buc.)", 235, 562, 35, 22, 37, 235, "porție"],
+    ["aripi-9", "Aripi de pui în pane (9 buc.)", 300, 717, 44, 28, 47, 300, "porție"]
+  ]],
+  ["Mic dejun", [
+    ["mcmuffin-bacon", "Bacon McMuffin cu ou", 124, 349, 18, 26, 15, 124, "bucată"],
+    ["mcmuffin-cheese", "Cheese McMuffin cu ou", 119, 317, 16, 26, 13, 119, "bucată"],
+    ["mcmuffin-sausage", "Sausage McMuffin", 116, 377, 18, 26, 18, 116, "bucată"],
+    ["morning-salami", "Morning Salami", 120, 284, 10, 24, 16, 120, "bucată"],
+    ["mcmuffin-puisor", "McMuffin Puișor", 140, 355, 13, 45, 13, 140, "bucată"],
+    ["mcmuffin-chicken-fresh", "Chicken Fresh McMuffin", 137, 305, 14, 37, 11, 137, "bucată"],
+    ["mcmuffin-fresh-dublu", "McMuffin Fresh dublu", 199, 523, 28, 36, 29, 199, "bucată"]
+  ]],
+  ["Garnituri și snack-uri", [
+    ["cartofi-mici", "Cartofi prăjiți, porție mică", 80, 231, 2.7, 28, 12, 80, "porție"],
+    ["cartofi-medii", "Cartofi prăjiți, porție medie", 114, 330, 3.9, 41, 16, 114, "porție"],
+    ["cartofi-mari", "Cartofi prăjiți, porție mare", 150, 434, 5.1, 54, 21, 150, "porție"],
+    ["crisscuts", "Cartofi CrissCuts", 135, 387, 3.6, 32, 18, 135, "porție"],
+    ["creveti", "Creveți pane", 90, 340, 10.8, 23.4, 22.4, 90, "porție"],
+    ["mozza", "Bavaria Mozza Sticks", 72, 238, 11.5, 17.3, 13.5, 72, "porție"],
+    ["bacon-felii", "Felii de bacon (3 felii)", 10, 36, 2.9, 0.1, 2.5, 10, "porție"]
+  ]],
+  ["Salate și fructe", [
+    ["salatzikos", "Salată Salatzikos cu pui", 250, 214, 15.7, 19, 9.5, 250, "porție"],
+    ["coleslaw", "Salată coleslaw", 200, 206, 2.4, 18.4, 12.4, 200, "porție"],
+    ["mere", "Felii de mere", 80, 56, 0.3, 12, 0.4, 80, "porție"],
+    ["ananas", "Ananas", 60, 33, 0.3, 7.08, 0.2, 60, "porție"]
+  ]],
+  ["Sosuri", [
+    ["sos-smantana", "Sos de smântână", 25, 111, 1.0, 2.0, 11, 25, "porție"],
+    ["sos-usturoi", "Sos de usturoi", 25, 80, 0, 2.0, 8.0, 25, "porție"],
+    ["sos-dulce-acrisor", "Sos dulce-acrișor", 25, 67, 0.2, 16, 0, 25, "porție"],
+    ["maioneza", "Maioneză", 20, 135, 0, 0, 15, 20, "porție"],
+    ["ketchup", "Ketchup", 10, 16, 0, 4.0, 0, 10, "porție"],
+    ["cocktail-dip", "Cocktail Dip", 25, 79, 0.33, 2.2, 7.3, 25, "porție"],
+    ["sos-salata", "Sos pentru salată", 50, 122, 5.0, 3.0, 10, 50, "porție"],
+    ["sos-hot-devil", "Sos Hot Devil", 100, 207, 1.3, 22.4, 11.5, 25, "porție"],
+    ["sos-bbq", "Sos barbecue", 100, 162, 0.7, 36.8, 1.02, 25, "porție"],
+    ["sos-marinara", "Sos Monica's Marinara", 100, 140, 1.7, 32, 0.5, 25, "porție"],
+    ["dressing-1000", "Dressing 1000 Island", 100, 214, 1.1, 6.7, 19.9, 0, ""],
+    ["dressing-vinaigrette", "Dressing vinaigrette", 100, 466, 0.3, 2.8, 50, 50, "porție"]
+  ]],
+  ["Deserturi", [
+    ["shake-cioc-mic", "Shake de ciocolată (250 ml)", 250, 205, 5.6, 36, 4.2, 250, "pahar"],
+    ["shake-cioc-mare", "Shake de ciocolată (400 ml)", 400, 329, 8.9, 58, 6.7, 400, "pahar"],
+    ["shake-van-mic", "Shake de vanilie (250 ml)", 250, 203, 5.1, 37, 3.8, 250, "pahar"],
+    ["shake-van-mare", "Shake de vanilie (400 ml)", 400, 326, 8.1, 59, 6.1, 400, "pahar"],
+    ["shake-caps-mic", "Shake de căpșuni (250 ml)", 250, 203, 5.1, 37, 3.8, 250, "pahar"],
+    ["shake-caps-mare", "Shake de căpșuni (400 ml)", 400, 325, 8.2, 59, 6.1, 400, "pahar"],
+    ["sundae-cioc", "McSundae cu topping de ciocolată", 180, 279, 5.6, 45, 8.2, 180, "porție"],
+    ["sundae-caramel", "McSundae cu topping de caramel", 180, 288, 4.8, 53, 6.1, 180, "porție"],
+    ["sundae-lamaie", "McSundae cu topping de lichior de lămâie", 180, 322, 6.2, 58, 7, 180, "porție"],
+    ["cornet", "Înghețată la cornet", 62, 101, 2.4, 17, 2.3, 62, "bucată"],
+    ["mcflurry-biscoff-caramel", "McFlurry Biscoff cu topping de caramel", 200, 446, 6.5, 78, 12, 200, "porție"],
+    ["mcflurry-biscoff-cioc", "McFlurry Biscoff cu topping de ciocolată", 200, 441, 6.54, 77, 12, 200, "porție"],
+    ["mcflurry-pecan-cioc", "McFlurry Pecan cu topping de ciocolată", 200, 436, 6.4, 76, 12, 200, "porție"],
+    ["mcflurry-pecan-caramel", "McFlurry Pecan cu topping de caramel", 200, 442, 6.5, 77, 12, 200, "porție"],
+    ["placinta-visine", "Plăcintă cu vișine", 70, 238, 1.9, 32, 11, 70, "bucată"]
+  ]],
+  ["Băuturi", [
+    ["cola-250", "Coca-Cola (250 ml)", 250, 108, 0, 26, 0, 250, "pahar"],
+    ["cola-400", "Coca-Cola (400 ml)", 400, 168, 0, 42, 0, 400, "pahar"],
+    ["cola-500", "Coca-Cola (500 ml)", 500, 212, 0, 53, 0, 500, "pahar"],
+    ["cola-zero-250", "Coca-Cola Zero (250 ml)", 250, 0.8, 0, 0, 0, 250, "pahar"],
+    ["cola-zero-400", "Coca-Cola Zero (400 ml)", 400, 1.2, 0, 0, 0, 400, "pahar"],
+    ["cola-zero-500", "Coca-Cola Zero (500 ml)", 500, 1.5, 0, 0, 0, 500, "pahar"],
+    ["fanta-250", "Fanta (250 ml)", 250, 108, 0, 27, 0, 250, "pahar"],
+    ["fanta-400", "Fanta (400 ml)", 400, 172, 0, 43, 0, 400, "pahar"],
+    ["fanta-500", "Fanta (500 ml)", 500, 216, 0, 54, 0, 500, "pahar"],
+    ["sprite-250", "Sprite (250 ml)", 250, 23, 0, 5, 0, 250, "pahar"],
+    ["sprite-400", "Sprite (400 ml)", 400, 36, 0, 8, 0, 400, "pahar"],
+    ["sprite-500", "Sprite (500 ml)", 500, 45, 0, 11, 0, 500, "pahar"],
+    ["lipton-250", "Lipton (250 ml)", 250, 46, 0.1, 11, 0, 250, "pahar"],
+    ["lipton-400", "Lipton (400 ml)", 400, 74, 0.3, 18, 0, 400, "pahar"],
+    ["lipton-500", "Lipton (500 ml)", 500, 92, 0.5, 23, 0, 500, "pahar"],
+    ["suc-mere-250", "Suc de mere (250 ml)", 250, 112, 0, 28, 0, 250, "pahar"],
+    ["suc-mere-500", "Suc de mere (500 ml)", 500, 224, 0.1, 58, 0, 500, "pahar"],
+    ["sprite-mango", "Sprite Mango (500 ml)", 500, 223, 0, 55, 0, 500, "pahar"],
+    ["sprite-sakura", "Sprite Sakura (500 ml)", 500, 307, 0, 76, 0, 500, "pahar"],
+    ["ursus-cooler", "Ursus Cooler (500 ml)", 100, 23, 0, 5.3, 0, 500, "sticlă"]
+  ]]
+];
+const mcd1 = v => Math.round(v * 10) / 10;
+const MCD_FOODS = [];
+MCD_MENU.forEach(([cat, rows]) => rows.forEach(([id, name, base, k, p, c, f, serv, servName]) => MCD_FOODS.push({
+  id: 'mcd-' + id, name, brand: "McDonald's", barcode: '',
+  k: mcd1(k * 100 / base), p: mcd1(p * 100 / base), c: mcd1(c * 100 / base), f: mcd1(f * 100 / base),
+  serv, servName, used: 0, created: 0, std: false, chain: 'mcd', cat, ord: MCD_FOODS.length
+})));
+
 const SEED_FOODS = SEED_ROWS.map((r, i) => ({
   id: 's' + String(i + 1).padStart(3, '0'), name: r[0], brand: '', barcode: '', k: r[1], p: r[2], c: r[3], f: r[4],
   serv: r[5] || 0, servName: r[6] || '', used: 0, created: 0, std: true
-}));
+})).concat(MCD_FOODS);
 
 /* Exerciții: [grupă, [nume în engleză]] */
 const EXLIB = [
@@ -1073,16 +1207,42 @@ ACT.saveTargets = () => {
 };
 
 /* ---- adaugă aliment în jurnal ---- */
-const A = { meal: 'mic', food: null, g: 100 };
-const sortedFoods = q => {
-  const t = (q || '').trim().toLowerCase();
-  return Object.values(S.foods)
-    .filter(f => !t || (f.name + ' ' + (f.brand || '') + ' ' + (f.barcode || '')).toLowerCase().includes(t))
-    .sort((a, b) => (b.used || 0) - (a.used || 0) || a.name.localeCompare(b.name, 'ro'));
+const A = { meal: 'mic', food: null, g: 100, set: 'all' };   /* set: filtrul din fereastra de adăugare (separat de cel din tabul Alimente) */
+/* listele de alimente: „Toate” (meniul McDonald's apare doar când îl cauți sau după ce l-ai folosit) sau doar „McDonald's”, în ordinea meniului */
+const sortedFoods = (q, set) => {
+  const t = (q || '').trim().toLowerCase(), mcd = set === 'mcd';
+  const list = Object.values(S.foods)
+    .filter(f => (mcd ? f.chain === 'mcd' : !f.chain || f.used > 0 || t) &&
+      (!t || (f.name + ' ' + (f.brand || '') + ' ' + (f.barcode || '')).toLowerCase().includes(t)));
+  return mcd && !t ? list.sort((a, b) => (a.ord || 0) - (b.ord || 0))
+    : list.sort((a, b) => (b.used || 0) - (a.used || 0) || a.name.localeCompare(b.name, 'ro'));
 };
-const foodRow = (f, act) =>
-  '<button class="row food-row" type="button" data-act="' + act + '" data-id="' + esc(f.id) + '"><span class="grow"><span class="name">' + esc(f.name) +
-  (f.barcode ? '<span class="tag">COD</span>' : '') + (f.std ? '<span class="tag">COMUN</span>' : '') + '</span><br><span class="sub">' + (f.brand ? esc(f.brand) + ' · ' : '') + 'la 100 g: ' + num(f.k) + ' kcal · ' + macroLine(f.p, f.c, f.f) + '</span></span></button>';
+const foodRow = (f, act) => {
+  const por = f.chain && f.serv > 0, x = v => v * f.serv / 100;   /* meniurile de restaurant: valorile pe porție */
+  return '<button class="row food-row" type="button" data-act="' + act + '" data-id="' + esc(f.id) + '"><span class="grow"><span class="name">' + esc(f.name) +
+    (f.barcode ? '<span class="tag">COD</span>' : '') + (f.std ? '<span class="tag">COMUN</span>' : '') + '</span><br><span class="sub">' + (f.brand ? esc(f.brand) + ' · ' : '') +
+    (por ? '1 ' + esc(f.servName || 'porție') + ': ' + num(x(f.k)) + ' kcal · ' + macroLine(x(f.p), x(f.c), x(f.f)) : 'la 100 g: ' + num(f.k) + ' kcal · ' + macroLine(f.p, f.c, f.f)) +
+    '</span></span></button>';
+};
+/* rândurile listei; în „McDonald's” fără căutare, cu titlu pe categorii */
+const foodRowsHTML = (list, act, q, set) => {
+  let cat = null;
+  return list.map(f => {
+    let h = '';
+    if (set === 'mcd' && !(q || '').trim() && f.cat && f.cat !== cat) { cat = f.cat; h = '<div class="label food-cat">' + esc(cat) + '</div>'; }
+    return h + foodRow(f, act);
+  }).join('');
+};
+const foodSetHTML = (scope, cur) => '<div class="chips food-set" role="group" aria-label="Ce alimente arăt">' +
+  [['all', 'Toate'], ['mcd', "McDonald's"]].map(([v, l]) => '<button class="chip" type="button" data-act="foodSet" data-scope="' + scope + '" data-set="' + v + '" aria-pressed="' + ((cur || 'all') === v) + '">' + l + '</button>').join('') + '</div>';
+const MCD_NOTE = '<div class="note">Valorile oficiale McDonald\'s România (septembrie 2026), pe porție. Apasă pe produs și alege porția.</div>';
+ACT.foodSet = el => {
+  const v = el.dataset.set === 'mcd' ? 'mcd' : 'all', add = el.dataset.scope === 'add';
+  if (add) A.set = v; else S.foodSet = v;
+  document.querySelectorAll('.food-set .chip[data-scope="' + el.dataset.scope + '"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.set === v)));
+  if (add) { const al = $('#addList'), aq = $('#addQ'); if (al) al.innerHTML = pickListHTML(aq ? aq.value : '', sortedFoods(aq ? aq.value : '', A.set)); }
+  else { const fl = $('#foodList'); if (fl) fl.innerHTML = foodListHTML(); }
+};
 
 ACT.addTo = el => {
   if (locked()) return;
@@ -1090,21 +1250,21 @@ ACT.addTo = el => {
   A.meal = el.dataset.meal; renderPick('');
 };
 function renderPick(q) {
-  const list = sortedFoods(q);
+  const list = sortedFoods(q, A.set);
   openSheet(sheetHead('Adaugă · ' + mealName(A.meal)) +
     '<div class="btn-row"><button class="btn" type="button" data-act="scan" data-for="add">' + ic('scan') + 'Scanează cod de bare</button>' +
     '<button class="btn ghost" type="button" data-act="newFood" data-from="add">' + ic('plus') + 'Aliment nou</button></div>' +
     '<input class="inp" id="addQ" data-in="addQ" type="search" placeholder="Caută în alimentele tale sau scrie un cod" value="' + esc(q) + '" autocomplete="off">' +
-    '<div id="addList">' + pickListHTML(q, list) + '</div>');
+    foodSetHTML('add', A.set) + '<div id="addList">' + pickListHTML(q, list) + '</div>');
 }
 function pickListHTML(q, list) {
   const t = (q || '').trim();
-  if (list.length) return list.map(f => foodRow(f, 'pickFood')).join('');
+  if (list.length) return (A.set === 'mcd' && !t ? MCD_NOTE : '') + foodRowsHTML(list, 'pickFood', t, A.set);
   if (/^\d{8,14}$/.test(t)) return '<div class="hint">Codul ' + esc(t) + ' nu e încă în memorie.</div><button class="btn block" type="button" data-act="lookupCode" data-code="' + esc(t) + '" style="margin-top:10px">Caută sau creează alimentul cu acest cod</button>';
   if (t) return '<div class="meal-empty">Niciun aliment găsit. Apasă „Aliment nou” ca să-l adaugi.</div>';
   return '<div class="empty"><h3>Memoria e goală</h3><div class="muted">Scanează un cod de bare sau creează primul aliment. Valorile de pe etichetă le scrii o singură dată, apoi apar singure la fiecare scanare.</div></div>';
 }
-INP.addQ = el => { const q = el.value; $('#addList').innerHTML = pickListHTML(q, sortedFoods(q)); };
+INP.addQ = el => { const q = el.value; $('#addList').innerHTML = pickListHTML(q, sortedFoods(q, A.set)); };
 
 ACT.pickFood = el => { const f = S.foods[el.dataset.id]; if (f) renderQty(f); };
 function renderQty(f) {
@@ -1191,6 +1351,7 @@ function viewFoods() {
     '<button class="btn sm" type="button" data-act="newFood" data-from="foods">' + ic('plus') + 'Aliment</button></div>' +
     '<div style="display:flex;gap:8px"><input class="inp" id="foodQ" data-in="foodQ" type="search" placeholder="Caută sau scrie un cod" value="' + esc(S.foodQ) + '" autocomplete="off" style="flex:1;min-width:0">' +
     '<button class="btn" type="button" data-act="scan" data-for="foods" style="flex:none">' + ic('scan') + 'Scanează</button></div>' +
+    foodSetHTML('foods', S.foodSet) +
     '<div class="note">Cele marcate COMUN au valori medii la 100 g. Pentru produse de marcă, verifică eticheta.</div>' +
     '<div id="foodList">' + foodListHTML() + '</div>';
   return h;
@@ -1202,9 +1363,9 @@ function foodListHTML() {
       '<div class="btn-row"><button class="btn" type="button" data-act="scan" data-for="foods">' + ic('scan') + 'Scanează un cod</button>' +
       '<button class="btn ghost" type="button" data-act="newFood" data-from="foods">Adaugă manual</button></div></div>';
   }
-  const l = sortedFoods(S.foodQ);
+  const l = sortedFoods(S.foodQ, S.foodSet);
   if (!l.length) return '<div class="meal-empty">Niciun rezultat.</div>';
-  return '<div>' + l.map(f => foodRow(f, 'editFood')).join('') + '</div>';
+  return '<div>' + (S.foodSet === 'mcd' && !(S.foodQ || '').trim() ? MCD_NOTE : '') + foodRowsHTML(l, 'editFood', S.foodQ, S.foodSet) + '</div>';
 }
 INP.foodQ = el => { S.foodQ = el.value; $('#foodList').innerHTML = foodListHTML(); };
 
@@ -1260,7 +1421,8 @@ ACT.saveFood = () => {
   const food = {
     id: FF.id || ('f' + uid()), name, brand: $('#ffBrand').value.trim(), barcode: code,
     k: r1(k), p: r1(p), c: r1(c), f: r1(g), serv: isFinite(sv) && sv > 0 ? r1(sv) : 0, servName: $('#ffServName').value.trim(),
-    used: old ? old.used || 0 : 0, created: old ? old.created || Date.now() : Date.now()
+    used: old ? old.used || 0 : 0, created: old ? old.created || Date.now() : Date.now(),
+    ...(old && old.chain ? { chain: old.chain, cat: old.cat, ord: old.ord } : {})   /* un produs din meniu rămâne în meniu și după editare */
   };
   S.foods[food.id] = food; saveFoods();
   if (FF.from === 'add' || FF.from === 'add-edit') renderQty(food);
@@ -2988,7 +3150,7 @@ document.addEventListener('keydown', e => {
     if (/^\d{8,14}$/.test(q)) {
       SC.for = 'add'; gotCode(q);
     } else {
-      const l = sortedFoods(q); if (l.length === 1) renderQty(l[0]);
+      const l = sortedFoods(q, A.set); if (l.length === 1) renderQty(l[0]);
     }
   }
 });
