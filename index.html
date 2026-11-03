@@ -401,6 +401,86 @@ button{cursor:pointer;touch-action:manipulation}
 .lb-req .lb-name{font-size:20px}
 .lb-req-b{display:flex;gap:8px}
 #lbReq{display:flex;flex-direction:column;gap:14px}#lbReq:empty,#lbMe:empty{display:none}
+.lb-sp{display:flex;align-items:center;gap:6px;min-width:0;font:800 13px/1.1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--carb-t)}
+.lb-sp span{min-width:0;overflow-wrap:anywhere}
+.lb-sp svg{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.lb-r.off .lb-sp{color:var(--ink-2)}
+
+/* split: zilele de antrenament din Sală, cu omulețul din față și din spate (mușchii zilei colorați) */
+.bm{display:block;width:100%;height:auto;--bm-sil:var(--paper-2);--bm-off:var(--line);--bm-on:var(--flame);--bm-gap:var(--bg)}
+.bm .bm-b{fill:var(--bm-sil)}
+.bm .bm-m{fill:var(--bm-off);stroke:var(--bm-gap);stroke-width:1;stroke-linejoin:round;transition:fill .3s ease}
+.bm .bm-m.on{fill:var(--bm-on)}
+.split{gap:14px}
+.split .label{color:var(--on-slab-2)}
+.split h2{margin-top:5px;font-size:34px;line-height:.92;font-weight:900;overflow-wrap:anywhere}
+.split .bm{--bm-sil:#262C2F;--bm-off:#3B4347;--bm-gap:var(--slab)}
+.split .bm .bm-m.on{filter:drop-shadow(0 0 3px var(--flame-glow))}
+.sp-top{display:flex;align-items:flex-start;gap:12px}
+.sp-top .grow{flex:1;min-width:0}
+.split .icon-btn{flex:none;background:var(--slab-2);border-color:var(--slab-line);color:var(--on-slab);box-shadow:none}
+.split .chip{display:inline-flex;align-items:center;gap:7px;background:var(--slab-2);border-color:var(--slab-line);color:var(--on-slab)}
+.split .chip[aria-pressed="true"]{background:var(--on-slab);border-color:var(--on-slab);color:var(--slab)}
+.split .chip .sp-ok{font-style:normal;font-weight:900;color:#4FC389}
+.split .chip[aria-pressed="true"] .sp-ok{color:#17803F}
+.sp-next{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--flame);box-shadow:0 0 6px var(--flame-glow)}
+.sp-day{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:center}
+.sp-map{min-width:0}
+.sp-info{display:flex;flex-direction:column;gap:8px;min-width:0}
+.sp-info .label{margin:0;line-height:1.25}
+.sp-dname{font:900 30px/.95 var(--f-display);letter-spacing:.02em;text-transform:uppercase;overflow-wrap:anywhere}
+.sp-mus{font-size:13.5px;line-height:1.35;color:var(--on-slab-2)}
+.sp-ex{display:flex;flex-direction:column;border-top:1px dashed var(--slab-line)}
+.sp-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 2px;background:none;border:0;border-bottom:1px dashed var(--slab-line);border-radius:0;color:var(--on-slab);text-align:left;transition:background .15s}
+.sp-row:active{background:var(--slab-2)}
+.sp-row .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.sp-row .name{font-weight:600;overflow-wrap:anywhere}
+.sp-row .sub{font-size:12.5px;line-height:1.3;color:var(--on-slab-2)}
+.sp-row .thumb{width:60px;height:45px}
+.sp-go,.sp-row .sp-ok{flex:none;width:32px;height:32px;display:grid;place-items:center;border-radius:3px;font:800 20px/1 var(--f-display);font-style:normal}
+.sp-go{border:2px solid var(--slab-line);color:var(--on-slab-2)}
+.sp-row .sp-ok{background:#4FC389;color:#0B2A18;font-size:18px}
+.split .btn{background:var(--on-slab);border-color:var(--on-slab);color:var(--slab);box-shadow:none}
+.split .btn.ghost{background:transparent;border-color:var(--slab-line);color:var(--on-slab)}
+.split .btn.ghost:active{background:var(--slab-2)}
+.sp-muted{font-size:14px;line-height:1.4;color:var(--on-slab-2)}
+.sp-muted.small{font-size:12.5px}
+.sp-strip{display:flex;gap:8px;justify-content:center}
+.sp-mini{flex:1 1 0;min-width:0;max-width:124px;display:flex;flex-direction:column;align-items:center;gap:6px;font:700 12px/1.1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;text-align:center;overflow-wrap:anywhere;color:var(--ink-2)}
+.split .sp-mini{color:var(--on-slab-2)}
+.sp-all{margin:4px 2px -6px}
+.sp-list{display:flex;flex-direction:column;gap:12px}
+.sp-lh{padding:8px 2px 0}
+.sp-card{display:flex;flex-direction:column;gap:12px;width:100%;padding:14px 14px 16px;text-align:left;background:var(--paper);color:var(--ink);border:0;border-radius:2px;box-shadow:0 0 0 1px var(--line),0 8px 12px -10px rgba(0,0,0,.5);transition:transform .15s var(--ease)}
+.sp-card:active{transform:scale(.985)}
+.sp-card[aria-current="true"]{box-shadow:0 0 0 3px var(--ink),0 8px 12px -10px rgba(0,0,0,.5)}
+.sp-card .bm{--bm-gap:var(--paper)}
+.sp-card-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sp-card-h b{display:inline-flex;align-items:center;gap:8px;font:900 26px/1 var(--f-display);letter-spacing:.02em;text-transform:uppercase}
+.sp-card-h b svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round}
+.sp-card .tag{font:800 12px/1 var(--f-display);letter-spacing:.14em;text-transform:uppercase;padding:4px 6px 3px;border:1.5px solid var(--ink-2);border-radius:2px;color:var(--ink-2)}
+.sp-card .tag.on{background:var(--flame);border-color:var(--flame);color:#1B0E02}
+.sp-desc{font-size:13.5px;line-height:1.35;color:var(--ink-2)}
+.sp-card.sp-new{background:transparent;box-shadow:none;border:2px dashed var(--line)}
+.sp-erow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.sp-erow .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.sp-erow .name{font-weight:600;overflow-wrap:anywhere}
+.sp-erow .sub{font-size:12.5px;line-height:1.3;color:var(--ink-2)}
+.sp-eday{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:2px 0;background:none;border:0;border-radius:3px;text-align:left}
+.sp-eday:active{background:var(--paper-2)}
+.sp-mini.sm{flex:none;width:66px}
+.sp-ctl{flex:none;display:flex;gap:6px}
+.icon-btn.sm{width:34px;height:34px;font:800 18px/1 var(--f-display);box-shadow:0 2px 0 var(--lip)}
+.icon-btn.sm svg{width:16px;height:16px}
+.icon-btn.armed{background:var(--down);border-color:var(--down);color:#fff}
+.sp-map-lg{background:var(--paper);border-radius:3px;box-shadow:0 0 0 1px var(--line);padding:12px 10px}
+.sp-map-lg .bm{max-width:340px;margin:0 auto;--bm-gap:var(--paper)}
+#exList[data-day] .row::after{content:"+";flex:none;width:32px;height:32px;display:grid;place-items:center;border:2px solid var(--line);border-radius:3px;font:800 20px/1 var(--f-display);color:var(--ink-2)}
+#exList[data-day] .row[aria-pressed="true"]::after{content:"✓";background:var(--ink);border-color:var(--ink);color:var(--on-ink);font-size:17px}
+#exList[data-day] .row .note{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .split .bm{--bm-sil:#1C2023;--bm-off:#30383B}}
+:root[data-theme="dark"] .split .bm{--bm-sil:#1C2023;--bm-off:#30383B}
+@media (prefers-reduced-motion:reduce){.bm .bm-m{transition:none}}
 
 /* streak sheet */
 .streak-big{display:flex;align-items:center;gap:14px}
@@ -2538,15 +2618,18 @@ function viewGym() {
     const la = sortedSess(a).slice(-1)[0], lb = sortedSess(b).slice(-1)[0];
     return (lb ? lb.date : '') < (la ? la.date : '') ? -1 : (lb ? lb.date : '') > (la ? la.date : '') ? 1 : (a.created || 0) - (b.created || 0);
   });
-  let h = '<div class="top"><div><div class="scrawl">Progres</div><h1>Sală</h1></div><button class="btn sm" type="button" data-act="newEx">' + ic('plus') + 'Exercițiu</button></div>';
-  if (!list.length) {
+  let h = '<div class="top"><div><div class="scrawl">Progres</div><h1>Sală</h1></div><button class="btn sm" type="button" data-act="newEx">' + ic('plus') + 'Exercițiu</button></div>' + splitCardHTML();
+  const withSplit = S.loaded && !!activeSplit();
+  if (!list.length && withSplit) {
+    h += '<div class="note sp-all">Exercițiile pe care le înregistrezi apar aici, fiecare cu progresul de la o sesiune la alta.</div>';
+  } else if (!list.length) {
     h += '<div class="empty">' + BARBELL + '<h3>Notează ce ridici, vezi ce crește</h3>' +
       '<div class="muted">Scrii greutatea și repetările: 12 kg × 6 într-o săptămână, 12 kg × 8 în următoarea. Aplicația îți arată pe loc +2 rep și trasează evoluția.</div>' +
       '<div class="label">Alege un exercițiu ca să începi</div><div class="chips">' +
       POPULAR.map(n => '<button class="chip" type="button" data-act="quickEx" data-name="' + esc(n) + '">' + esc(n) + '</button>').join('') + '</div>' +
       '<button class="btn ghost" type="button" data-act="newEx">Vezi toate exercițiile (' + EXFLAT.length + ')</button></div>';
   } else {
-    h += list.map(exCardHTML).join('');
+    h += (withSplit ? '<div class="label sp-all">Progresul pe exerciții</div>' : '') + list.map(exCardHTML).join('');
   }
   return h;
 }
@@ -2699,6 +2782,367 @@ ACT.saveSess = () => {
 };
 ACT.logSess = el => { if (S.ex[el.dataset.id]) openLog(el.dataset.id); };
 
+
+/* ================= SPLIT: antrenamentul pe zile (în tabul Sală) =================
+   Spliturile clasice (Push Pull Legs, Upper / Lower, Arnold, Full Body, Bro, PHUL) sau unul propriu.
+   Fiecare zi are grupele de mușchi (colorate pe omuleț, din față și din spate) și exercițiile ei, care se înregistrează
+   ca până acum. După ce înregistrezi un exercițiu al zilei, ziua e bifată; data viitoare apare următoarea din ciclu.
+   Date: meta/split = { v, active, list: { id: { id, name, tpl, days: [{ name, mus, ex }] } }, last: { id, day, date } }. */
+const MUSCLES = [['chest', 'Piept'], ['back', 'Spate'], ['traps', 'Trapez'], ['delts', 'Umeri'], ['biceps', 'Biceps'], ['triceps', 'Triceps'],
+  ['forearms', 'Antebrațe'], ['abs', 'Abdomen'], ['lowback', 'Lombar'], ['glutes', 'Fesieri'], ['quads', 'Cvadriceps'], ['hams', 'Femurali'], ['calves', 'Gambe']];
+const MUSN = Object.fromEntries(MUSCLES);
+const SPLITS = [
+  { id: 'ppl', name: 'Push Pull Legs', freq: '3 sau 6 zile pe săptămână: Push, Pull, Legs, apoi pauză sau încă un ciclu.', days: [
+    ['Push', 'chest delts triceps', ['Barbell Bench Press', 'Overhead Press', 'Incline Dumbbell Press', 'Lateral Raise', 'Triceps Pushdown', 'Overhead Triceps Extension']],
+    ['Pull', 'back traps biceps forearms', ['Pull-Up', 'Barbell Row', 'Seated Cable Row', 'Face Pull', 'Barbell Curl', 'Hammer Curl']],
+    ['Legs', 'quads hams glutes calves', ['Back Squat', 'Romanian Deadlift (RDL)', 'Leg Press', 'Lying Leg Curl', 'Leg Extension', 'Standing Calf Raise']]] },
+  { id: 'ul', name: 'Upper / Lower', freq: '4 zile pe săptămână: Upper, Lower, pauză, Upper, Lower.', days: [
+    ['Upper A', 'chest back delts biceps triceps', ['Barbell Bench Press', 'Barbell Row', 'Overhead Press', 'Lat Pulldown', 'Barbell Curl', 'Triceps Pushdown']],
+    ['Lower A', 'quads hams glutes calves abs', ['Back Squat', 'Romanian Deadlift (RDL)', 'Leg Press', 'Lying Leg Curl', 'Standing Calf Raise']],
+    ['Upper B', 'chest back delts biceps triceps', ['Incline Dumbbell Press', 'Pull-Up', 'Seated Dumbbell Shoulder Press', 'Seated Cable Row', 'Hammer Curl', 'Overhead Triceps Extension']],
+    ['Lower B', 'quads hams glutes calves abs lowback', ['Conventional Deadlift', 'Bulgarian Split Squat', 'Hip Thrust', 'Seated Leg Curl', 'Seated Calf Raise', 'Hanging Leg Raise']]] },
+  { id: 'arnold', name: 'Arnold Split', freq: '6 zile pe săptămână: ciclul de 3 zile de două ori, apoi o pauză.', days: [
+    ['Piept și spate', 'chest back', ['Barbell Bench Press', 'Incline Dumbbell Press', 'Dumbbell Fly', 'Pull-Up', 'Barbell Row', 'Seated Cable Row']],
+    ['Umeri și brațe', 'delts biceps triceps forearms', ['Overhead Press', 'Lateral Raise', 'Rear Delt Fly', 'Barbell Curl', 'Skull Crusher', 'Hammer Curl', 'Triceps Pushdown']],
+    ['Picioare', 'quads hams glutes calves abs', ['Back Squat', 'Romanian Deadlift (RDL)', 'Leg Press', 'Lying Leg Curl', 'Standing Calf Raise', 'Hanging Leg Raise']]] },
+  { id: 'fb', name: 'Full Body', freq: '3 zile pe săptămână, cu pauză între ele: A, B, A, apoi B, A, B.', days: [
+    ['Full Body A', 'chest back delts quads hams glutes abs', ['Back Squat', 'Barbell Bench Press', 'Barbell Row', 'Overhead Press', 'Romanian Deadlift (RDL)', 'Cable Crunch']],
+    ['Full Body B', 'chest back delts quads hams glutes abs', ['Conventional Deadlift', 'Incline Dumbbell Press', 'Lat Pulldown', 'Seated Dumbbell Shoulder Press', 'Leg Press', 'Hanging Leg Raise']]] },
+  { id: 'bro', name: 'Bro Split', freq: '5 zile pe săptămână, câte o grupă mare pe zi.', days: [
+    ['Piept', 'chest', ['Barbell Bench Press', 'Incline Dumbbell Press', 'Cable Crossover', 'Chest Dip']],
+    ['Spate', 'back traps lowback', ['Conventional Deadlift', 'Pull-Up', 'Barbell Row', 'Lat Pulldown', 'Barbell Shrug']],
+    ['Umeri', 'delts traps', ['Overhead Press', 'Lateral Raise', 'Rear Delt Fly', 'Face Pull']],
+    ['Brațe', 'biceps triceps forearms', ['Barbell Curl', 'Hammer Curl', 'Skull Crusher', 'Rope Pushdown', 'Wrist Curl']],
+    ['Picioare', 'quads hams glutes calves', ['Back Squat', 'Leg Press', 'Romanian Deadlift (RDL)', 'Leg Extension', 'Lying Leg Curl', 'Standing Calf Raise']]] },
+  { id: 'phul', name: 'PHUL', freq: '4 zile pe săptămână: forță (Upper, Lower), pauză, volum (Upper, Lower).', days: [
+    ['Upper forță', 'chest back delts biceps triceps', ['Barbell Bench Press', 'Barbell Row', 'Overhead Press', 'Pull-Up', 'Barbell Curl', 'Skull Crusher']],
+    ['Lower forță', 'quads hams glutes calves lowback', ['Back Squat', 'Conventional Deadlift', 'Leg Press', 'Lying Leg Curl', 'Standing Calf Raise']],
+    ['Upper volum', 'chest back delts biceps triceps', ['Incline Dumbbell Press', 'Dumbbell Fly', 'Seated Cable Row', 'One-Arm Dumbbell Row', 'Lateral Raise', 'Incline Dumbbell Curl', 'Rope Pushdown']],
+    ['Lower volum', 'quads hams glutes calves', ['Front Squat', 'Walking Lunge', 'Leg Extension', 'Seated Leg Curl', 'Seated Calf Raise']]] }
+];
+const SPLIT_MAXD = 7, SPLIT_MAXEX = 20, SPLIT_MAXOWN = 20;
+const tplSplit = t => ({ id: t.id, name: t.name, tpl: t.id, days: t.days.map(([name, mus, ex]) => ({ name, mus: mus.split(' '), ex: ex.slice() })) });
+
+/* ---- starea ---- */
+function splitNorm(o) {
+  const out = { v: 1, active: '', list: {}, last: null };
+  if (!o || typeof o !== 'object') return out;
+  const str = (x, n) => typeof x === 'string' ? x.trim().slice(0, n) : '';
+  Object.values(o.list && typeof o.list === 'object' ? o.list : {}).forEach(sp => {
+    const id = sp && typeof sp.id === 'string' ? sp.id.slice(0, 40) : '';
+    if (!id) return;
+    const days = (Array.isArray(sp.days) ? sp.days : []).slice(0, SPLIT_MAXD).map((d, i) => {
+      const seen = new Set();
+      return {
+        name: str(d && d.name, 24) || 'Ziua ' + (i + 1),
+        mus: MUSCLES.map(m => m[0]).filter(m => d && Array.isArray(d.mus) && d.mus.includes(m)),
+        ex: (d && Array.isArray(d.ex) ? d.ex : []).filter(x => typeof x === 'string' && x.trim()).map(x => x.trim().slice(0, 60))
+          .filter(x => { const k = x.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, SPLIT_MAXEX)
+      };
+    });
+    out.list[id] = { id, name: str(sp.name, 30) || 'Splitul meu', tpl: SPLITS.some(t => t.id === sp.tpl) ? sp.tpl : '', days: days.length ? days : [{ name: 'Ziua 1', mus: [], ex: [] }] };
+  });
+  out.active = typeof o.active === 'string' && out.list[o.active] ? o.active : '';
+  const L = o.last;
+  if (L && out.list[L.id] && Number.isInteger(L.day) && L.day >= 0 && L.day < out.list[L.id].days.length && typeof L.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(L.date)) out.last = { id: L.id, day: L.day, date: L.date };
+  return out;
+}
+const SP = () => S.split || (S.split = splitNorm(null));
+const activeSplit = () => { const s = SP(); return s.list[s.active] || null; };
+/* numele splitului, pentru clasament */
+function splitLabel() { const a = activeSplit(); return a ? a.name.slice(0, 30) : ''; }
+const saveSplit = () => persist('meta', 'split', () => S.split);
+let spPubT = 0;
+/* salvează pe loc; clasamentul se actualizează după ce te oprești din scris (trimite doar dacă s-a schimbat numele splitului) */
+const splitChanged = () => { saveSplit(); clearTimeout(spPubT); spPubT = setTimeout(() => { if (typeof lbPublish === 'function') lbPublish(); }, 1200); };
+const SPV = { day: null, edit: null };        /* ziua aleasă de mână în card (altfel cea care urmează); ziua din editor */
+function nextDay(sp) {
+  const L = SP().last, n = sp.days.length;
+  if (!L || L.id !== sp.id || L.day >= n) return 0;
+  return L.date === todayStr() ? L.day : (L.day + 1) % n;
+}
+const viewedDay = sp => SPV.day != null && SPV.day < sp.days.length ? SPV.day : nextDay(sp);
+const doneToday = (sp, i) => { const L = SP().last; return !!L && L.id === sp.id && L.day === i && L.date === todayStr(); };
+const loggedToday = n => { const ex = exByName(n); return !!ex && ex.sessions.some(s => s.date === todayStr()); };
+
+/* ---- omulețul: din față și din spate, cu mușchii zilei colorați (desen propriu, din forme simple) ---- */
+const BODY = (() => {
+  const el = (cx, cy, rx, ry, rot) => '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '"' + (rot ? ' transform="rotate(' + rot + ' ' + cx + ' ' + cy + ')"' : '') + '/>';
+  const pair = (cx, cy, rx, ry, rot) => el(cx, cy, rx, ry, rot) + el(100 - cx, cy, rx, ry, rot ? -rot : 0);
+  /* conturul din stânga și oglinda lui (x → 100 − x) */
+  const mir = d => d.replace(/(\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/g, (m, x, y) => (Math.round((100 - x) * 10) / 10) + ' ' + y);
+  const both = d => '<path d="' + d + '"/><path d="' + mir(d) + '"/>';
+  const base = '<circle cx="50" cy="14" r="10"/><path d="M45 21 L55 21 L56.5 31 L43.5 31 Z"/>' +
+    '<path d="M39 30 L61 30 C66 31 70 33 71 37 L67 58 C65 68 64 78 64 86 C66 92 66 98 63 104 L50 108 L37 104 C34 98 34 92 36 86 C36 78 35 68 33 58 L29 37 C30 33 34 31 39 30 Z"/>' +
+    pair(27, 55, 5.6, 15, 11) + pair(22.2, 83, 4.6, 13, 6) + pair(20.5, 101.5, 3.8, 5.6, 6) +
+    both('M35 96 C33 110 34 128 37 140 C40 143 45 143 47.5 140 C50 128 50.5 112 49.5 104 Z') + pair(42.3, 158.5, 5.4, 17.5) + pair(41.5, 181, 6, 3.6);
+  const forearms = pair(22.2, 83, 4, 11.5, 6), delts = pair(30.5, 41, 6.6, 9, 22);
+  const front = {
+    delts,
+    chest: both('M49 34 C43 33 38 34 35.5 38 C33.5 43 35 50 39 53 C43 55.5 47 55 49 52 Z'),
+    biceps: pair(27, 57, 4.6, 10, 11),
+    forearms,
+    abs: [[57, 7.5], [65.5, 7.5], [74, 9]].map(([y, h]) => '<rect x="43" y="' + y + '" width="6.3" height="' + h + '" rx="2"/><rect x="50.7" y="' + y + '" width="6.3" height="' + h + '" rx="2"/>').join('') +
+      both('M36.5 59 C38.5 59 41 59.5 42 60 L42 84 C40 86 38.5 87.5 37 88 C37 78 36.5 68 36.5 59 Z'),
+    quads: both('M36 100 C34 112 35 127 38 136 C41 139.5 45 139.5 47 136 C49.5 125 49.5 111 48 102 C45 98.5 39 98 36 100 Z'),
+    calves: pair(41.6, 157, 4.4, 12)
+  };
+  const back = {
+    traps: '<path d="M50 24 C54 28 59 31 64 33.5 L57 40 L50 56 L43 40 L36 33.5 C41 31 46 28 50 24 Z"/>',
+    delts,
+    back: both('M43.5 40.5 L49 56 L49 74 L45 77 C40 71 36.5 64 35.5 56 C35.5 49 38.5 43.5 43.5 40.5 Z'),
+    triceps: pair(27, 57, 4.6, 10, 11),
+    forearms,
+    lowback: '<path d="M45 77 L50 74.5 L55 77 L56 88 L44 88 Z"/>',
+    glutes: pair(43.5, 97, 7, 8.5),
+    hams: both('M36.5 106 C35 116 36 128 38.5 137 C41 139.5 45 139.5 46.5 137 C48.5 128 49 116 48 107 C45 104.5 39.5 104 36.5 106 Z'),
+    calves: pair(42, 155.5, 5.8, 12.5)
+  };
+  const side = (parts, on, dx) => '<g' + (dx ? ' transform="translate(' + dx + ' 0)"' : '') + '><g class="bm-b">' + base + '</g>' +
+    Object.entries(parts).map(([m, s]) => '<g class="bm-m' + (on.includes(m) ? ' on' : '') + '" data-m="' + m + '">' + s + '</g>').join('') + '</g>';
+  return (mus, cls) => {
+    const on = mus || [], names = on.map(m => MUSN[m]).filter(Boolean);
+    return '<svg class="bm' + (cls ? ' ' + cls : '') + '" viewBox="0 0 208 190" role="img" aria-label="' + esc(names.length ? 'Lucrează: ' + names.join(', ') : 'Nicio grupă de mușchi aleasă') + '">' +
+      side(front, on, 0) + side(back, on, 108) + '</svg>';
+  };
+})();
+const miniStrip = days => '<span class="sp-strip">' + days.map(d => '<span class="sp-mini">' + BODY(d.mus) + '<span>' + esc(d.name) + '</span></span>').join('') + '</span>';
+
+/* ---- cardul din tabul Sală ---- */
+function lastTxt(name) {
+  const ex = exByName(name); if (!ex || !ex.sessions.length) return 'încă nu l-ai înregistrat';
+  const ss = sortedSess(ex), l = ss[ss.length - 1];
+  return 'ultima: ' + setTxt(topSet(l)) + ' · ' + fmtShort(l.date);
+}
+function splitCardHTML() {
+  if (!S.loaded) return '';
+  const sp = activeSplit();
+  if (!sp) {
+    return '<section class="slab split sp-none" aria-label="Antrenamentul pe zile"><div><span class="label">Antrenamentul pe zile</span><h2>Alege-ți splitul</h2></div>' +
+      miniStrip(tplSplit(SPLITS[0]).days) +
+      '<div class="sp-muted">Push Pull Legs, Upper / Lower, Arnold și altele, sau unul făcut de tine. Vezi în fiecare zi ce mușchi lucrezi și ce exerciții ai.</div>' +
+      '<button class="btn" type="button" data-act="splitPick">Alege un split</button></section>';
+  }
+  const di = viewedDay(sp), d = sp.days[di], nx = nextDay(sp), n = sp.days.length;
+  const done = d.ex.filter(loggedToday).length;
+  const head = (di === nx ? 'Azi' : 'Ziua ' + (di + 1) + ' din ' + n) + (d.ex.length && done ? ' · ' + done + ' din ' + d.ex.length + ' făcute' : '');
+  return '<section class="slab split" aria-label="Splitul tău">' +
+    '<div class="sp-top"><div class="grow"><span class="label">Splitul tău</span><h2>' + esc(sp.name) + '</h2></div>' +
+    '<button class="icon-btn" type="button" data-act="splitEdit" aria-label="Schimbă sau editează splitul">' + ic('edit') + '</button></div>' +
+    '<div class="chips scroll sp-days" role="group" aria-label="Zilele splitului">' + sp.days.map((x, i) =>
+      '<button class="chip" type="button" data-act="splitDay" data-i="' + i + '" aria-pressed="' + (i === di) + '">' + esc(x.name) +
+      (doneToday(sp, i) ? '<i class="sp-ok" aria-label=", făcută azi">✓</i>' : i === nx ? '<i class="sp-next" aria-label=", urmează"></i>' : '') + '</button>').join('') + '</div>' +
+    '<div class="sp-day"><div class="sp-map">' + BODY(d.mus) + '</div><div class="sp-info"><span class="label">' + esc(head) + '</span>' +
+    '<b class="sp-dname">' + esc(d.name) + '</b><span class="sp-mus">' + (d.mus.length ? esc(d.mus.map(m => MUSN[m]).join(' · ')) : 'Alege grupele de mușchi din „Editează ziua”.') + '</span></div></div>' +
+    '<div class="sp-ex">' + (d.ex.length ? d.ex.map(name => { const t = loggedToday(name);
+      return '<button class="sp-row' + (t ? ' done' : '') + '" type="button" data-act="splitLog" data-name="' + esc(name) + '">' + thumbHTML(name) +
+        '<span class="grow"><span class="name">' + esc(name) + '</span><span class="sub">' + esc(lastTxt(name)) + '</span></span>' +
+        (t ? '<i class="sp-ok" aria-label="înregistrat azi">✓</i>' : '<i class="sp-go" aria-hidden="true">+</i>') + '</button>'; }).join('')
+      : '<div class="sp-muted">Ziua nu are încă exerciții. Le alegi din „Editează ziua”.</div>') + '</div>' +
+    '<button class="btn ghost" type="button" data-act="dayEdit" data-i="' + di + '">' + ic('edit') + 'Editează ziua</button>' +
+    (SP().last ? '' : '<div class="sp-muted small">Apasă pe un exercițiu ca să-l înregistrezi. Ziua se bifează, iar data viitoare apare următoarea.</div>') + '</section>';
+}
+ACT.splitDay = el => { const sp = activeSplit(); if (!sp) return; const i = +el.dataset.i; SPV.day = i === nextDay(sp) ? null : i; render(); };
+ACT.splitLog = el => ACT.pickEx(el);
+/* după o sesiune salvată: ziua care are exercițiul (întâi cea văzută acum, apoi în ordinea ciclului) e făcută în ziua sesiunii */
+function splitMark(name, date) {
+  const sp = activeSplit(); if (!sp) return;
+  const k = String(name).toLowerCase(), n = sp.days.length, has = i => sp.days[i].ex.some(x => x.toLowerCase() === k);
+  const v = viewedDay(sp), nx = nextDay(sp);
+  const d = [v, ...Array.from({ length: n }, (_, j) => (nx + j) % n)].find(has);
+  if (d == null) return;
+  const L = SP().last;
+  if (L && L.id === sp.id && L.date > date) return;           /* o sesiune trecută nu mută ziua la care ai ajuns */
+  SP().last = { id: sp.id, day: d, date }; SPV.day = null;
+  saveSplit(); render();
+}
+{
+  const save0 = ACT.saveSess;
+  ACT.saveSess = (...a) => {
+    const id = LG.id, date = LG.date;
+    save0(...a);
+    const ex = S.ex[id];
+    if (!sheetOpen() && ex && ex.sessions.some(s => s.date === date)) splitMark(ex.name, date);
+  };
+}
+
+/* ---- alegerea splitului ---- */
+function splitCardPick(sp, desc) {
+  const on = SP().active === sp.id;
+  return '<button class="sp-card" type="button" data-act="splitUse" data-id="' + esc(sp.id) + '"' + (on ? ' aria-current="true"' : '') + '>' +
+    '<span class="sp-card-h"><b>' + esc(sp.name) + '</b><span class="tag">' + sp.days.length + (sp.days.length === 1 ? ' zi' : ' zile') + '</span>' + (on ? '<span class="tag on">acum</span>' : '') + '</span>' +
+    miniStrip(sp.days) + (desc ? '<span class="sp-desc">' + esc(desc) + '</span>' : '') + '</button>';
+}
+ACT.splitPick = () => {
+  if (!S.loaded) { toast('Se încarcă datele…'); return; }
+  const mine = Object.values(SP().list).filter(x => !x.tpl);
+  openSheet(sheetHead('Alege un split') +
+    '<div class="note">Exercițiile propuse le poți schimba oricând, la fiecare zi. Ce ai înregistrat rămâne, oricare ar fi splitul.</div>' +
+    '<div class="sp-list">' + SPLITS.map(t => splitCardPick(SP().list[t.id] || tplSplit(t), t.freq)).join('') +
+    (mine.length ? '<div class="label sp-lh">Spliturile tale</div>' + mine.map(x => splitCardPick(x, '')).join('') : '') +
+    '<button class="sp-card sp-new" type="button" data-act="splitNew"><span class="sp-card-h"><b>' + ic('plus') + 'Split propriu</b></span>' +
+    '<span class="sp-desc">Pentru când nu ai un split clasic: îi dai un nume, îți faci zilele, alegi mușchii și exercițiile.</span></button></div>');
+};
+ACT.splitUse = el => {
+  const id = el.dataset.id, s = SP();
+  if (!s.list[id]) { const t = SPLITS.find(x => x.id === id); if (!t) return; s.list[id] = tplSplit(t); }
+  s.active = id; SPV.day = null;
+  splitChanged(); closeSheet(); render(); toast('Splitul tău: ' + s.list[id].name);
+};
+ACT.splitNew = () => {
+  const s = SP();
+  if (Object.values(s.list).filter(x => !x.tpl).length >= SPLIT_MAXOWN) { toast('Ai deja ' + SPLIT_MAXOWN + ' splituri proprii. Șterge unul ca să faci altul.'); return; }
+  const id = 'c' + uid();
+  s.list[id] = { id, name: 'Splitul meu', tpl: '', days: [{ name: 'Ziua 1', mus: [], ex: [] }] };
+  s.active = id; SPV.day = null; splitChanged(); render(); openSplitEdit(true);
+};
+
+/* ---- editorul splitului: nume, zile ---- */
+const chev = up => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + (up ? 'm18 15-6-6-6 6' : 'm6 9 6 6 6-6') + '"/></svg>';
+function openSplitEdit(fresh) {
+  const sp = activeSplit(); if (!sp) { ACT.splitPick(); return; }
+  openSheet(sheetHead('Splitul tău') +
+    '<label class="field"><span>Nume</span><input class="inp" id="spName" data-in="spName" maxlength="30" value="' + esc(sp.name) + '" autocomplete="off"' + (fresh ? ' autofocus' : '') + '></label>' +
+    '<div class="field"><span>Zilele, în ordine</span><div id="spDays">' + spDaysHTML(sp) + '</div></div>' +
+    (sp.days.length < SPLIT_MAXD ? '<button class="btn ghost block" type="button" data-act="spAddDay">' + ic('plus') + 'Adaugă o zi</button>' : '') +
+    '<div class="note">Apeși pe o zi ca să-i alegi mușchii și exercițiile.</div>' +
+    '<button class="btn block" type="button" data-act="close">Gata</button>' +
+    '<button class="btn ghost block" type="button" data-act="splitPick">Alege alt split</button>' +
+    (sp.tpl ? '<button class="btn ghost block" type="button" data-act="spReset">Revino la varianta propusă</button>' : '') +
+    '<button class="btn danger block" type="button" data-act="spDel">' + (sp.tpl ? 'Renunță la split' : ic('trash') + 'Șterge splitul') + '</button>');
+}
+const spDaysHTML = sp => sp.days.map((d, i) =>
+  '<div class="sp-erow"><button class="sp-eday" type="button" data-act="dayEdit" data-i="' + i + '"><span class="sp-mini sm">' + BODY(d.mus) + '</span>' +
+  '<span class="grow"><span class="name">' + (i + 1) + '. ' + esc(d.name) + '</span><span class="sub">' + (d.mus.length ? esc(d.mus.map(m => MUSN[m]).join(', ')) : 'fără grupe alese') +
+  ' · ' + (d.ex.length === 1 ? '1 exercițiu' : d.ex.length + ' exerciții') + '</span></span></button>' +
+  '<span class="sp-ctl"><button class="icon-btn sm" type="button" data-act="spDayMove" data-i="' + i + '" data-d="-1" aria-label="Mută ziua ' + esc(d.name) + ' mai sus"' + (i ? '' : ' disabled') + '>' + chev(1) + '</button>' +
+  '<button class="icon-btn sm" type="button" data-act="spDayMove" data-i="' + i + '" data-d="1" aria-label="Mută ziua ' + esc(d.name) + ' mai jos"' + (i < sp.days.length - 1 ? '' : ' disabled') + '>' + chev(0) + '</button>' +
+  (sp.days.length > 1 ? '<button class="icon-btn sm" type="button" data-act="spDayDel" data-i="' + i + '" aria-label="Șterge ziua ' + esc(d.name) + '">' + ic('x') + '</button>' : '') + '</span></div>').join('');
+ACT.splitEdit = () => openSplitEdit(false);
+INP.spName = el => { const sp = activeSplit(); if (!sp) return; const v = el.value.trim().slice(0, 30); if (!v) return; sp.name = v; splitChanged(); render(); };
+ACT.spAddDay = () => {
+  const sp = activeSplit(); if (!sp || sp.days.length >= SPLIT_MAXD) return;
+  sp.days.push({ name: 'Ziua ' + (sp.days.length + 1), mus: [], ex: [] }); splitChanged(); render(); openDayEdit(sp.days.length - 1);
+};
+ACT.spDayMove = el => {
+  const sp = activeSplit(), i = +el.dataset.i, j = i + (+el.dataset.d); if (!sp || j < 0 || j >= sp.days.length) return;
+  [sp.days[i], sp.days[j]] = [sp.days[j], sp.days[i]];
+  const L = SP().last; if (L && L.id === sp.id) { if (L.day === i) L.day = j; else if (L.day === j) L.day = i; }
+  SPV.day = null; splitChanged(); render(); $('#spDays').innerHTML = spDaysHTML(sp);
+};
+const arm = (el, msg) => {
+  if (el.dataset.armed) return true;
+  el.dataset.armed = '1'; el.classList.add('armed'); toast(msg);
+  setTimeout(() => { if (el.isConnected) { delete el.dataset.armed; el.classList.remove('armed'); } }, 3500);
+  return false;
+};
+ACT.spDayDel = el => {
+  const sp = activeSplit(), i = +el.dataset.i; if (!sp || sp.days.length < 2 || !sp.days[i]) return;
+  if (!arm(el, 'Apasă încă o dată ca să ștergi ziua „' + sp.days[i].name + '”.')) return;
+  sp.days.splice(i, 1);
+  const L = SP().last; if (L && L.id === sp.id) { if (L.day === i) SP().last = null; else if (L.day > i) L.day--; }
+  SPV.day = null; splitChanged(); render(); openSplitEdit(false);
+};
+ACT.spReset = el => {
+  const s = SP(), sp = activeSplit(), t = sp && SPLITS.find(x => x.id === sp.tpl); if (!t) return;
+  if (!arm(el, 'Apasă încă o dată: zilele și exercițiile revin la cele propuse.')) return;
+  s.list[sp.id] = tplSplit(t); if (s.last && s.last.id === sp.id && s.last.day >= t.days.length) s.last = null;
+  SPV.day = null; splitChanged(); render(); openSplitEdit(false); toast('Ai din nou ' + t.name + ' ca la început');
+};
+ACT.spDel = el => {
+  const s = SP(), sp = activeSplit(); if (!sp) return;
+  if (!el.dataset.armed) { el.dataset.armed = '1'; el.textContent = sp.tpl ? 'Sigur? Apasă încă o dată' : 'Sigur? Se șterge splitul'; return; }
+  if (!sp.tpl) delete s.list[sp.id];
+  s.active = ''; if (s.last && s.last.id === sp.id) s.last = null;
+  SPV.day = null; splitChanged(); closeSheet(); render(); toast(sp.tpl ? 'Nu mai ai un split ales' : 'Split șters');
+};
+
+/* ---- editorul unei zile: nume, mușchi, exerciții ---- */
+function openDayEdit(i) {
+  const sp = activeSplit(); if (!sp || !sp.days[i]) return;
+  SPV.edit = i;
+  const d = sp.days[i];
+  openSheet('<div class="sheet-h"><button class="btn ghost sm" type="button" data-act="dayBack">' + ic('left') + 'Splitul</button>' +
+    '<button class="icon-btn" type="button" data-act="close" aria-label="Închide">' + ic('x') + '</button></div>' +
+    '<h2>' + esc(sp.name) + ' · ziua ' + (i + 1) + '</h2>' +
+    '<label class="field"><span>Numele zilei</span><input class="inp" id="dayName" data-in="dayName" maxlength="24" value="' + esc(d.name) + '" autocomplete="off"></label>' +
+    '<div class="field"><span>Ce mușchi lucrezi</span><div class="chips" id="dayMus">' + dayMusHTML(d) + '</div></div>' +
+    '<div class="sp-map-lg" id="dayMap">' + BODY(d.mus) + '</div>' +
+    '<div class="field"><span>Exercițiile zilei</span><div id="dayEx">' + dayExHTML(d) + '</div></div>' +
+    '<button class="btn block" type="button" data-act="dayAddEx">' + ic('plus') + 'Adaugă exerciții</button>' +
+    '<button class="btn ghost block" type="button" data-act="close">Gata</button>');
+  FIG.mount($('#sheetRoot'));
+}
+const dayMusHTML = d => MUSCLES.map(([m, n]) => '<button class="chip" type="button" data-act="dayMus" data-m="' + m + '" aria-pressed="' + d.mus.includes(m) + '">' + esc(n) + '</button>').join('');
+const dayExHTML = d => d.ex.length ? d.ex.map((n, j) => '<div class="sp-erow">' + thumbHTML(n) + '<span class="grow"><span class="name">' + esc(n) + '</span></span><span class="sp-ctl">' +
+  '<button class="icon-btn sm" type="button" data-act="dayExMove" data-j="' + j + '" data-d="-1" aria-label="Mută ' + esc(n) + ' mai sus"' + (j ? '' : ' disabled') + '>' + chev(1) + '</button>' +
+  '<button class="icon-btn sm" type="button" data-act="dayExMove" data-j="' + j + '" data-d="1" aria-label="Mută ' + esc(n) + ' mai jos"' + (j < d.ex.length - 1 ? '' : ' disabled') + '>' + chev(0) + '</button>' +
+  '<button class="icon-btn sm" type="button" data-act="dayExDel" data-j="' + j + '" aria-label="Scoate ' + esc(n) + ' din zi">' + ic('x') + '</button></span></div>').join('')
+  : '<div class="meal-empty">Niciun exercițiu încă.</div>';
+const editDay = () => { const sp = activeSplit(); return sp && sp.days[SPV.edit] ? sp.days[SPV.edit] : null; };
+const paintDayEx = d => { const l = $('#dayEx'); if (l) { l.innerHTML = dayExHTML(d); FIG.mount(l); } };
+ACT.dayEdit = el => openDayEdit(+el.dataset.i);
+ACT.dayBack = () => openSplitEdit(false);
+INP.dayName = el => { const d = editDay(); if (!d) return; const v = el.value.trim().slice(0, 24); if (!v) return; d.name = v; splitChanged(); render(); };
+ACT.dayMus = el => {
+  const d = editDay(); if (!d) return;
+  const m = el.dataset.m; d.mus = MUSCLES.map(x => x[0]).filter(x => x === m ? !d.mus.includes(m) : d.mus.includes(x));
+  el.setAttribute('aria-pressed', String(d.mus.includes(m)));
+  const map = $('#dayMap'); if (map) map.innerHTML = BODY(d.mus);
+  splitChanged(); render();
+};
+ACT.dayExMove = el => {
+  const d = editDay(), j = +el.dataset.j, k = j + (+el.dataset.d); if (!d || k < 0 || k >= d.ex.length) return;
+  [d.ex[j], d.ex[k]] = [d.ex[k], d.ex[j]]; splitChanged(); render(); paintDayEx(d);
+};
+ACT.dayExDel = el => { const d = editDay(); if (!d || !d.ex[+el.dataset.j]) return; d.ex.splice(+el.dataset.j, 1); splitChanged(); render(); paintDayEx(d); };
+
+/* ---- biblioteca de exerciții, în modul „adaugă la zi”: apeși ca să pui sau să scoți ---- */
+const unesc = s => s.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+function dayLibHTML() {
+  const d = editDay(), on = new Set((d ? d.ex : []).map(x => x.toLowerCase()));
+  const lib = new Set(EXFLAT.map(([n]) => n.toLowerCase())), q = S.exQ.trim().toLowerCase();
+  /* exercițiile tale care nu sunt în bibliotecă (le-ai creat tu) */
+  const own = S.exG ? [] : Object.values(S.ex).filter(e => e.sessions.length && !lib.has(e.name.toLowerCase()) && (!q || e.name.toLowerCase().includes(q)))
+    .map(e => e.name).sort((a, b) => a.localeCompare(b, 'ro'));
+  const ownH = own.length ? '<div class="label" style="padding:14px 2px 4px">Ale tale</div>' + own.map(n =>
+    '<button class="row" type="button" data-act="splitAddEx" data-name="' + esc(n) + '" aria-pressed="' + on.has(n.toLowerCase()) + '">' + thumbHTML(n) + '<span class="grow"><span class="name">' + esc(n) + '</span></span></button>').join('') : '';
+  const libH = exListHTML().replace(/data-act="pickEx" data-name="([^"]*)"/g, (m, n) => 'data-act="splitAddEx" data-name="' + n + '" aria-pressed="' + on.has(unesc(n).toLowerCase()) + '"');
+  return own.length && /^<div class="meal-empty">/.test(libH) ? ownH : ownH + libH;
+}
+const paintLib = () => { const l = $('#exList'); if (l) { l.innerHTML = dayLibHTML(); FIG.mount(l); } };
+ACT.dayAddEx = () => {
+  const d = editDay(); if (!d) return;
+  S.exQ = ''; S.exG = '';
+  openSheet('<div class="sheet-h"><button class="btn ghost sm" type="button" data-act="dayAddBack">' + ic('left') + esc(d.name) + '</button>' +
+    '<button class="icon-btn" type="button" data-act="close" aria-label="Închide">' + ic('x') + '</button></div>' +
+    '<h2>Adaugă la ' + esc(d.name) + '</h2><div class="note">Apeși pe un exercițiu ca să-l pui în zi și încă o dată ca să-l scoți. Dacă nu-l găsești, îi scrii numele.</div>' +
+    '<input class="inp" id="exQ" data-in="exQ" type="search" placeholder="Caută (ex. squat, curl, piept) sau scrie unul nou" autocomplete="off">' +
+    '<div class="chips scroll" id="exGroups">' + exGroupsHTML() + '</div>' +
+    '<div id="exList" data-day="1">' + dayLibHTML() + '</div>' +
+    '<button class="btn block" type="button" data-act="dayAddBack">Gata</button>');
+  FIG.mount($('#sheetRoot'));
+};
+ACT.dayAddBack = () => openDayEdit(SPV.edit);
+ACT.splitAddEx = el => {
+  const d = editDay(); if (!d) return;
+  const n = el.dataset.name.trim().slice(0, 60); if (!n) return;
+  const k = n.toLowerCase(), j = d.ex.findIndex(x => x.toLowerCase() === k);
+  if (j >= 0) { d.ex.splice(j, 1); toast('Scos din ' + d.name + ': ' + n); }
+  else if (d.ex.length >= SPLIT_MAXEX) { toast('O zi poate avea cel mult ' + SPLIT_MAXEX + ' exerciții.'); return; }
+  else { d.ex.push(n); toast('Adăugat la ' + d.name + ': ' + n); }
+  splitChanged(); render();
+  if (!EXFLAT.some(([x]) => x.toLowerCase() === k)) { const q = $('#exQ'); if (q) q.value = ''; S.exQ = ''; }
+  paintLib();
+};
+{
+  /* căutarea și grupele din bibliotecă rămân în modul „adaugă la zi” */
+  const q0 = INP.exQ, g0 = ACT.exGroup;
+  const inDay = () => { const l = $('#exList'); return !!(l && l.dataset.day); };
+  INP.exQ = (el, e) => { if (!inDay()) return q0(el, e); S.exQ = el.value; paintLib(); };
+  ACT.exGroup = (el, e) => { if (!inDay()) return g0(el, e); S.exG = el.dataset.g; $('#exGroups').innerHTML = exGroupsHTML(); paintLib(); };
+}
+
 /* ================= CLASAMENT: cine are cea mai lungă serie =================
    Două clasamente în același tab: Global (toți cei care au intrat) și Prieteni (doar pe invitație, după numele de utilizator).
    Fiecare persoană are un singur nume de utilizator, unic (fără diferență între litere mari și mici).
@@ -2768,10 +3212,13 @@ async function lbInit() {
   if (S.tab === 'clasament') render();
 }
 
-/* seria mea, în forma în care o văd ceilalți: ultima zi a seriei + lungimea */
+/* seria mea, în forma în care o văd ceilalți: ultima zi a seriei + lungimea (+ numele splitului de la Sală, dacă ai unul) */
+const lbMySplit = () => !LB.noSp && typeof splitLabel === 'function' ? splitLabel() : '';
 function lbPayload() {
-  const st = streakInfo(), today = todayStr();
-  return { name: LB.uname, lu: LB.uname.toLowerCase(), claimed: LB.claimed, n: st.n, best: Math.max(st.best, st.n), end: st.n > 0 ? (st.doneToday ? today : addDays(today, -1)) : '', g: LB.g ? 1 : 0, fr: LB.friends.slice(0, LB_MAXF), v: 3 };
+  const st = streakInfo(), today = todayStr(), sp = lbMySplit();
+  const p = { name: LB.uname, lu: LB.uname.toLowerCase(), claimed: LB.claimed, n: st.n, best: Math.max(st.best, st.n), end: st.n > 0 ? (st.doneToday ? today : addDays(today, -1)) : '', g: LB.g ? 1 : 0, fr: LB.friends.slice(0, LB_MAXF), v: 3 };
+  if (sp) p.sp = sp;
+  return p;
 }
 async function lbPublish(force) {
   if (!LB.joined || !LB.uname || !LB.board || !LB.me || LB.canWrite === false) return false;
@@ -2782,7 +3229,16 @@ async function lbPublish(force) {
   LB.busy = true;
   let ok = true;
   try {
-    while (LB.pending) { const q = LB.pending; LB.pending = null; await LB.board.doc(LB.me).set(q); LB.last = JSON.stringify(q); }
+    while (LB.pending) {
+      const q = LB.pending; LB.pending = null;
+      try { await LB.board.doc(LB.me).set(q); }
+      catch (e) {
+        /* regulile vechi ale clasamentului nu știu de split: intrarea merge mai departe fără el */
+        if (!('sp' in q) || !e || e.code !== 'permission-denied') throw e;
+        LB.noSp = true; delete q.sp; await LB.board.doc(LB.me).set(q);
+      }
+      LB.last = JSON.stringify(q);
+    }
   } catch (e) { ok = false; LB.last = ''; toast('Nu am putut actualiza clasamentul.'); }
   finally { LB.busy = false; }
   return ok;
@@ -2845,9 +3301,9 @@ function lbAll() {
   const out = lbUnique(LB.rows.filter(lbValid)).filter(r => r.id !== LB.me).map(r => {
     const n = Math.min(9999, Math.max(0, Math.floor(Number(r.n) || 0))), best = Math.min(9999, Math.max(n, Math.floor(Number(r.best) || 0)));
     const alive = n > 0 && typeof r.end === 'string' && LB_ID.test(r.end) && r.end >= y;
-    return { id: r.id, name: r.name, cur: alive ? n : 0, best, today: alive && r.end >= today, me: false, g: r.g === 0 ? 0 : 1, fr: strArr(r.fr) };
+    return { id: r.id, name: r.name, cur: alive ? n : 0, best, today: alive && r.end >= today, me: false, g: r.g === 0 ? 0 : 1, fr: strArr(r.fr), sp: typeof r.sp === 'string' ? r.sp.trim().slice(0, 30) : '' };
   });
-  if (LB.joined && LB.uname) out.push({ id: LB.me, name: LB.uname, cur: st.n, best: Math.max(st.best, st.n), today: st.doneToday, me: true, g: LB.g, fr: LB.friends });
+  if (LB.joined && LB.uname) out.push({ id: LB.me, name: LB.uname, cur: st.n, best: Math.max(st.best, st.n), today: st.doneToday, me: true, g: LB.g, fr: LB.friends, sp: lbMySplit() });
   return out;
 }
 function lbRank(rows) {
@@ -2867,6 +3323,8 @@ const lbRequests = () => !LB.joined ? [] : lbAll().filter(r => !r.me && r.fr.inc
 /* invitații trimise: i-am invitat eu, încă nu m-au invitat ei înapoi */
 const lbSent = () => !LB.joined ? [] : lbAll().filter(r => !r.me && LB.friends.includes(r.id) && !r.fr.includes(LB.me));
 
+/* gantera mică din fața splitului (aceeași iconiță ca tabul Sală, Lucide) */
+const LB_DB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.596 12.768a2 2 0 1 0 2.829-2.829l-1.768-1.767a2 2 0 0 0 2.828-2.829l-2.828-2.828a2 2 0 0 0-2.829 2.828l-1.767-1.768a2 2 0 1 0-2.829 2.829z"/><path d="m2.5 21.5 1.4-1.4"/><path d="m20.1 3.9 1.4-1.4"/><path d="M5.343 21.485a2 2 0 1 0 2.829-2.828l1.767 1.768a2 2 0 1 0 2.829-2.829l-6.364-6.364a2 2 0 1 0-2.829 2.829l1.768 1.767a2 2 0 0 0-2.828 2.829z"/><path d="m9.6 14.4 4.8-4.8"/></svg>';
 function lbRowHTML(r) {
   const flame = r.cur > 0, friendsView = LB.view === 'friends';
   let x = '';
@@ -2875,6 +3333,7 @@ function lbRowHTML(r) {
   return '<li class="lb-r' + (r.me ? ' me' : '') + (r.rank <= 3 && flame ? ' top' + r.rank : '') + (flame ? '' : ' off') + '">' +
     '<span class="lb-n">' + r.rank + '</span>' +
     '<span class="lb-who"><span class="lb-name">' + esc(r.name) + (r.me ? '<em>tu</em>' : '') + '</span>' +
+    (r.sp ? '<span class="lb-sp" title="Splitul de la sală">' + LB_DB + '<span>' + esc(r.sp) + '</span></span>' : '') +
     '<span class="lb-sub">' + (flame ? (r.today ? 'a adăugat azi' : 'încă nu a adăugat azi') : 'serie întreruptă') + ' · record ' + esc(zile(r.best)) + '</span></span>' +
     '<span class="lb-s">' + FLAME + '<b>' + r.cur + '</b></span>' + x + '</li>';
 }
@@ -2928,7 +3387,7 @@ function lbPaint() {
 function lbJoinCard() {
   if (LB.canWrite === false) return '<div class="hint">Ai acces doar de citire la aplicație, deci poți vedea clasamentul, dar nu poți intra în el. Cere acces de Contributor ca să apari și tu.</div>';
   return '<div class="empty"><h3>Cine ține seria cel mai mult?</h3>' +
-    '<div class="muted">Alege un nume de utilizator și apari în clasamentul global. Numele e unic: nimeni altcineva nu îl poate avea. Ceilalți văd doar numele și câte zile la rând ai adăugat mâncare, iar prietenii te invită după el. Poți ieși oricând și poți fi vizibil doar pentru prieteni.</div>' +
+    '<div class="muted">Alege un nume de utilizator și apari în clasamentul global. Numele e unic: nimeni altcineva nu îl poate avea. Ceilalți văd doar numele, câte zile la rând ai adăugat mâncare și ce split folosești la sală (dacă ți-ai ales unul), iar prietenii te invită după nume. Poți ieși oricând și poți fi vizibil doar pentru prieteni.</div>' +
     '<label class="field"><span>Numele tău de utilizator</span><input class="inp" id="lbName" maxlength="21" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="ex. dima_92" value="' + esc(LB.prefill) + '"></label>' +
     '<div class="note">3–20 de caractere: litere, cifre, _ sau .</div>' +
     '<button class="btn block" type="button" data-act="lbJoin">' + ic('trophy') + 'Intră în clasament</button></div>';
@@ -3166,8 +3625,9 @@ async function boot() {
   render();
   await Store.init();
   try {
-    const [t, fd, exs, act] = await Promise.all([Store.get('meta', 'targets'), Store.get('meta', 'foods'), Store.list('ex'), Store.get('meta', 'active')]);
+    const [t, fd, exs, act, spl] = await Promise.all([Store.get('meta', 'targets'), Store.get('meta', 'foods'), Store.list('ex'), Store.get('meta', 'active'), Store.get('meta', 'split')]);
     if (t) S.targets = { ...S.targets, ...t };
+    S.split = splitNorm(spl);
     if (fd && fd.items) { S.foods = fd.items; S.seedVer = fd.seedVer || 0; }
     exs.forEach(x => { S.ex[x._id] = { id: x._id, name: x.name || 'Exercițiu', sessions: x.sessions || [], created: x.created || 0 }; });
     if (act && Array.isArray(act.days)) S.active = new Set(act.days);
@@ -3301,7 +3761,7 @@ $('#importInput').addEventListener('change', async e => {
   } catch (err) { toast('Fișierul nu e o copie Gantera validă.'); }
 });
 
-const PRIVACY = {"updated":"2026-10-27","ro":{"title":"Politica de confidențialitate – Gantera","updatedLabel":"Ultima actualizare: 31 octombrie 2026","sections":[{"h":"","p":["Gantera este o aplicație pentru jurnalul de calorii și macronutrienți, apă și progresul la sală. Această politică explică ce se întâmplă cu datele tale când folosești aplicația.","Pe scurt: aplicația nu are conturi cu e-mail sau parolă, nu afișează reclame și nu folosește instrumente de analiză sau de urmărire. Jurnalul tău rămâne pe dispozitiv și dezvoltatorul nu îl primește."]},{"h":"Unde stau datele tale","p":["Tot ce introduci în aplicație (alimente, cantități, apă, antrenamente, ținte) se salvează doar pe dispozitivul tău, în spațiul de stocare al browserului sau, dacă ai adăugat-o pe ecranul principal, al aplicației.","Aplicația se încarcă de pe GitHub Pages (un serviciu GitHub), ca orice site: la deschidere, GitHub primește adresa IP și informațiile obișnuite ale browserului. Ce introduci în aplicație nu ajunge acolo."]},{"h":"Căutarea după codul de bare","p":["Când scanezi sau scrii un cod de bare care nu e deja salvat în aplicație, codul produsului este trimis la Open Food Facts (openfoodfacts.org), o bază de date publică despre alimente, ca să primești valorile nutriționale. Cererea nu conține numele tău sau alte date despre tine. Ca orice cerere pe internet, ajunge la serverele lor împreună cu adresa IP a telefonului. Open Food Facts are propria politică de confidențialitate.","Codurile pe care le ai deja salvate se găsesc direct pe telefon, fără nicio cerere pe internet."]},{"h":"Clasamentul (opțional)","p":["Clasamentul e opțional. Dacă intri în el, se salvează în Firebase (un serviciu Google), ca să le vadă ceilalți: numele de utilizator ales, seria curentă și cea mai lungă, ultima zi a seriei, dacă apari în clasamentul global și pe cine ai invitat ca prieten. Ce scrii în jurnal (mese, apă, antrenamente) nu ajunge acolo.","Pentru clasament, telefonul primește de la Firebase un cont anonim, fără nume real, e-mail sau parolă. Ca orice cerere pe internet, cererile ajung la Google împreună cu adresa IP. Firebase se încarcă doar dacă intri în clasament sau îl deschizi.","Dezvoltatorul poate vedea intrările din clasament și le poate șterge (de exemplu un nume nepotrivit). Când ieși din clasament, intrarea ta se șterge."]},{"h":"Camera","p":["Aplicația cere acces la cameră doar ca să citească codurile de bare. Imaginea se analizează pe telefon și nu este trimisă nicăieri.","Dacă alegi să faci o poză codului, poza este citită pe dispozitiv și nu este trimisă nicăieri."]},{"h":"Copia de siguranță","p":["Exportul creează un fișier cu datele tale și deschide meniul de partajare al telefonului; tu alegi unde îl salvezi sau cui îl trimiți. Importul citește doar fișierul pe care îl alegi tu."]},{"h":"Permisiuni","p":["Camera: pentru citirea codurilor de bare, doar când pornești scanarea. Internet: pentru încărcarea aplicației, căutarea produselor în Open Food Facts și clasament."]},{"h":"Ștergerea datelor","p":["Poți șterge oricând toate datele din setările browserului, ștergând datele acestui site.","Intrarea din clasament se șterge când ieși din clasament (Clasament › creionul de sus › Ieși din clasament)."]},{"h":"Copii","p":["Gantera nu este destinată copiilor sub 13 ani."]},{"h":"Modificări","p":["Dacă politica se schimbă, versiunea nouă apare la aceeași adresă și în aplicație, cu data actualizării."]},{"h":"Contact","p":["Pentru întrebări despre această politică, scrie la adresa de e-mail afișată la Gantera în Google Play, în secțiunea „Contactul dezvoltatorului”."]}]},"en":{"title":"Privacy Policy – Gantera","updatedLabel":"Last updated: October 27, 2026","sections":[{"h":"","p":["Gantera is an app for logging calories and macronutrients, water and gym progress. This policy explains what happens to your data when you use the app.","In short: the app has no accounts, shows no ads and uses no analytics or tracking tools. The developer does not receive your data."]},{"h":"Where your data is stored","p":["Everything you enter in the app (foods, amounts, water, workouts, goals) is saved only on your phone, in the app's own storage.","If Android backup is turned on, the system may include this data in your Google account backup, according to your phone settings."]},{"h":"Barcode lookup","p":["When you scan or type a barcode that is not already saved in the app, the product code is sent to Open Food Facts (openfoodfacts.org), a public food database, to get the nutrition values. The request does not contain your name or any other information about you. Like any internet request, it reaches their servers together with your phone's IP address. Open Food Facts has its own privacy policy.","Barcodes you have already saved are found directly on your phone, without any internet request."]},{"h":"Camera","p":["The app asks for camera access only to read barcodes. The image is analyzed on your phone and is not sent anywhere.","If you choose to take a photo of a barcode, the photo is read on your phone, is not sent anywhere and stays only in the app's own storage, which is deleted when you uninstall the app."]},{"h":"Backup copy","p":["Export creates a file with your data and opens your phone's share menu; you choose where to save it or whom to send it to. Import only reads the file you pick."]},{"h":"Permissions","p":["Camera: to read barcodes. Internet: to look up products in Open Food Facts. Vibration: a short vibration when a barcode has been read."]},{"h":"Deleting your data","p":["You can delete all data at any time by uninstalling the app or from your phone settings: Apps › Gantera › Storage › Clear data."]},{"h":"Children","p":["Gantera is not intended for children under 13."]},{"h":"Changes","p":["If this policy changes, the new version is published at the same address and in the app, with the date of the update."]},{"h":"Contact","p":["For questions about this policy, write to the email address shown for Gantera on Google Play, in the \"Developer contact\" section."]}]}};
+const PRIVACY = {"updated":"2026-10-27","ro":{"title":"Politica de confidențialitate – Gantera","updatedLabel":"Ultima actualizare: 4 noiembrie 2026","sections":[{"h":"","p":["Gantera este o aplicație pentru jurnalul de calorii și macronutrienți, apă și progresul la sală. Această politică explică ce se întâmplă cu datele tale când folosești aplicația.","Pe scurt: aplicația nu are conturi cu e-mail sau parolă, nu afișează reclame și nu folosește instrumente de analiză sau de urmărire. Jurnalul tău rămâne pe dispozitiv și dezvoltatorul nu îl primește."]},{"h":"Unde stau datele tale","p":["Tot ce introduci în aplicație (alimente, cantități, apă, antrenamente, ținte) se salvează doar pe dispozitivul tău, în spațiul de stocare al browserului sau, dacă ai adăugat-o pe ecranul principal, al aplicației.","Aplicația se încarcă de pe GitHub Pages (un serviciu GitHub), ca orice site: la deschidere, GitHub primește adresa IP și informațiile obișnuite ale browserului. Ce introduci în aplicație nu ajunge acolo."]},{"h":"Căutarea după codul de bare","p":["Când scanezi sau scrii un cod de bare care nu e deja salvat în aplicație, codul produsului este trimis la Open Food Facts (openfoodfacts.org), o bază de date publică despre alimente, ca să primești valorile nutriționale. Cererea nu conține numele tău sau alte date despre tine. Ca orice cerere pe internet, ajunge la serverele lor împreună cu adresa IP a telefonului. Open Food Facts are propria politică de confidențialitate.","Codurile pe care le ai deja salvate se găsesc direct pe telefon, fără nicio cerere pe internet."]},{"h":"Clasamentul (opțional)","p":["Clasamentul e opțional. Dacă intri în el, se salvează în Firebase (un serviciu Google), ca să le vadă ceilalți: numele de utilizator ales, seria curentă și cea mai lungă, ultima zi a seriei, numele splitului ales la Sală (dacă ai unul), dacă apari în clasamentul global și pe cine ai invitat ca prieten. Ce scrii în jurnal (mese, apă, antrenamente) nu ajunge acolo.","Pentru clasament, telefonul primește de la Firebase un cont anonim, fără nume real, e-mail sau parolă. Ca orice cerere pe internet, cererile ajung la Google împreună cu adresa IP. Firebase se încarcă doar dacă intri în clasament sau îl deschizi.","Dezvoltatorul poate vedea intrările din clasament și le poate șterge (de exemplu un nume nepotrivit). Când ieși din clasament, intrarea ta se șterge."]},{"h":"Camera","p":["Aplicația cere acces la cameră doar ca să citească codurile de bare. Imaginea se analizează pe telefon și nu este trimisă nicăieri.","Dacă alegi să faci o poză codului, poza este citită pe dispozitiv și nu este trimisă nicăieri."]},{"h":"Copia de siguranță","p":["Exportul creează un fișier cu datele tale și deschide meniul de partajare al telefonului; tu alegi unde îl salvezi sau cui îl trimiți. Importul citește doar fișierul pe care îl alegi tu."]},{"h":"Permisiuni","p":["Camera: pentru citirea codurilor de bare, doar când pornești scanarea. Internet: pentru încărcarea aplicației, căutarea produselor în Open Food Facts și clasament."]},{"h":"Ștergerea datelor","p":["Poți șterge oricând toate datele din setările browserului, ștergând datele acestui site.","Intrarea din clasament se șterge când ieși din clasament (Clasament › creionul de sus › Ieși din clasament)."]},{"h":"Copii","p":["Gantera nu este destinată copiilor sub 13 ani."]},{"h":"Modificări","p":["Dacă politica se schimbă, versiunea nouă apare la aceeași adresă și în aplicație, cu data actualizării."]},{"h":"Contact","p":["Pentru întrebări despre această politică, scrie la adresa de e-mail afișată la Gantera în Google Play, în secțiunea „Contactul dezvoltatorului”."]}]},"en":{"title":"Privacy Policy – Gantera","updatedLabel":"Last updated: October 27, 2026","sections":[{"h":"","p":["Gantera is an app for logging calories and macronutrients, water and gym progress. This policy explains what happens to your data when you use the app.","In short: the app has no accounts, shows no ads and uses no analytics or tracking tools. The developer does not receive your data."]},{"h":"Where your data is stored","p":["Everything you enter in the app (foods, amounts, water, workouts, goals) is saved only on your phone, in the app's own storage.","If Android backup is turned on, the system may include this data in your Google account backup, according to your phone settings."]},{"h":"Barcode lookup","p":["When you scan or type a barcode that is not already saved in the app, the product code is sent to Open Food Facts (openfoodfacts.org), a public food database, to get the nutrition values. The request does not contain your name or any other information about you. Like any internet request, it reaches their servers together with your phone's IP address. Open Food Facts has its own privacy policy.","Barcodes you have already saved are found directly on your phone, without any internet request."]},{"h":"Camera","p":["The app asks for camera access only to read barcodes. The image is analyzed on your phone and is not sent anywhere.","If you choose to take a photo of a barcode, the photo is read on your phone, is not sent anywhere and stays only in the app's own storage, which is deleted when you uninstall the app."]},{"h":"Backup copy","p":["Export creates a file with your data and opens your phone's share menu; you choose where to save it or whom to send it to. Import only reads the file you pick."]},{"h":"Permissions","p":["Camera: to read barcodes. Internet: to look up products in Open Food Facts. Vibration: a short vibration when a barcode has been read."]},{"h":"Deleting your data","p":["You can delete all data at any time by uninstalling the app or from your phone settings: Apps › Gantera › Storage › Clear data."]},{"h":"Children","p":["Gantera is not intended for children under 13."]},{"h":"Changes","p":["If this policy changes, the new version is published at the same address and in the app, with the date of the update."]},{"h":"Contact","p":["For questions about this policy, write to the email address shown for Gantera on Google Play, in the \"Developer contact\" section."]}]}};
 
 
 /* ================= doar aplicația Android (Capacitor) ================= */
