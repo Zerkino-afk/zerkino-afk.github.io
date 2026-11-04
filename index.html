@@ -567,6 +567,23 @@ body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .pl-w span{font-size:13px;color:var(--ink-2);text-align:right}
 .pl-warm .label{margin-bottom:6px}
 #lgPlates:empty{display:none}
+/* harta săptămânii */
+.wkmap{display:flex;flex-direction:column;gap:12px;padding:16px 14px 14px;border-radius:2px;background:var(--paper);box-shadow:0 10px 14px -10px rgba(0,0,0,.5),0 0 0 1px var(--line)}
+.wkmap-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.wkmap-h h3{margin-top:4px;font-size:28px;line-height:.95;font-weight:900}
+.wkmap-n{flex:none;font:800 13px/1.1 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);text-align:right}
+.wkmap-b{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;align-items:center}
+.wkmap .bm{--bm-gap:var(--paper)}
+.bm .bm-m.on.h1{fill-opacity:.38}
+.bm .bm-m.on.h2{fill-opacity:.7}
+.wkmap-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.wkmap-l li{display:flex;align-items:center;gap:7px;font-size:13.5px}
+.wkmap-l li span{flex:1;min-width:0}
+.wkmap-l li b{font:800 17px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.wkmap-l i{flex:none;width:10px;height:10px;border-radius:2px;background:var(--flame)}
+.wkmap-l i.h1{opacity:.38} .wkmap-l i.h2{opacity:.7}
+.wkmap-none{font-size:13.5px;line-height:1.35}
+.wkmap-none.ok{color:var(--up);font-weight:600}
 #lgPlates{background:var(--paper);border-radius:3px;box-shadow:0 0 0 1px var(--line);padding:12px}
 .sheet>.linkbtn{align-self:flex-start}
 .sp-coach{display:block;margin-top:2px;font-size:12.5px;font-weight:700;line-height:1.3;color:var(--s-fat)}
@@ -2709,7 +2726,7 @@ function viewGym() {
   });
   let h = '<div class="top"><div><div class="scrawl">Progres</div><h1>Sală</h1></div><div class="top-b">' +
     '<button class="icon-btn" type="button" data-act="plOpen" aria-label="Calculator de discuri"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M12 3v3M12 18v3"/></svg></button>' +
-    '<button class="btn sm" type="button" data-act="newEx">' + ic('plus') + 'Exercițiu</button></div></div>' + splitCardHTML();
+    '<button class="btn sm" type="button" data-act="newEx">' + ic('plus') + 'Exercițiu</button></div></div>' + splitCardHTML() + (typeof weekMapHTML === 'function' ? weekMapHTML() : '');
   const withSplit = S.loaded && !!activeSplit();
   if (!list.length && withSplit) {
     h += '<div class="note sp-all">Exercițiile pe care le înregistrezi apar aici, fiecare cu progresul de la o sesiune la alta.</div>';
@@ -2991,12 +3008,13 @@ const BODY = (() => {
     hams: both('M36.5 106 C35 116 36 128 38.5 137 C41 139.5 45 139.5 46.5 137 C48.5 128 49 116 48 107 C45 104.5 39.5 104 36.5 106 Z'),
     calves: pair(42, 155.5, 5.8, 12.5)
   };
-  const side = (parts, on, dx) => '<g' + (dx ? ' transform="translate(' + dx + ' 0)"' : '') + '><g class="bm-b">' + base + '</g>' +
-    Object.entries(parts).map(([m, s]) => '<g class="bm-m' + (on.includes(m) ? ' on' : '') + '" data-m="' + m + '">' + s + '</g>').join('') + '</g>';
-  return (mus, cls) => {
+  /* lv: nivelul fiecărui mușchi (1–3) pentru harta săptămânii; fără lv, mușchii din „on” sunt aprinși complet */
+  const side = (parts, on, dx, lv) => '<g' + (dx ? ' transform="translate(' + dx + ' 0)"' : '') + '><g class="bm-b">' + base + '</g>' +
+    Object.entries(parts).map(([m, s]) => '<g class="bm-m' + (lv ? (lv[m] ? ' on h' + lv[m] : '') : on.includes(m) ? ' on' : '') + '" data-m="' + m + '">' + s + '</g>').join('') + '</g>';
+  return (mus, cls, lv, label) => {
     const on = mus || [], names = on.map(m => MUSN[m]).filter(Boolean);
-    return '<svg class="bm' + (cls ? ' ' + cls : '') + '" viewBox="0 0 208 190" role="img" aria-label="' + esc(names.length ? 'Lucrează: ' + names.join(', ') : 'Nicio grupă de mușchi aleasă') + '">' +
-      side(front, on, 0) + side(back, on, 108) + '</svg>';
+    return '<svg class="bm' + (cls ? ' ' + cls : '') + '" viewBox="0 0 208 190" role="img" aria-label="' + esc(label || (names.length ? 'Lucrează: ' + names.join(', ') : 'Nicio grupă de mușchi aleasă')) + '">' +
+      side(front, on, 0, lv) + side(back, on, 108, lv) + '</svg>';
   };
 })();
 const miniStrip = days => '<span class="sp-strip">' + days.map(d => '<span class="sp-mini">' + BODY(d.mus) + '<span>' + esc(d.name) + '</span></span>').join('') + '</span>';
@@ -3711,6 +3729,43 @@ ACT.lgPlates = () => {
 };
 /* din capul tabului Sală */
 ACT.plOpen = () => { openSheet(sheetHead('Discuri pe bară') + plPanelHTML()); };
+
+
+/* ================= HARTA SĂPTĂMÂNII (în tabul Sală) =================
+   Omulețul colorat după câte serii a primit fiecare mușchi în ultimele 7 zile (cu azi): cu cât mai multe, cu atât mai aprins.
+   Mușchiul principal al exercițiului primește seria întreagă, cei ajutători câte o jumătate. Mușchii vin din mișcarea desenată
+   a exercițiului; la exercițiile proprii, din grupa lui din bibliotecă. Arată și ce mușchi mari n-au primit nimic. */
+const WM_GROUP = { 'Piept': ['chest'], 'Spate': ['back'], 'Umeri': ['delts'], 'Biceps': ['biceps'], 'Triceps': ['triceps'], 'Cvadriceps': ['quads'],
+  'Femurali și fesieri': ['hams', 'glutes'], 'Gambe': ['calves'], 'Abdomen': ['abs'], 'Antebraț': ['forearms'], 'Corp întreg': ['quads', 'glutes', 'back', 'delts'] };
+const WM_MAJOR = ['chest', 'back', 'delts', 'biceps', 'triceps', 'quads', 'hams', 'glutes', 'calves', 'abs'];
+const wmMuscles = name => { const pat = FIG.get(name); if (pat && Array.isArray(pat.hl) && pat.hl.length) return pat.hl.filter(m => MUSN[m]); return WM_GROUP[groupOf(name)] || []; };
+function weekSets(end) {
+  const to = end || todayStr(), from = addDays(to, -6), sets = {}, days = new Set();
+  Object.values(S.ex).forEach(ex => {
+    const mus = wmMuscles(ex.name);
+    ex.sessions.forEach(s => {
+      if (s.date < from || s.date > to || !s.sets.length) return;
+      days.add(s.date);
+      mus.forEach((m, k) => { sets[m] = (sets[m] || 0) + s.sets.length * (k ? .5 : 1); });
+    });
+  });
+  return { sets, days: days.size };
+}
+const wmLevel = v => v >= 10 ? 3 : v >= 5 ? 2 : v > 0 ? 1 : 0;
+function weekMapHTML() {
+  if (!S.loaded) return '';
+  const { sets, days } = weekSets(); if (!days) return '';
+  const lv = {}; Object.keys(sets).forEach(m => { lv[m] = wmLevel(sets[m]); });
+  const done = MUSCLES.filter(([m]) => sets[m] > 0).sort((a, b) => sets[b[0]] - sets[a[0]]);
+  const none = WM_MAJOR.filter(m => !sets[m]).map(m => MUSN[m]);
+  const label = 'Serii pe mușchi în ultimele 7 zile: ' + done.map(([m, n]) => n + ' ' + num(sets[m], 1)).join(', ');
+  return '<section class="wkmap" aria-label="Harta săptămânii">' +
+    '<div class="wkmap-h"><div><span class="label">Ultimele 7 zile</span><h3>Harta săptămânii</h3></div><span class="wkmap-n">' + esc(pl(days, 'zi', 'zile')) + ' de sală</span></div>' +
+    '<div class="wkmap-b"><div class="wkmap-fig">' + BODY([], 'heat', lv, label) + '</div>' +
+    '<ul class="wkmap-l">' + done.map(([m, n]) => '<li><i class="h' + lv[m] + '" aria-hidden="true"></i><span>' + esc(n) + '</span><b>' + num(sets[m], 1) + '</b></li>').join('') + '</ul></div>' +
+    (none.length ? '<div class="wkmap-none"><b>Neatinse:</b> ' + esc(none.join(', ')) + '</div>' : '<div class="wkmap-none ok">Ai lucrat toate grupele mari săptămâna asta.</div>') +
+    '<div class="note">Numărul e de serii (mușchii ajutători primesc jumătate). Ca reper, multe programe țintesc cam 10–20 de serii pe săptămână pentru fiecare mușchi.</div></section>';
+}
 
 /* ================= CLASAMENT: cine are cea mai lungă serie =================
    Două clasamente în același tab: Global (toți cei care au intrat) și Prieteni (doar pe invitație, după numele de utilizator).
