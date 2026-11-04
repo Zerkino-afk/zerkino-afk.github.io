@@ -25,10 +25,14 @@ export function reminderFor(d, now = new Date()) {
 
 async function main() {
   const { FIREBASE_SA, VAPID_PRIVATE, VAPID_PUBLIC } = process.env;
-  if (!FIREBASE_SA || !VAPID_PRIVATE || !VAPID_PUBLIC) { console.log('Lipsesc secretele FIREBASE_SA sau VAPID_PRIVATE: nu trimit nimic.'); return; }
+  /* ce secrete vede workflow-ul (fără să le afișeze) */
+  let sa = null; try { sa = FIREBASE_SA ? JSON.parse(FIREBASE_SA) : null; } catch (e) { sa = 'invalid'; }
+  console.log('FIREBASE_SA: ' + (!FIREBASE_SA ? 'lipsește' : sa === 'invalid' ? 'există, dar nu e JSON valid' : 'ok (proiect ' + sa.project_id + ', ' + (sa.client_email ? 'are client_email' : 'fără client_email') + ')'));
+  console.log('VAPID_PRIVATE: ' + (!VAPID_PRIVATE ? 'lipsește' : VAPID_PRIVATE.trim().length === 43 ? 'ok' : 'există, dar are ' + VAPID_PRIVATE.trim().length + ' caractere în loc de 43'));
+  if (!sa || sa === 'invalid' || !VAPID_PRIVATE || !VAPID_PUBLIC) { console.log('Nu trimit nimic până nu sunt amândouă secretele în regulă.'); return; }
   const admin = (await import('firebase-admin')).default, webpush = (await import('web-push')).default;
-  admin.initializeApp({ credential: admin.credential.cert(JSON.parse(FIREBASE_SA)) });
-  webpush.setVapidDetails('https://zerkino-afk.github.io', VAPID_PUBLIC, VAPID_PRIVATE);
+  admin.initializeApp({ credential: admin.credential.cert(sa) });
+  webpush.setVapidDetails('https://zerkino-afk.github.io', VAPID_PUBLIC, VAPID_PRIVATE.trim());
   const snap = await admin.firestore().collection('push').get();
   let sent = 0, gone = 0, failed = 0;
   for (const doc of snap.docs) {
