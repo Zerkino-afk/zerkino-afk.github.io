@@ -586,6 +586,15 @@ body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .wt-list .h-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
 .wt-list .h-row>span:first-child{flex:1}
 .wt-list .num{font:800 18px/1 var(--f-display);font-variant-numeric:tabular-nums}
+/* rețete */
+.rc{display:flex;flex-direction:column;gap:16px}
+.rc-items{display:flex;flex-direction:column}
+.rc-i{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.rc-i .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rc-i .name{font-weight:600;overflow-wrap:anywhere}
+.rc-i .sub{font-size:12.5px;color:var(--ink-2)}
+.rc-i .inp{flex:none;width:78px;min-height:44px;padding:0 8px;text-align:right;font-weight:700}
+.rc-u{flex:none;font:700 14px/1 var(--f-display);color:var(--ink-2)}
 /* mese salvate și „copiază de ieri” */
 .meal-tools{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px}
 .qm{display:flex;flex-direction:column;padding:10px 12px;border-radius:3px;background:var(--paper);box-shadow:0 0 0 1px var(--line)}
@@ -1466,18 +1475,19 @@ ACT.saveTargets = () => {
 /* ---- adaugă aliment în jurnal ---- */
 const A = { meal: 'mic', food: null, g: 100, set: 'all' };   /* set: filtrul din fereastra de adăugare (separat de cel din tabul Alimente) */
 /* listele de alimente: „Toate” (meniul McDonald's apare doar când îl cauți sau după ce l-ai folosit) sau doar „McDonald's”, în ordinea meniului */
+/* set: „all”, „rec” (doar rețetele) sau un lanț de restaurante (ex. „mcd”) */
 const sortedFoods = (q, set) => {
-  const t = (q || '').trim().toLowerCase(), mcd = set === 'mcd';
+  const t = (q || '').trim().toLowerCase(), chain = set && set !== 'all' && set !== 'rec' ? set : '';
   const list = Object.values(S.foods)
-    .filter(f => (mcd ? f.chain === 'mcd' : !f.chain || f.used > 0 || t) &&
+    .filter(f => (chain ? f.chain === chain : set === 'rec' ? !!f.recipe : !f.chain || f.used > 0 || t) &&
       (!t || (f.name + ' ' + (f.brand || '') + ' ' + (f.barcode || '')).toLowerCase().includes(t)));
-  return mcd && !t ? list.sort((a, b) => (a.ord || 0) - (b.ord || 0))
+  return chain && !t ? list.sort((a, b) => (a.ord || 0) - (b.ord || 0))
     : list.sort((a, b) => (b.used || 0) - (a.used || 0) || a.name.localeCompare(b.name, 'ro'));
 };
 const foodRow = (f, act) => {
   const por = f.chain && f.serv > 0, x = v => v * f.serv / 100;   /* meniurile de restaurant: valorile pe porție */
   return '<button class="row food-row" type="button" data-act="' + act + '" data-id="' + esc(f.id) + '"><span class="grow"><span class="name">' + esc(f.name) +
-    (f.barcode ? '<span class="tag">COD</span>' : '') + (f.std ? '<span class="tag">COMUN</span>' : '') + '</span><br><span class="sub">' + (f.brand ? esc(f.brand) + ' · ' : '') +
+    (f.barcode ? '<span class="tag">COD</span>' : '') + (f.std ? '<span class="tag">COMUN</span>' : '') + (f.recipe ? '<span class="tag">REȚETĂ</span>' : '') + '</span><br><span class="sub">' + (f.brand ? esc(f.brand) + ' · ' : '') +
     (por ? '1 ' + esc(f.servName || 'porție') + ': ' + num(x(f.k)) + ' kcal · ' + macroLine(x(f.p), x(f.c), x(f.f)) : 'la 100 g: ' + num(f.k) + ' kcal · ' + macroLine(f.p, f.c, f.f)) +
     '</span></span></button>';
 };
@@ -1490,11 +1500,12 @@ const foodRowsHTML = (list, act, q, set) => {
     return h + foodRow(f, act);
   }).join('');
 };
-const foodSetHTML = (scope, cur) => '<div class="chips food-set" role="group" aria-label="Ce alimente arăt">' +
-  [['all', 'Toate'], ['mcd', "McDonald's"]].map(([v, l]) => '<button class="chip" type="button" data-act="foodSet" data-scope="' + scope + '" data-set="' + v + '" aria-pressed="' + ((cur || 'all') === v) + '">' + l + '</button>').join('') + '</div>';
+const FOOD_SETS = [['all', 'Toate'], ['mcd', "McDonald's"], ['rec', 'Rețete']];
+const foodSetHTML = (scope, cur) => '<div class="chips scroll food-set" role="group" aria-label="Ce alimente arăt">' +
+  FOOD_SETS.map(([v, l]) => '<button class="chip" type="button" data-act="foodSet" data-scope="' + scope + '" data-set="' + v + '" aria-pressed="' + ((cur || 'all') === v) + '">' + l + '</button>').join('') + '</div>';
 const MCD_NOTE = '<div class="note">Valorile oficiale McDonald\'s România (septembrie 2026), pe porție. Apasă pe produs și alege porția.</div>';
 ACT.foodSet = el => {
-  const v = el.dataset.set === 'mcd' ? 'mcd' : 'all', add = el.dataset.scope === 'add';
+  const v = FOOD_SETS.some(s => s[0] === el.dataset.set) ? el.dataset.set : 'all', add = el.dataset.scope === 'add';
   if (add) A.set = v; else S.foodSet = v;
   document.querySelectorAll('.food-set .chip[data-scope="' + el.dataset.scope + '"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.set === v)));
   if (add) { const al = $('#addList'), aq = $('#addQ'); if (al) al.innerHTML = pickListHTML(aq ? aq.value : '', sortedFoods(aq ? aq.value : '', A.set)); }
@@ -1518,6 +1529,7 @@ function renderPick(q) {
 function pickListHTML(q, list) {
   const t = (q || '').trim();
   if (list.length) return (A.set === 'mcd' && !t ? MCD_NOTE : '') + foodRowsHTML(list, 'pickFood', t, A.set);
+  if (A.set === 'rec') return '<div class="meal-empty">' + (t ? 'Nicio rețetă găsită.' : 'Nicio rețetă încă. O faci în tabul Alimente, la „Rețete”.') + '</div>';
   if (/^\d{8,14}$/.test(t)) return '<div class="hint">Codul ' + esc(t) + ' nu e încă în memorie.</div><button class="btn block" type="button" data-act="lookupCode" data-code="' + esc(t) + '" style="margin-top:10px">Caută sau creează alimentul cu acest cod</button>';
   if (t) return '<div class="meal-empty">Niciun aliment găsit. Apasă „Aliment nou” ca să-l adaugi.</div>';
   return '<div class="empty"><h3>Memoria e goală</h3><div class="muted">Scanează un cod de bare sau creează primul aliment. Valorile de pe etichetă le scrii o singură dată, apoi apar singure la fiecare scanare.</div></div>';
@@ -1615,6 +1627,12 @@ function viewFoods() {
   return h;
 }
 function foodListHTML() {
+  if (S.foodSet === 'rec') {
+    const l = sortedFoods(S.foodQ, 'rec');
+    return '<button class="btn block" type="button" data-act="rcNew">' + ic('plus') + 'Rețetă nouă</button>' + (l.length ? '<div>' + foodRowsHTML(l, 'editFood', S.foodQ, 'rec') + '</div>'
+      : (S.foodQ || '').trim() ? '<div class="meal-empty">Nicio rețetă găsită.</div>'
+      : '<div class="empty"><h3>Rețetele tale</h3><div class="muted">Pui ingredientele unei mâncări gătite, cântărești mâncarea gata și aplicația îi calculează caloriile la 100 g. Apoi o notezi pe grame sau pe porții, ca pe orice aliment.</div></div>');
+  }
   if (!Object.keys(S.foods).length) {
     return '<div class="empty"><h3>Încă nu ai alimente salvate</h3>' +
       '<div class="muted">Scanează codul de pe ambalaj. Dacă produsul nu e în memorie, îi treci o dată valorile de pe etichetă. La următoarea scanare, apare singur.</div>' +
@@ -2215,6 +2233,99 @@ ACT.mealDel = el => {
   if (!el.dataset.armed) { el.dataset.armed = '1'; el.textContent = 'Sigur?'; setTimeout(() => { if (el.isConnected) { delete el.dataset.armed; el.textContent = 'Șterge'; } }, 3000); return; }
   ML().list = ML().list.filter(m => m.id !== el.dataset.id); saveMeals(); ACT.mealsManage(); toast('Masă ștearsă');
 };
+
+
+/* ================= REȚETE (în tabul Alimente) =================
+   O mâncare gătită din mai multe alimente: pui ingredientele cu gramele lor, cântărești mâncarea gata (fără vas)
+   și aplicația îi calculează valorile la 100 g. Rețeta devine un aliment ca oricare altul: o notezi după cât ai pus
+   în farfurie sau pe porții. Gramele gătite contează: apa care se evaporă sau se adaugă schimbă valorile la 100 g.
+   Rețeta se păstrează ca aliment, cu ingredientele ei (food.recipe), ca s-o poți edita oricând. */
+const RC_MAX = 40;
+const RC = { id: null, name: '', items: [], total: '', portions: '', view: 'main', q: '' };
+const rcTotals = items => items.reduce((a, i) => { const m = (pn(i.g) || 0) / 100; a.g += pn(i.g) || 0; a.k += i.k * m; a.p += i.p * m; a.c += i.c * m; a.f += i.f * m; return a; }, { g: 0, k: 0, p: 0, c: 0, f: 0 });
+function rcCalc() {
+  const t = rcTotals(RC.items), cooked = pn(RC.total) > 0 ? pn(RC.total) : t.g, por = Math.round(pn(RC.portions));
+  if (!(cooked > 0)) return null;
+  const m = 100 / cooked;
+  return { t, cooked, k: t.k * m, p: t.p * m, c: t.c * m, f: t.f * m, serv: por >= 1 && por <= 100 ? cooked / por : 0, por: por >= 1 && por <= 100 ? por : 0 };
+}
+function rcOpen(f) {
+  const r = f && f.recipe;
+  Object.assign(RC, { id: f ? f.id : null, name: f ? f.name : '', items: r ? r.items.map(i => ({ ...i, g: num(i.g, 1).replace(/\s/g, '') })) : [], total: r && r.total ? num(r.total, 1).replace(/\s/g, '') : '',
+    portions: r && r.portions ? String(r.portions) : '', view: 'main', q: '' });
+  openSheet('<div id="rcRoot" class="rc">' + rcHTML() + '</div>');
+}
+const rcPaint = () => { const r = $('#rcRoot'); if (r) r.innerHTML = rcHTML(); };
+const rcPrevHTML = () => {
+  const c = rcCalc(); if (!c || !RC.items.length) return '<div class="note">Adaugă ingredientele ca să vezi valorile.</div>';
+  return '<div class="label">La 100 g de mâncare gata</div><div class="preview">' + prevHTML(c.k, c.p, c.c, c.f) + '</div>' +
+    '<div class="note">Toată rețeta: ' + num(c.t.k) + ' kcal în ' + num(c.cooked) + ' g' + (c.por ? ' · o porție: ' + num(c.serv) + ' g, ' + num(c.k * c.serv / 100) + ' kcal' : '') + '.</div>';
+};
+function rcHTML() {
+  if (RC.view === 'add') {
+    const list = sortedFoods(RC.q, 'all').filter(f => !f.recipe || f.id !== RC.id).slice(0, 60);
+    return '<div class="sheet-h"><button class="btn ghost sm" type="button" data-act="rcBack">' + ic('left') + 'Rețeta</button><button class="icon-btn" type="button" data-act="close" aria-label="Închide">' + ic('x') + '</button></div>' +
+      '<h2>Adaugă un ingredient</h2><input class="inp" id="rcQ" data-in="rcQ" type="search" placeholder="Caută în alimentele tale" value="' + esc(RC.q) + '" autocomplete="off">' +
+      '<div id="rcList">' + rcListHTML(list) + '</div>';
+  }
+  const t = rcTotals(RC.items);
+  return sheetHead(RC.id ? 'Editează rețeta' : 'Rețetă nouă') +
+    '<label class="field"><span>Nume</span><input class="inp" id="rcName" data-in="rcName" maxlength="60" placeholder="ex. Ciorbă de perișoare, Paste cu pui" value="' + esc(RC.name) + '" autocomplete="off"></label>' +
+    '<div class="field"><span>Ingrediente (crude, în grame)</span><div class="rc-items">' + (RC.items.length ? RC.items.map((i, j) =>
+      '<div class="rc-i"><span class="grow"><span class="name">' + esc(i.name) + '</span><span class="sub">' + num(i.k * (pn(i.g) || 0) / 100) + ' kcal</span></span>' +
+      '<input class="inp" data-in="rcG" data-j="' + j + '" inputmode="decimal" value="' + esc(i.g) + '" aria-label="Grame de ' + esc(i.name) + '"><span class="rc-u">g</span>' +
+      '<button class="icon-btn sm" type="button" data-act="rcDel" data-j="' + j + '" aria-label="Scoate ' + esc(i.name) + '">' + ic('x') + '</button></div>').join('') : '<div class="meal-empty">Niciun ingredient încă.</div>') + '</div></div>' +
+    (RC.items.length < RC_MAX ? '<button class="btn ghost block" type="button" data-act="rcAdd">' + ic('plus') + 'Adaugă un ingredient</button>' : '') +
+    '<div class="grid2"><label class="field"><span>Mâncarea gata (g)</span><input class="inp" id="rcTotal" data-in="rcTotal" inputmode="decimal" placeholder="' + (t.g ? num(t.g).replace(/\s/g, '') : 'grame') + '" value="' + esc(RC.total) + '"></label>' +
+    '<label class="field"><span>Porții (opțional)</span><input class="inp" id="rcPor" data-in="rcPor" inputmode="numeric" placeholder="ex. 4" value="' + esc(RC.portions) + '"></label></div>' +
+    '<div class="note">Cântărește mâncarea gata, fără vas. Dacă lași gol, socotesc suma ingredientelor (' + num(t.g) + ' g), ca la o salată.</div>' +
+    '<div id="rcPrev">' + rcPrevHTML() + '</div>' +
+    '<button class="btn block" type="button" data-act="rcSave">' + (RC.id ? 'Salvează rețeta' : 'Salvează în alimente') + '</button>' +
+    (RC.id ? '<button class="btn danger block" type="button" data-act="rcRemove">' + ic('trash') + 'Șterge rețeta</button>' : '');
+}
+const rcListHTML = list => list.length ? list.map(f => '<button class="row" type="button" data-act="rcPick" data-id="' + esc(f.id) + '"><span class="grow"><span class="name">' + esc(f.name) + '</span><span class="sub">' + (f.brand ? esc(f.brand) + ' · ' : '') + 'la 100 g: ' + num(f.k) + ' kcal</span></span></button>').join('')
+  : '<div class="meal-empty">Niciun aliment găsit. Ingredientele trebuie să fie întâi în alimentele tale (scanate sau adăugate).</div>';
+const rcPrevPaint = () => { const p = $('#rcPrev'); if (p) p.innerHTML = rcPrevHTML(); };
+INP.rcName = el => { RC.name = el.value.slice(0, 60); };
+INP.rcG = el => { const i = RC.items[+el.dataset.j]; if (!i) return; i.g = el.value.slice(0, 8); const s = el.closest('.rc-i').querySelector('.sub'); if (s) s.textContent = num(i.k * (pn(i.g) || 0) / 100) + ' kcal'; rcPrevPaint(); const tot = $('#rcTotal'); if (tot) tot.placeholder = num(rcTotals(RC.items).g).replace(/\s/g, ''); };
+INP.rcTotal = el => { RC.total = el.value.slice(0, 8); rcPrevPaint(); };
+INP.rcPor = el => { RC.portions = el.value.slice(0, 3); rcPrevPaint(); };
+INP.rcQ = el => { RC.q = el.value; const l = $('#rcList'); if (l) l.innerHTML = rcListHTML(sortedFoods(RC.q, 'all').filter(f => f.id !== RC.id).slice(0, 60)); };
+ACT.rcAdd = () => { RC.view = 'add'; RC.q = ''; rcPaint(); };
+ACT.rcBack = () => { RC.view = 'main'; rcPaint(); };
+ACT.rcPick = el => {
+  const f = S.foods[el.dataset.id]; if (!f) return;
+  RC.items.push({ id: f.id, name: f.name, g: String(f.serv > 0 ? r1(f.serv) : 100).replace('.', ','), k: f.k, p: f.p, c: f.c, f: f.f });
+  RC.view = 'main'; rcPaint();
+  const inp = $('#rcRoot [data-in="rcG"][data-j="' + (RC.items.length - 1) + '"]'); if (inp) { inp.focus(); try { inp.select(); } catch (e) {} }
+};
+ACT.rcDel = el => { RC.items.splice(+el.dataset.j, 1); rcPaint(); };
+ACT.rcSave = () => {
+  const name = RC.name.trim();
+  if (!name) { toast('Dă-i un nume rețetei.'); return; }
+  if (!RC.items.length) { toast('Adaugă cel puțin un ingredient.'); return; }
+  if (RC.items.some(i => !(pn(i.g) > 0))) { toast('Fiecare ingredient are nevoie de grame.'); return; }
+  if (String(RC.total).trim() && !(pn(RC.total) > 0)) { toast('Greutatea mâncării gata nu e un număr valid.'); return; }
+  const c = rcCalc(); if (!c) return;
+  if (c.k > 900 || c.p + c.c + c.f > 100.5) { toast('Mâncarea gata pare prea ușoară față de ingrediente. Verifică gramele.'); return; }
+  const old = RC.id ? S.foods[RC.id] : null;
+  const food = { id: RC.id || ('r' + uid()), name, brand: '', barcode: '', k: r1(c.k), p: r1(c.p), c: r1(c.c), f: r1(c.f), serv: c.serv ? r1(c.serv) : 0, servName: c.serv ? 'porție' : '',
+    used: old ? old.used || 0 : Date.now(), created: old ? old.created || Date.now() : Date.now(),
+    recipe: { items: RC.items.map(i => ({ id: i.id, name: i.name, g: r1(pn(i.g)), k: i.k, p: i.p, c: i.c, f: i.f })), total: pn(RC.total) > 0 ? r1(pn(RC.total)) : 0, portions: c.por } };
+  S.foods[food.id] = food; saveFoods(); closeSheet(); render(); toast((old ? 'Rețetă salvată: ' : 'Rețetă nouă în alimente: ') + name);
+};
+ACT.rcRemove = el => {
+  if (!RC.id || !S.foods[RC.id]) return;
+  if (!el.dataset.armed) { el.dataset.armed = '1'; el.textContent = 'Sigur? Apasă încă o dată'; return; }
+  delete S.foods[RC.id]; saveFoods(); closeSheet(); render(); toast('Rețetă ștearsă');
+};
+ACT.rcNew = () => { if (!S.loaded) { toast('Se încarcă datele…'); return; } rcOpen(null); };
+{
+  /* o rețetă se editează în editorul de rețete, nu în formularul de aliment */
+  const edit0 = ACT.editFood, editQ0 = ACT.editFoodFromQty;
+  ACT.editFood = el => { const f = S.foods[el.dataset.id]; if (f && f.recipe) rcOpen(f); else edit0(el); };
+  ACT.editFoodFromQty = () => { if (A.food && A.food.recipe) rcOpen(A.food); else editQ0(); };
+}
 
 
 /* ================= ilustrații: manechin 3D desenat în SVG =================

@@ -1,6 +1,6 @@
 // Gantera merge și fără internet: fișierele aplicației se păstrează în telefon.
 // Generat de scripts/build-www.mjs --pwa. VERSION se schimbă când se schimbă orice fișier, iar telefonul ia versiunea nouă.
-const VERSION = "gantera-11876ff7a623";
+const VERSION = "gantera-e189febcdcba";
 const FILES = ["fonts/archivo-latin-400-normal.woff2","fonts/archivo-latin-500-normal.woff2","fonts/archivo-latin-600-normal.woff2","fonts/archivo-latin-700-normal.woff2","fonts/archivo-latin-ext-400-normal.woff2","fonts/archivo-latin-ext-500-normal.woff2","fonts/archivo-latin-ext-600-normal.woff2","fonts/archivo-latin-ext-700-normal.woff2","fonts/big-shoulders-display-latin-600-normal.woff2","fonts/big-shoulders-display-latin-800-normal.woff2","fonts/big-shoulders-display-latin-900-normal.woff2","fonts/big-shoulders-display-latin-ext-600-normal.woff2","fonts/big-shoulders-display-latin-ext-800-normal.woff2","fonts/big-shoulders-display-latin-ext-900-normal.woff2","fonts/permanent-marker-latin-400-normal.woff2","icons/apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","icons/icon-maskable-512.png","index.html","licenses/archivo.txt","licenses/big-shoulders-display.txt","licenses/canvas-confetti.txt","licenses/capacitor.txt","licenses/firebase.txt","licenses/lucide.txt","licenses/permanent-marker.txt","licenses/zxing.txt","manifest.webmanifest","vendor/confetti.browser.js","vendor/firebase.js","vendor/zxing.min.js"];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION)
