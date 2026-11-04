@@ -586,6 +586,22 @@ body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .wt-list .h-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
 .wt-list .h-row>span:first-child{flex:1}
 .wt-list .num{font:800 18px/1 var(--f-display);font-variant-numeric:tabular-nums}
+/* mese salvate și „copiază de ieri” */
+.meal-tools{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px}
+.qm{display:flex;flex-direction:column;padding:10px 12px;border-radius:3px;background:var(--paper);box-shadow:0 0 0 1px var(--line)}
+.qm .label{margin-bottom:2px}
+.qm-r .sub{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qm-r:last-of-type{border-bottom:0}
+.qm .linkbtn{align-self:flex-start;margin-top:8px}
+.ms-items{display:flex;flex-direction:column;gap:6px}
+.ms-i{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:3px;background:var(--paper);color:var(--ink);text-align:left}
+.ms-i .grow,.ms-list .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ms-i .name{font-weight:600;overflow-wrap:anywhere}
+.ms-i .sub,.ms-list .sub{font-size:12.5px;color:var(--ink-2)}
+.ms-i i{flex:none;width:26px;height:26px;display:grid;place-items:center;border:2px solid var(--line);border-radius:3px;color:transparent;font-style:normal;font-weight:900}
+.ms-i[aria-pressed="true"]{border-color:var(--ink)}
+.ms-i[aria-pressed="true"] i{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.ms-list .h-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px dashed var(--line)}
 /* prima pornire ghidată și calculatorul de ținte */
 .ob-card{display:flex;flex-direction:column;gap:10px;padding:18px 16px 16px;border-radius:3px;background:var(--paper);box-shadow:inset 4px 0 0 var(--flame),0 10px 14px -10px rgba(0,0,0,.5),0 0 0 1px var(--line)}
 .ob-card h3{font-size:30px;line-height:.95;font-weight:900}
@@ -1303,7 +1319,8 @@ function viewAzi() {
       const t = entryTot(e);
       h += '<button class="row entry' + (e.id === S.fresh ? ' fresh' : '') + (open ? '' : ' locked') + '" type="button"' + (open ? ' data-act="editEntry" data-id="' + esc(e.id) + '"' : ' tabindex="-1" aria-disabled="true"') + '><span class="grow"><span class="l1"><span class="name">' + esc(e.name) + '</span><i class="lead"></i><span class="num kc">' + num(t.k) + '</span></span><span class="sub">' + num(e.g, 1) + ' g · ' + macroLine(t.p, t.c, t.f) + '</span></span></button>';
     });
-    h += (open ? '<button class="add-link" type="button" data-act="addTo" data-meal="' + id + '">' + ic('plus') + 'Adaugă</button>' : '') + '</section>';
+    h += (open ? '<button class="add-link" type="button" data-act="addTo" data-meal="' + id + '">' + ic('plus') + 'Adaugă</button>' : '') +
+      (typeof mealToolsHTML === 'function' ? mealToolsHTML(id, list, open) : '') + '</section>';
   });
   S.fresh = null;
 
@@ -1494,6 +1511,7 @@ function renderPick(q) {
   openSheet(sheetHead('Adaugă · ' + mealName(A.meal)) +
     '<div class="btn-row"><button class="btn" type="button" data-act="scan" data-for="add">' + ic('scan') + 'Scanează cod de bare</button>' +
     '<button class="btn ghost" type="button" data-act="newFood" data-from="add">' + ic('plus') + 'Aliment nou</button></div>' +
+    (typeof quickMealsHTML === 'function' ? quickMealsHTML() : '') +
     '<input class="inp" id="addQ" data-in="addQ" type="search" placeholder="Caută în alimentele tale sau scrie un cod" value="' + esc(q) + '" autocomplete="off">' +
     foodSetHTML('add', A.set) + '<div id="addList">' + pickListHTML(q, list) + '</div>');
 }
@@ -2095,6 +2113,108 @@ ACT.obUse = () => {
 };
 ACT.obSplit = () => { setTab('sala'); ACT.splitPick(); };
 ACT.obDone = () => { closeSheet(); render(); };
+
+
+/* ================= MESE SALVATE ȘI „COPIAZĂ DE IERI” =================
+   O masă pe care o mănânci des (micul dejun obișnuit) se salvează cu un nume și se adaugă apoi dintr-o apăsare,
+   la orice masă. „Copiază de ieri” pune în masa de azi ce ai mâncat la aceeași masă în ziua dinainte.
+   Mesele salvate țin copiile alimentelor (nume, grame, valori la 100 g), deci merg și dacă schimbi alimentul între timp.
+   Date: meta/meals = { list: [{ id, name, meal, items: [{ name, g, k, p, c, f }], used }] }. */
+const MEALS_MAX = 60, MEAL_ITEMS_MAX = 30;
+const ML = () => S.meals || (S.meals = { list: [] });
+const saveMeals = () => persist('meta', 'meals', () => S.meals);
+function mealsNorm(o) {
+  const n = v => { const x = Number(v); return isFinite(x) && x >= 0 ? x : 0; };
+  const list = (o && Array.isArray(o.list) ? o.list : []).filter(m => m && typeof m.name === 'string' && Array.isArray(m.items)).slice(0, MEALS_MAX).map(m => ({
+    id: typeof m.id === 'string' && m.id ? m.id.slice(0, 20) : 'm' + uid(), name: m.name.trim().slice(0, 40) || 'Masă', meal: MEALS.some(x => x[0] === m.meal) ? m.meal : 'mic', used: n(m.used),
+    items: m.items.filter(i => i && typeof i.name === 'string' && n(i.g) > 0).slice(0, MEAL_ITEMS_MAX).map(i => ({ name: i.name.slice(0, 80), g: n(i.g), k: n(i.k), p: n(i.p), c: n(i.c), f: n(i.f) }))
+  })).filter(m => m.items.length);
+  return { list };
+}
+const mealCopy = e => ({ name: e.name, g: e.g, k: e.k, p: e.p, c: e.c, f: e.f });
+const itemsKcal = items => sumEntries(items).k;
+/* adaugă mai multe alimente deodată, cu seria ca la adăugarea unuia singur */
+function addEntries(items, meal, msg) {
+  if (!dayOpen(S.date)) { closeSheet(); toast(LOCK_MSG); return; }
+  const day = S.days[S.date] || (S.days[S.date] = { entries: [] }), before = streakInfo().n;
+  items.forEach(i => day.entries.push({ id: uid(), meal, ...mealCopy(i) }));
+  S.fresh = day.entries.length ? day.entries[day.entries.length - 1].id : null;
+  saveDay(S.date); closeSheet(); render();
+  const after = streakInfo().n;
+  toast(after > before ? msg + ' · serie ' + zile(after) : msg);
+  if (after > before) { const el = FX.bump('.streak'); FX.burst(el, after % 7 === 0); }
+}
+/* ziua dinainte se încarcă la nevoie (pentru „Copiază de ieri”) */
+const prevDayOf = d => addDays(d, -1);
+function ensureDay(d) { if (!S.days[d] && S.active.has(d) && !ensureDay.busy[d]) { ensureDay.busy[d] = 1; loadDay(d).then(() => { if (S.tab === 'azi' && !sheetOpen()) render(); }).catch(() => {}); } }
+ensureDay.busy = {};
+const prevMeal = meal => { const y = S.days[prevDayOf(S.date)]; return y ? y.entries.filter(e => e.meal === meal) : []; };
+
+/* sub fiecare masă din Azi: „Copiază de ieri” (când masa e goală și ieri ai avut ceva) și „Salvează masa” */
+function mealToolsHTML(meal, list, open) {
+  if (!open || !S.loaded) return '';
+  ensureDay(prevDayOf(S.date));
+  const y = list.length ? [] : prevMeal(meal), tools = [];
+  if (y.length) tools.push('<button class="linkbtn" type="button" data-act="mealCopy" data-meal="' + meal + '">Copiază de ieri (' + num(itemsKcal(y)) + ' kcal)</button>');
+  if (list.length) tools.push('<button class="linkbtn" type="button" data-act="mealSave" data-meal="' + meal + '">Salvează masa</button>');
+  return tools.length ? '<div class="meal-tools">' + tools.join('') + '</div>' : '';
+}
+ACT.mealCopy = el => {
+  if (locked()) return;
+  const meal = el.dataset.meal, y = prevMeal(meal);
+  if (!y.length) { toast('Ieri n-ai notat nimic la ' + mealName(meal).toLowerCase() + '.'); return; }
+  addEntries(y, meal, 'Copiat de ieri: ' + pl(y.length, 'aliment', 'alimente'));
+};
+
+/* salvarea unei mese: nume + ce intră */
+const MS = { meal: 'mic', pick: [] };
+ACT.mealSave = el => {
+  if (locked()) return;
+  const list = ((S.days[S.date] || { entries: [] }).entries).filter(e => e.meal === el.dataset.meal); if (!list.length) return;
+  if (ML().list.length >= MEALS_MAX) { toast('Ai deja ' + MEALS_MAX + ' mese salvate. Șterge una ca să salvezi alta.'); return; }
+  MS.meal = el.dataset.meal; MS.pick = list.map(e => e.id);
+  openSheet(sheetHead('Salvează masa') +
+    '<label class="field"><span>Nume</span><input class="inp" id="msName" maxlength="40" value="' + esc(mealName(MS.meal) + ' obișnuit' + (MS.meal === 'cina' || MS.meal === 'gust' ? 'ă' : '')) + '" autocomplete="off" autofocus></label>' +
+    '<div class="field"><span>Ce intră</span><div class="ms-items">' + list.map(e => { const t = entryTot(e);
+      return '<button class="ms-i" type="button" data-act="msPick" data-id="' + esc(e.id) + '" aria-pressed="true"><span class="grow"><span class="name">' + esc(e.name) + '</span><span class="sub">' + num(e.g, 1) + ' g · ' + num(t.k) + ' kcal</span></span><i aria-hidden="true">✓</i></button>'; }).join('') + '</div></div>' +
+    '<button class="btn block" type="button" data-act="msSave">Salvează</button>');
+};
+ACT.msPick = el => { const id = el.dataset.id, on = MS.pick.includes(id); MS.pick = on ? MS.pick.filter(x => x !== id) : MS.pick.concat(id); el.setAttribute('aria-pressed', String(!on)); };
+ACT.msSave = () => {
+  const name = ($('#msName') || {}).value ? $('#msName').value.trim().slice(0, 40) : '';
+  if (!name) { toast('Dă-i un nume mesei.'); return; }
+  const items = ((S.days[S.date] || { entries: [] }).entries).filter(e => MS.pick.includes(e.id)).slice(0, MEAL_ITEMS_MAX).map(mealCopy);
+  if (!items.length) { toast('Alege cel puțin un aliment.'); return; }
+  ML().list.unshift({ id: 'm' + uid(), name, meal: MS.meal, items, used: Date.now() }); saveMeals();
+  closeSheet(); toast('Masă salvată: ' + name + '. O găsești la „Adaugă”.');
+};
+
+/* în fereastra „Adaugă”: copiază de ieri + mesele salvate, deasupra listei de alimente */
+function quickMealsHTML() {
+  const y = prevMeal(A.meal), saved = ML().list.slice().sort((a, b) => (b.used || 0) - (a.used || 0));
+  if (!y.length && !saved.length) return '';
+  return '<div class="qm"><span class="label">Rapid</span>' +
+    (y.length ? '<button class="row qm-r" type="button" data-act="mealCopy" data-meal="' + A.meal + '"><span class="grow"><span class="name">Copiază de ieri · ' + esc(mealName(A.meal)) + '</span><span class="sub">' + esc(y.map(e => e.name).join(', ')) + '</span></span><span class="num kc">' + num(itemsKcal(y)) + '</span></button>' : '') +
+    saved.map(m => '<button class="row qm-r" type="button" data-act="mealAdd" data-id="' + esc(m.id) + '"><span class="grow"><span class="name">' + esc(m.name) + '</span><span class="sub">' + esc(pl(m.items.length, 'aliment', 'alimente')) + ' · ' + esc(m.items.map(i => i.name).join(', ')) + '</span></span><span class="num kc">' + num(itemsKcal(m.items)) + '</span></button>').join('') +
+    (saved.length ? '<button class="linkbtn" type="button" data-act="mealsManage">Mesele salvate</button>' : '') + '</div>';
+}
+ACT.mealAdd = el => {
+  const m = ML().list.find(x => x.id === el.dataset.id); if (!m) return;
+  m.used = Date.now(); saveMeals();
+  addEntries(m.items, A.meal, 'Adăugat: ' + m.name);
+};
+ACT.mealsManage = () => {
+  openSheet(sheetHead('Mesele salvate') + (ML().list.length ? '<div class="ms-list">' + ML().list.map(m =>
+    '<div class="h-row"><span class="grow"><b>' + esc(m.name) + '</b><span class="sub">' + esc(pl(m.items.length, 'aliment', 'alimente')) + ' · ' + num(itemsKcal(m.items)) + ' kcal</span></span>' +
+    '<button class="btn ghost sm" type="button" data-act="mealDel" data-id="' + esc(m.id) + '">Șterge</button></div>').join('') + '</div>' : '<div class="meal-empty">Nicio masă salvată.</div>') +
+    '<div class="note">O masă nouă o salvezi din Azi, cu „Salvează masa” sub masa respectivă.</div>' +
+    '<button class="btn ghost block" type="button" data-act="mealsBack">‹ Înapoi la adăugare</button>');
+};
+ACT.mealsBack = () => renderPick('');
+ACT.mealDel = el => {
+  if (!el.dataset.armed) { el.dataset.armed = '1'; el.textContent = 'Sigur?'; setTimeout(() => { if (el.isConnected) { delete el.dataset.armed; el.textContent = 'Șterge'; } }, 3000); return; }
+  ML().list = ML().list.filter(m => m.id !== el.dataset.id); saveMeals(); ACT.mealsManage(); toast('Masă ștearsă');
+};
 
 
 /* ================= ilustrații: manechin 3D desenat în SVG =================
@@ -4587,10 +4707,10 @@ async function boot() {
   render();
   await Store.init();
   try {
-    const [t, fd, exs, act, spl, wk, prf, wkl, wt, pf] = await Promise.all([Store.get('meta', 'targets'), Store.get('meta', 'foods'), Store.list('ex'), Store.get('meta', 'active'),
-      Store.get('meta', 'split'), Store.get('meta', 'workout'), Store.get('meta', 'prefs'), Store.get('meta', 'wklog'), Store.get('meta', 'weight'), Store.get('meta', 'profile')]);
+    const [t, fd, exs, act, spl, wk, prf, wkl, wt, pf, ml] = await Promise.all([Store.get('meta', 'targets'), Store.get('meta', 'foods'), Store.list('ex'), Store.get('meta', 'active'),
+      Store.get('meta', 'split'), Store.get('meta', 'workout'), Store.get('meta', 'prefs'), Store.get('meta', 'wklog'), Store.get('meta', 'weight'), Store.get('meta', 'profile'), Store.get('meta', 'meals')]);
     if (t) S.targets = { ...S.targets, ...t };
-    S.split = splitNorm(spl); S.wk = wkNorm(wk); S.prefs = prefsNorm(prf); S.weight = weightNorm(wt); S.profile = profileNorm(pf);
+    S.split = splitNorm(spl); S.wk = wkNorm(wk); S.prefs = prefsNorm(prf); S.weight = weightNorm(wt); S.profile = profileNorm(pf); S.meals = mealsNorm(ml);
     S.wklog = { list: wkl && Array.isArray(wkl.list) ? wkl.list.filter(x => x && typeof x === 'object').slice(-500) : [] };
     if (fd && fd.items) { S.foods = fd.items; S.seedVer = fd.seedVer || 0; }
     exs.forEach(x => { S.ex[x._id] = { id: x._id, name: x.name || 'Exercițiu', sessions: x.sessions || [], created: x.created || 0 }; });
