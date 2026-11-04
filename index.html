@@ -475,12 +475,74 @@ button{cursor:pointer;touch-action:manipulation}
 .icon-btn.armed{background:var(--down);border-color:var(--down);color:#fff}
 .sp-map-lg{background:var(--paper);border-radius:3px;box-shadow:0 0 0 1px var(--line);padding:12px 10px}
 .sp-map-lg .bm{max-width:340px;margin:0 auto;--bm-gap:var(--paper)}
-#exList[data-day] .row::after{content:"+";flex:none;width:32px;height:32px;display:grid;place-items:center;border:2px solid var(--line);border-radius:3px;font:800 20px/1 var(--f-display);color:var(--ink-2)}
-#exList[data-day] .row[aria-pressed="true"]::after{content:"✓";background:var(--ink);border-color:var(--ink);color:var(--on-ink);font-size:17px}
-#exList[data-day] .row .note{display:none}
+#exList[data-day] .row::after,#exList[data-wk] .row::after{content:"+";flex:none;width:32px;height:32px;display:grid;place-items:center;border:2px solid var(--line);border-radius:3px;font:800 20px/1 var(--f-display);color:var(--ink-2)}
+#exList[data-day] .row[aria-pressed="true"]::after,#exList[data-wk] .row[aria-pressed="true"]::after{content:"✓";background:var(--ink);border-color:var(--ink);color:var(--on-ink);font-size:17px}
+#exList[data-day] .row .note,#exList[data-wk] .row .note{display:none}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .split .bm{--bm-sil:#1C2023;--bm-off:#30383B}}
 :root[data-theme="dark"] .split .bm{--bm-sil:#1C2023;--bm-off:#30383B}
 @media (prefers-reduced-motion:reduce){.bm .bm-m{transition:none}}
+.split .btn svg{width:18px;height:18px}
+
+/* antrenamentul în desfășurare: fereastra, pauza, seriile, rezumatul, pastila de deasupra barei */
+.wk{display:flex;flex-direction:column;gap:16px}
+.wk .grow{flex:1;min-width:0}
+.wk .sheet-h{align-items:flex-start}
+.wk .sheet-h .label{display:block;margin-bottom:6px}
+.wk-stat{display:flex;gap:8px 20px;flex-wrap:wrap;align-items:baseline;font:800 14px/1 var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.wk-stat b{margin-left:7px;font-size:26px;letter-spacing:.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.wk-rest{position:sticky;top:-18px;z-index:3;display:flex;flex-direction:column;gap:10px;padding:12px 14px 14px;border-radius:4px;background:var(--slab);color:var(--on-slab);box-shadow:0 12px 18px -12px rgba(0,0,0,.75)}
+.wk-rest-t{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.wk-rest .label{color:var(--on-slab-2)}
+.wk-rest-t b{font:900 58px/.85 var(--f-display);font-variant-numeric:tabular-nums}
+.wk-bar{height:6px;border-radius:3px;background:var(--slab-2);overflow:hidden}
+.wk-bar i{display:block;height:100%;background:var(--s-fat);transform-origin:left center;transition:transform 1s linear}
+.wk-rest-b{display:flex;gap:8px}
+.wk-rest-b .btn{flex:1;min-height:42px;padding:0 6px;box-shadow:none;background:var(--on-slab);border-color:var(--on-slab);color:var(--slab)}
+.wk-rest-b .btn.ghost{background:transparent;border-color:var(--slab-line);color:var(--on-slab)}
+.wk-list{display:flex;flex-direction:column;gap:10px}
+.wk-ex{background:var(--paper);border-radius:3px;box-shadow:0 0 0 1px var(--line)}
+.wk-ex.cur{box-shadow:0 0 0 2px var(--ink)}
+.wk-ex-h{display:flex;align-items:center;gap:10px;width:100%;padding:10px;background:none;border:0;border-radius:3px;text-align:left;color:inherit}
+.wk-ex-h .name{display:block;font-weight:700;overflow-wrap:anywhere}
+.wk-ex-h .sub{display:block;margin-top:2px;font-size:12.5px;color:var(--ink-2)}
+.wk-ex-h .thumb{width:56px;height:42px}
+.wk-chev{flex:none;width:28px;height:28px;display:grid;place-items:center;color:var(--ink-2)}
+.wk-chev svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.wk-ok{flex:none;width:28px;height:28px;display:grid;place-items:center;border-radius:3px;background:#17803F;color:#fff;font-style:normal;font-weight:900}
+.wk-ex.full .wk-ex-h .name{color:var(--ink-2)}
+.wk-ex-b{display:flex;flex-direction:column;gap:10px;padding:0 10px 12px}
+.wk-sets{display:flex;flex-direction:column;gap:8px}
+.wk-set{display:grid;grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) 52px;gap:8px;align-items:center}
+.wk-set .idx{font:900 20px/1 var(--f-display);color:var(--ink-2);text-align:center}
+.wk-set .inp{min-height:48px;text-align:center;font-weight:700;font-size:19px}
+.wk-done{width:52px;height:48px;padding:0;display:grid;place-items:center;border:2px solid var(--ink);border-radius:3px;background:transparent;color:var(--ink);font:900 24px/1 var(--f-display);transition:background .15s,border-color .15s,transform .15s var(--spring)}
+.wk-done:active{transform:scale(.92)}
+.wk-set.done .wk-done{background:#17803F;border-color:#17803F;color:#fff}
+.wk-set.done .inp{background:var(--paper-2);border-bottom-color:#17803F;color:var(--ink-2)}
+.wk-ex-a{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.wk-ex-a .btn{flex:none}
+.wk-ex-a .wk-rm{margin-left:auto;width:38px;height:38px}
+.wk-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px;border-radius:4px;background:var(--slab);color:var(--on-slab)}
+.wk-sum .label{color:var(--on-slab-2)}
+.wk-sum b{display:block;margin-top:6px;font:900 30px/1 var(--f-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.wk-res{display:flex;flex-direction:column}
+.wk-r{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px dashed var(--line)}
+.wk-r .name{display:block;font-weight:700;overflow-wrap:anywhere}
+.wk-r .name em{margin-left:8px;padding:3px 6px 2px;border-radius:2px;background:var(--s-fat);color:#14171A;font:800 11px/1 var(--f-display);font-style:normal;letter-spacing:.14em;text-transform:uppercase;vertical-align:2px}
+.wk-r .sub{display:block;margin-top:2px;font-size:12.5px;color:var(--ink-2)}
+.wk-d{flex:none;padding:6px 8px 5px;border-radius:3px;background:var(--st-flat);color:#fff;font:800 15px/1 var(--f-display);letter-spacing:.06em}
+.wk-d.up{background:var(--st-up)} .wk-d.down{background:var(--st-down)}
+.wk-d.new{background:transparent;color:var(--ink-2);box-shadow:inset 0 0 0 1.5px var(--line)}
+.wk-pill{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;max-width:calc(100% - 32px);padding:11px 18px;border:0;border-radius:999px;background:var(--flame);color:#1B0E02;font:800 15px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;box-shadow:0 8px 18px -8px rgba(0,0,0,.65)}
+.wk-pill[hidden]{display:none}
+.wk-pill i{flex:none;width:9px;height:9px;border-radius:50%;background:#1B0E02;animation:breathe 1.6s ease-in-out infinite}
+.wk-pill span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.wk-pill b,.wk-pill small{font-variant-numeric:tabular-nums}
+.wk-pill small{font:800 13px/1 var(--f-display);opacity:.8}
+body.wk-on{padding-bottom:172px}
+body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
+.btn.danger.armed{background:var(--down);color:#fff}
+@media (prefers-reduced-motion:reduce){.wk-bar i,.wk-done{transition:none}.wk-pill i{animation:none}}
 
 /* streak sheet */
 .streak-big{display:flex;align-items:center;gap:14px}
@@ -2921,7 +2983,8 @@ function splitCardHTML() {
     return '<section class="slab split sp-none" aria-label="Antrenamentul pe zile"><div><span class="label">Antrenamentul pe zile</span><h2>Alege-ți splitul</h2></div>' +
       miniStrip(tplSplit(SPLITS[0]).days) +
       '<div class="sp-muted">Push Pull Legs, Upper / Lower, Arnold și altele, sau unul făcut de tine. Vezi în fiecare zi ce mușchi lucrezi și ce exerciții ai.</div>' +
-      '<button class="btn" type="button" data-act="splitPick">Alege un split</button></section>';
+      '<button class="btn" type="button" data-act="splitPick">Alege un split</button>' +
+      '<button class="btn ghost" type="button" data-act="wkStart" data-free="1">' + (wkOn() ? 'Continuă antrenamentul' : 'Antrenament liber') + '</button></section>';
   }
   const di = viewedDay(sp), d = sp.days[di], nx = nextDay(sp), n = sp.days.length;
   const done = d.ex.filter(loggedToday).length;
@@ -2939,11 +3002,17 @@ function splitCardHTML() {
         '<span class="grow"><span class="name">' + esc(name) + '</span><span class="sub">' + esc(lastTxt(name)) + '</span></span>' +
         (t ? '<i class="sp-ok" aria-label="înregistrat azi">✓</i>' : '<i class="sp-go" aria-hidden="true">+</i>') + '</button>'; }).join('')
       : '<div class="sp-muted">Ziua nu are încă exerciții. Le alegi din „Editează ziua”.</div>') + '</div>' +
+    (wkOn() ? '<button class="btn" type="button" data-act="wkOpen">' + ic('right') + 'Continuă antrenamentul</button>'
+      : '<button class="btn" type="button" data-act="wkStart" data-i="' + di + '">Începe antrenamentul</button>') +
     '<button class="btn ghost" type="button" data-act="dayEdit" data-i="' + di + '">' + ic('edit') + 'Editează ziua</button>' +
-    (SP().last ? '' : '<div class="sp-muted small">Apasă pe un exercițiu ca să-l înregistrezi. Ziua se bifează, iar data viitoare apare următoarea.</div>') + '</section>';
+    (SP().last ? '' : '<div class="sp-muted small">Începi antrenamentul și notezi seriile pe rând, sau apeși pe un exercițiu ca să-l notezi direct. Ziua se bifează, iar data viitoare apare următoarea.</div>') + '</section>';
 }
 ACT.splitDay = el => { const sp = activeSplit(); if (!sp) return; const i = +el.dataset.i; SPV.day = i === nextDay(sp) ? null : i; render(); };
-ACT.splitLog = el => ACT.pickEx(el);
+/* în timpul unui antrenament, exercițiul se deschide în antrenament; altfel se notează direct */
+ACT.splitLog = el => {
+  if (wkOn()) { const k = S.wk.items.findIndex(it => it.name.toLowerCase() === el.dataset.name.toLowerCase()); if (k >= 0) { S.wk.cur = k; WKV.view = 'main'; saveWk(); wkOpen(); return; } }
+  ACT.pickEx(el);
+};
 /* după o sesiune salvată: ziua care are exercițiul (întâi cea văzută acum, apoi în ordinea ciclului) e făcută în ziua sesiunii */
 function splitMark(name, date) {
   const sp = activeSplit(); if (!sp) return;
@@ -3099,17 +3168,18 @@ ACT.dayExDel = el => { const d = editDay(); if (!d || !d.ex[+el.dataset.j]) retu
 
 /* ---- biblioteca de exerciții, în modul „adaugă la zi”: apeși ca să pui sau să scoți ---- */
 const unesc = s => s.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
-function dayLibHTML() {
-  const d = editDay(), on = new Set((d ? d.ex : []).map(x => x.toLowerCase()));
+/* biblioteca în care apeși ca să alegi: act = acțiunea rândului, on = numele (cu litere mici) deja alese */
+function pickLibHTML(act, on) {
   const lib = new Set(EXFLAT.map(([n]) => n.toLowerCase())), q = S.exQ.trim().toLowerCase();
   /* exercițiile tale care nu sunt în bibliotecă (le-ai creat tu) */
   const own = S.exG ? [] : Object.values(S.ex).filter(e => e.sessions.length && !lib.has(e.name.toLowerCase()) && (!q || e.name.toLowerCase().includes(q)))
     .map(e => e.name).sort((a, b) => a.localeCompare(b, 'ro'));
   const ownH = own.length ? '<div class="label" style="padding:14px 2px 4px">Ale tale</div>' + own.map(n =>
-    '<button class="row" type="button" data-act="splitAddEx" data-name="' + esc(n) + '" aria-pressed="' + on.has(n.toLowerCase()) + '">' + thumbHTML(n) + '<span class="grow"><span class="name">' + esc(n) + '</span></span></button>').join('') : '';
-  const libH = exListHTML().replace(/data-act="pickEx" data-name="([^"]*)"/g, (m, n) => 'data-act="splitAddEx" data-name="' + n + '" aria-pressed="' + on.has(unesc(n).toLowerCase()) + '"');
+    '<button class="row" type="button" data-act="' + act + '" data-name="' + esc(n) + '" aria-pressed="' + on.has(n.toLowerCase()) + '">' + thumbHTML(n) + '<span class="grow"><span class="name">' + esc(n) + '</span></span></button>').join('') : '';
+  const libH = exListHTML().replace(/data-act="pickEx" data-name="([^"]*)"/g, (m, n) => 'data-act="' + act + '" data-name="' + n + '" aria-pressed="' + on.has(unesc(n).toLowerCase()) + '"');
   return own.length && /^<div class="meal-empty">/.test(libH) ? ownH : ownH + libH;
 }
+function dayLibHTML() { const d = editDay(); return pickLibHTML('splitAddEx', new Set((d ? d.ex : []).map(x => x.toLowerCase()))); }
 const paintLib = () => { const l = $('#exList'); if (l) { l.innerHTML = dayLibHTML(); FIG.mount(l); } };
 ACT.dayAddEx = () => {
   const d = editDay(); if (!d) return;
@@ -3142,6 +3212,317 @@ ACT.splitAddEx = el => {
   INP.exQ = (el, e) => { if (!inDay()) return q0(el, e); S.exQ = el.value; paintLib(); };
   ACT.exGroup = (el, e) => { if (!inDay()) return g0(el, e); S.exG = el.dataset.g; $('#exGroups').innerHTML = exGroupsHTML(); paintLib(); };
 }
+
+
+/* ================= ANTRENAMENTUL ÎN DESFĂȘURARE (în tabul Sală) =================
+   Pornești ziua din split (sau un antrenament liber) și notezi fiecare serie pe loc, cu valorile de data trecută
+   deja completate. Bifezi seria și pornește pauza (cu bip și vibrație la final). La „Termină” se salvează sesiunile
+   la fiecare exercițiu, ziua din split se bifează și vezi rezumatul: durată, serii, kilograme ridicate, recorduri.
+   Antrenamentul în curs stă în meta/workout (nu se pierde dacă închizi aplicația), istoricul scurt în meta/wklog,
+   pauza aleasă în meta/prefs. Cât e pornit, o pastilă deasupra barei de jos îl readuce. */
+const WK_RESTS = [60, 90, 120, 180];
+const WK_MAXEX = 30, WK_MAXSETS = 15;
+const WKV = { view: 'main', how: '', sum: null };
+const saveWk = () => persist('meta', 'workout', () => S.wk || { off: 1 });
+const saveWkLog = () => persist('meta', 'wklog', () => S.wklog);
+const savePrefs = () => persist('meta', 'prefs', () => S.prefs);
+function prefsNorm(o) { const p = o && typeof o === 'object' && !Array.isArray(o) ? { ...o } : {}; if (!WK_RESTS.includes(p.rest)) p.rest = 90; return p; }
+const PREFS = () => S.prefs || (S.prefs = prefsNorm(null));
+const wkOn = () => !!(S.wk && Array.isArray(S.wk.items));
+const clockTxt = s => { const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : String(m)) + ':' + String(x).padStart(2, '0'); };
+const fmtUp = ms => clockTxt(Math.max(0, Math.floor(ms / 1000)));
+const fmtDown = ms => clockTxt(Math.max(0, Math.ceil(ms / 1000)));
+const restLbl = s => s % 60 ? Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + ' min' : s / 60 + ' min';
+const kgTxt = v => v ? String(v).replace('.', ',') : '';
+/* 1 serie, 2 serii, 20 de serii */
+const pl = (n, one, many) => n === 1 ? '1 ' + one : n + ((n % 100 === 0 && n > 0) || n % 100 >= 20 ? ' de ' : ' ') + many;
+
+function wkNorm(o) {
+  if (!o || typeof o !== 'object' || !Array.isArray(o.items) || !isFinite(o.start) || !o.start) return null;
+  const str = (x, n) => typeof x === 'string' ? x.slice(0, n) : '';
+  const items = o.items.filter(it => it && typeof it.name === 'string' && it.name.trim()).slice(0, WK_MAXEX).map(it => {
+    const sets = (Array.isArray(it.sets) ? it.sets : []).slice(0, WK_MAXSETS).map(s => ({ kg: s && s.kg != null ? String(s.kg).slice(0, 8) : '', reps: s && s.reps != null ? String(s.reps).slice(0, 4) : '', done: !!(s && s.done) }));
+    return { name: it.name.trim().slice(0, 60), sets: sets.length ? sets : [{ kg: '', reps: '', done: false }] };
+  });
+  const start = Number(o.start);
+  return { v: 1, id: str(o.id, 24) || 'w' + uid(), start, date: /^\d{4}-\d{2}-\d{2}$/.test(o.date) ? o.date : dstr(new Date(start)), sp: str(o.sp, 40),
+    day: Number.isInteger(o.day) ? o.day : -1, title: str(o.title, 30) || 'Antrenament', items, cur: Number.isInteger(o.cur) && o.cur < items.length ? o.cur : 0,
+    rest: Number(o.rest) || 0, restAt: Number(o.restAt) || 0 };
+}
+/* ultima sesiune dinaintea zilei antrenamentului: de acolo vin valorile completate și comparația */
+const wkPrevSess = (name, date) => { const ex = exByName(name); return ex ? sortedSess(ex).filter(s => s.date < date).slice(-1)[0] || null : null; };
+const wkItem = (name, date) => {
+  const p = wkPrevSess(name, date);
+  return { name, sets: p ? p.sets.slice(0, WK_MAXSETS).map(s => ({ kg: kgTxt(s.kg), reps: String(s.reps), done: false })) : [0, 1, 2].map(() => ({ kg: '', reps: '', done: false })) };
+};
+
+/* ---- pornire, deschidere ---- */
+function wkStart(sp, di) {
+  const date = todayStr(), d = sp && sp.days[di];
+  S.wk = { v: 1, id: 'w' + uid(), start: Date.now(), date, sp: d ? sp.id : '', day: d ? di : -1, title: d ? d.name : 'Antrenament liber',
+    items: d ? d.ex.slice(0, WK_MAXEX).map(n => wkItem(n, date)) : [], cur: 0, rest: 0, restAt: 0 };
+  saveWk(); S.exQ = ''; S.exG = '';
+  WKV.view = S.wk.items.length ? 'main' : 'add';
+  wkOpen(); render();
+}
+ACT.wkStart = el => {
+  if (!S.loaded) { toast('Se încarcă datele…'); return; }
+  wkAudio();
+  if (wkOn()) { WKV.view = 'main'; wkOpen(); return; }
+  const sp = activeSplit();
+  if (sp && !el.dataset.free) wkStart(sp, el.dataset.i != null ? +el.dataset.i : viewedDay(sp)); else wkStart(null, -1);
+};
+ACT.wkOpen = () => { if (!wkOn()) return; wkAudio(); if (WKV.view === 'sum') WKV.view = 'main'; wkOpen(); };
+function wkOpen() {
+  openSheet('<div id="wkRoot" class="wk">' + wkHTML() + '</div>');
+  sheetClose = () => { WKV.view = 'main'; WKV.sum = null; wkTick(); render(); };
+  FIG.mount($('#sheetRoot')); wkTick(); wkWake(true);
+}
+function wkPaint() { const r = $('#wkRoot'); if (r) { r.innerHTML = wkHTML(); FIG.mount(r); } wkTick(); }
+
+/* ---- ce se vede în fereastra antrenamentului ---- */
+function wkHTML() {
+  if (WKV.view === 'sum') return wkSumHTML();
+  const W = S.wk; if (!W) return '';
+  if (WKV.view === 'add') return wkAddHTML();
+  if (WKV.view === 'how') return wkHowHTML();
+  if (WKV.view === 'end') return wkEndHTML();
+  const done = W.items.reduce((a, it) => a + it.sets.filter(s => s.done).length, 0), all = W.items.reduce((a, it) => a + it.sets.length, 0);
+  return '<div class="sheet-h"><div class="grow"><span class="label">Antrenament în desfășurare</span><h2>' + esc(W.title) + '</h2></div>' +
+    '<button class="icon-btn" type="button" data-act="close" aria-label="Ascunde antrenamentul (merge mai departe)">' + ic('x') + '</button></div>' +
+    '<div class="wk-stat"><span>Timp<b data-wk="el">' + fmtUp(Date.now() - W.start) + '</b></span><span>Serii<b>' + done + ' / ' + all + '</b></span></div>' +
+    wkRestHTML() +
+    '<div class="wk-list">' + (W.items.length ? W.items.map(wkExHTML).join('') : '<div class="meal-empty">Niciun exercițiu încă. Adaugă primul.</div>') + '</div>' +
+    '<button class="btn ghost block" type="button" data-act="wkAdd">' + ic('plus') + 'Adaugă un exercițiu</button>' +
+    '<div class="field"><span>Pauza dintre serii</span><div class="chips" role="group" aria-label="Pauza dintre serii">' +
+    WK_RESTS.map(s => '<button class="chip" type="button" data-act="wkRestLen" data-s="' + s + '" aria-pressed="' + (PREFS().rest === s) + '">' + restLbl(s) + '</button>').join('') + '</div></div>' +
+    '<button class="btn block" type="button" data-act="wkEnd">Termină antrenamentul</button>' +
+    '<button class="btn danger block" type="button" data-act="wkQuit">Renunță la antrenament</button>';
+}
+function wkRestHTML() {
+  const W = S.wk, now = Date.now(); if (!W.rest || W.rest <= now) return '';
+  const f = Math.max(0, Math.min(1, (W.rest - now) / Math.max(1, W.rest - W.restAt)));
+  return '<div class="wk-rest" role="timer" aria-label="Pauză"><div class="wk-rest-t"><span class="label">Pauză</span><b data-wk="rest">' + fmtDown(W.rest - now) + '</b></div>' +
+    '<div class="wk-bar"><i data-wk="restbar" style="transform:scaleX(' + f.toFixed(3) + ')"></i></div>' +
+    '<div class="wk-rest-b"><button class="btn sm ghost" type="button" data-act="wkRestAdj" data-d="-15">−15 s</button><button class="btn sm ghost" type="button" data-act="wkRestAdj" data-d="15">+15 s</button>' +
+    '<button class="btn sm" type="button" data-act="wkRestAdj" data-d="0">Gata pauza</button></div></div>';
+}
+const wkSetHTML = (s, i, j) => '<div class="wk-set' + (s.done ? ' done' : '') + '"><span class="idx">' + (j + 1) + '</span>' +
+  '<input class="inp" data-in="wkSet" data-i="' + i + '" data-j="' + j + '" data-k="kg" inputmode="decimal" placeholder="kg" aria-label="Kilograme, seria ' + (j + 1) + '" value="' + esc(s.kg) + '"' + (s.done ? ' readonly' : '') + '>' +
+  '<input class="inp" data-in="wkSet" data-i="' + i + '" data-j="' + j + '" data-k="reps" inputmode="numeric" placeholder="rep" aria-label="Repetări, seria ' + (j + 1) + '" value="' + esc(s.reps) + '"' + (s.done ? ' readonly' : '') + '>' +
+  '<button class="wk-done" type="button" data-act="wkDone" data-i="' + i + '" data-j="' + j + '" aria-pressed="' + s.done + '" aria-label="' + (s.done ? 'Seria ' + (j + 1) + ' e făcută. Apasă ca s-o debifezi.' : 'Bifează seria ' + (j + 1)) + '">' + (s.done ? '✓' : '') + '</button></div>';
+function wkExHTML(it, i) {
+  const W = S.wk, open = W.cur === i, n = it.sets.filter(s => s.done).length, full = n === it.sets.length;
+  let h = '<section class="wk-ex' + (open ? ' cur' : '') + (full ? ' full' : '') + '">' +
+    '<button class="wk-ex-h" type="button" data-act="wkCur" data-i="' + i + '" aria-expanded="' + open + '">' + thumbHTML(it.name) +
+    '<span class="grow"><span class="name">' + esc(it.name) + '</span><span class="sub">' + (full ? 'gata, ' + pl(n, 'serie', 'serii') : n + ' din ' + pl(it.sets.length, 'serie', 'serii')) + '</span></span>' +
+    (full ? '<i class="wk-ok" aria-hidden="true">✓</i>' : '<i class="wk-chev" aria-hidden="true">' + chev(open ? 1 : 0) + '</i>') + '</button>';
+  if (open) {
+    const prev = wkPrevSess(it.name, W.date);
+    h += '<div class="wk-ex-b"><div class="hint">' + (prev ? 'Data trecută (' + esc(fmtShort(prev.date)) + '): ' + esc(prev.sets.map(setTxt).join(' · ')) : 'Prima dată la acest exercițiu: scrie greutatea și repetările. Pentru greutatea corpului lași kg gol.') + '</div>' +
+      (typeof coachHTML === 'function' ? coachHTML(it.name, W.date, i) : '') +
+      '<div class="wk-sets">' + it.sets.map((s, j) => wkSetHTML(s, i, j)).join('') + '</div>' +
+      '<div class="wk-ex-a"><button class="btn sm ghost" type="button" data-act="wkAddSet" data-i="' + i + '">' + ic('plus') + 'Serie</button>' +
+      (it.sets.length > 1 ? '<button class="btn sm ghost" type="button" data-act="wkRmSet" data-i="' + i + '">' + ic('minus') + 'Serie</button>' : '') +
+      (typeof platesBtn === 'function' ? platesBtn(it, i) : '') +
+      (FIG.get(it.name) ? '<button class="btn sm ghost" type="button" data-act="wkHow" data-i="' + i + '">Cum se face</button>' : '') +
+      '<button class="icon-btn sm wk-rm" type="button" data-act="wkRmEx" data-i="' + i + '" aria-label="Scoate ' + esc(it.name) + ' din antrenament">' + ic('trash') + '</button></div></div>';
+  }
+  return h + '</section>';
+}
+const wkBackHTML = () => '<div class="sheet-h"><button class="btn ghost sm" type="button" data-act="wkBack">' + ic('left') + 'Antrenamentul</button>' +
+  '<button class="icon-btn" type="button" data-act="close" aria-label="Ascunde antrenamentul">' + ic('x') + '</button></div>';
+const wkHowHTML = () => wkBackHTML() + '<h2>' + esc(WKV.how) + '</h2>' + demoHTML(WKV.how);
+const wkLibHTML = () => pickLibHTML('wkPick', new Set(S.wk.items.map(it => it.name.toLowerCase())));
+const wkAddHTML = () => wkBackHTML() + '<h2>Adaugă un exercițiu</h2>' +
+  '<input class="inp" id="exQ" data-in="exQ" type="search" placeholder="Caută (ex. squat, curl, piept) sau scrie unul nou" autocomplete="off" value="' + esc(S.exQ) + '">' +
+  '<div class="chips scroll" id="exGroups">' + exGroupsHTML() + '</div><div id="exList" data-wk="1">' + wkLibHTML() + '</div>';
+function wkEndHTML() {
+  const W = S.wk, done = W.items.reduce((a, it) => a + it.sets.filter(s => s.done).length, 0), exN = W.items.filter(it => it.sets.some(s => s.done)).length,
+    open = W.items.reduce((a, it) => a + it.sets.filter(s => !s.done).length, 0);
+  return wkBackHTML() + '<h2>Termini antrenamentul?</h2>' +
+    (done ? '<div class="hint">Se salvează ' + pl(done, 'serie bifată', 'serii bifate') + ', la ' + pl(exN, 'exercițiu', 'exerciții') + '.' + (open ? ' Seriile nebifate (' + open + ') nu se salvează.' : '') + '</div>' +
+      '<button class="btn block" type="button" data-act="wkSave">Salvează și termină</button>'
+      : '<div class="hint">N-ai bifat nicio serie, deci nu e nimic de salvat.</div><button class="btn danger block" type="button" data-act="wkQuit">Renunță la antrenament</button>') +
+    '<button class="btn ghost block" type="button" data-act="wkBack">Mai am de lucru</button>';
+}
+function wkSumHTML() {
+  const s = WKV.sum; if (!s) return '';
+  return '<div class="sheet-h"><div class="grow"><span class="label">Antrenament terminat</span><h2>' + esc(s.title) + '</h2></div>' +
+    '<button class="icon-btn" type="button" data-act="close" aria-label="Închide">' + ic('x') + '</button></div>' +
+    '<div class="wk-sum"><div><span class="label">Durată</span><b>' + fmtUp(s.dur) + '</b></div><div><span class="label">Serii</span><b>' + s.sets + '</b></div>' +
+    '<div><span class="label">Kg ridicate</span><b>' + num(s.vol, 0) + '</b></div></div>' +
+    '<div class="wk-res">' + s.res.map(r => '<div class="wk-r' + (r.pr ? ' wk-pr' : '') + '"><span class="grow"><span class="name">' + esc(r.name) + (r.pr ? '<em>Record</em>' : '') + '</span>' +
+      '<span class="sub">' + esc(pl(r.n, 'serie', 'serii')) + ' · cea mai bună: ' + esc(r.top) + '</span></span>' +
+      (r.cmp ? '<span class="wk-d ' + (r.cmp.dir > 0 ? 'up' : r.cmp.dir < 0 ? 'down' : 'flat') + '">' + esc(r.cmp.txt) + '</span>' : '<span class="wk-d new">prima dată</span>') + '</div>').join('') + '</div>' +
+    (s.res.some(r => r.cmp) ? '<div class="note">Comparația e cu cea mai bună serie din sesiunea de data trecută.</div>' : '') +
+    '<button class="btn block" type="button" data-act="close">Gata</button>';
+}
+
+/* ---- serii ---- */
+INP.wkSet = el => {
+  const it = S.wk && S.wk.items[+el.dataset.i], s = it && it.sets[+el.dataset.j]; if (!s || s.done) return;
+  s[el.dataset.k] = el.value.slice(0, el.dataset.k === 'kg' ? 8 : 4); saveWk();
+};
+ACT.wkCur = el => { const W = S.wk, i = +el.dataset.i; if (!W) return; W.cur = W.cur === i ? -1 : i; saveWk(); wkPaint(); };
+ACT.wkDone = el => {
+  const W = S.wk, i = +el.dataset.i, j = +el.dataset.j, it = W && W.items[i], s = it && it.sets[j]; if (!s) return;
+  wkAudio();
+  if (s.done) { s.done = false; saveWk(); wkPaint(); return; }
+  const kgT = String(s.kg).trim(), kg = kgT ? pn(kgT) : 0, reps = pn(String(s.reps).trim());
+  if (!isFinite(reps) || reps < 1 || reps > 999) { toast('Scrie câte repetări ai făcut (cel puțin 1).'); const r = $('#wkRoot [data-i="' + i + '"][data-j="' + j + '"][data-k="reps"]'); if (r) r.focus(); return; }
+  if (!isFinite(kg) || kg < 0 || kg > 2000) { toast('Greutatea nu e un număr valid.'); return; }
+  s.done = true; s.reps = String(Math.round(reps)); s.kg = kgT ? kgTxt(Math.round(kg * 1000) / 1000) : '';
+  const nx = it.sets[j + 1]; if (nx && !nx.done && !String(nx.kg).trim() && !String(nx.reps).trim()) { nx.kg = s.kg; nx.reps = s.reps; }
+  const now = Date.now(); W.restAt = now; W.rest = now + PREFS().rest * 1000;
+  if (it.sets.every(x => x.done)) {                      /* exercițiul e gata: trec la următorul care mai are serii */
+    const after = W.items.findIndex((x, k) => k > i && x.sets.some(y => !y.done));
+    W.cur = after >= 0 ? after : W.items.findIndex(x => x.sets.some(y => !y.done));
+  }
+  saveWk(); wkPaint();
+};
+ACT.wkAddSet = el => {
+  const it = S.wk && S.wk.items[+el.dataset.i]; if (!it) return;
+  if (it.sets.length >= WK_MAXSETS) { toast('Cel mult ' + WK_MAXSETS + ' serii la un exercițiu.'); return; }
+  const l = it.sets[it.sets.length - 1] || { kg: '', reps: '' }; it.sets.push({ kg: l.kg, reps: l.reps, done: false }); saveWk(); wkPaint();
+};
+ACT.wkRmSet = el => {
+  const it = S.wk && S.wk.items[+el.dataset.i]; if (!it || it.sets.length < 2) return;
+  let j = -1; for (let k = it.sets.length - 1; k >= 0; k--) if (!it.sets[k].done) { j = k; break; }
+  if (j < 0) { toast('Toate seriile sunt bifate. Debifează una ca s-o poți scoate.'); return; }
+  it.sets.splice(j, 1); saveWk(); wkPaint();
+};
+ACT.wkRmEx = el => {
+  const W = S.wk, i = +el.dataset.i, it = W && W.items[i]; if (!it) return;
+  if (!arm(el, 'Apasă încă o dată ca să scoți ' + it.name + ' din antrenament.')) return;
+  W.items.splice(i, 1); if (W.cur >= W.items.length) W.cur = W.items.length - 1; saveWk(); wkPaint();
+};
+ACT.wkHow = el => { const it = S.wk && S.wk.items[+el.dataset.i]; if (!it) return; WKV.how = it.name; WKV.view = 'how'; wkPaint(); };
+ACT.wkBack = () => { WKV.view = 'main'; wkPaint(); };
+ACT.wkAdd = () => { S.exQ = ''; S.exG = ''; WKV.view = 'add'; wkPaint(); };
+ACT.wkPick = el => {
+  const W = S.wk, n = String(el.dataset.name || '').trim().slice(0, 60); if (!W || !n) return;
+  const k = W.items.findIndex(it => it.name.toLowerCase() === n.toLowerCase());
+  if (k >= 0) W.cur = k;
+  else { if (W.items.length >= WK_MAXEX) { toast('Cel mult ' + WK_MAXEX + ' exerciții într-un antrenament.'); return; } W.items.push(wkItem(n, W.date)); W.cur = W.items.length - 1; }
+  WKV.view = 'main'; saveWk(); wkPaint();
+};
+{
+  /* căutarea și grupele din bibliotecă rămân în modul „adaugă la antrenament” */
+  const q1 = INP.exQ, g1 = ACT.exGroup;
+  const inWk = () => { const l = $('#exList'); return !!(l && l.dataset.wk); };
+  const paint = () => { const l = $('#exList'); if (l) { l.innerHTML = wkLibHTML(); FIG.mount(l); } };
+  INP.exQ = (el, e) => { if (!inWk()) return q1(el, e); S.exQ = el.value; paint(); };
+  ACT.exGroup = (el, e) => { if (!inWk()) return g1(el, e); S.exG = el.dataset.g; $('#exGroups').innerHTML = exGroupsHTML(); paint(); };
+}
+
+/* ---- pauza ---- */
+ACT.wkRestAdj = el => {
+  const W = S.wk; if (!W || !W.rest) return;
+  const d = +el.dataset.d; W.rest = d ? Math.max(Date.now() + 1000, W.rest + d * 1000) : 0; saveWk(); wkPaint();
+};
+ACT.wkRestLen = el => {
+  const s = +el.dataset.s; if (!WK_RESTS.includes(s)) return;
+  PREFS().rest = s; savePrefs();
+  const W = S.wk; if (W && W.rest > Date.now()) { W.rest = Math.max(Date.now() + 1000, W.restAt + s * 1000); saveWk(); }
+  wkPaint();
+};
+let wkAC = null;
+/* sunetul se poate porni doar după o atingere: îl pregătim la fiecare bifă */
+function wkAudio() {
+  try { const C = window.AudioContext || window.webkitAudioContext; if (!C) return; if (!wkAC) wkAC = new C(); if (wkAC.state === 'suspended') wkAC.resume(); } catch (e) { wkAC = null; }
+}
+function wkBeep() {
+  const ac = wkAC; if (!ac || ac.state !== 'running') return;
+  try {
+    [0, .22, .44].forEach((t, k) => {
+      const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime + t;
+      o.frequency.value = k === 2 ? 1175 : 880; o.connect(g); g.connect(ac.destination);
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.3, t0 + .02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + .18);
+      o.start(t0); o.stop(t0 + .2);
+    });
+  } catch (e) {}
+}
+let wkT = 0;
+function wkTick() {
+  const on = wkOn(), W = S.wk, now = Date.now(), sheet = !!$('#wkRoot'), pill = $('#wkPill');
+  if (pill) {
+    const show = on && !sheet;
+    pill.hidden = !show; document.body.classList.toggle('wk-on', show);
+    if (show) pill.innerHTML = '<i aria-hidden="true"></i><span>' + esc(W.title) + '</span><b>' + fmtUp(now - W.start) + '</b>' + (W.rest > now ? '<small>pauză ' + fmtDown(W.rest - now) + '</small>' : '');
+  }
+  if (on && sheet) {
+    const el = $('#wkRoot [data-wk="el"]'); if (el) el.textContent = fmtUp(now - W.start);
+    const r = $('#wkRoot [data-wk="rest"]');
+    if (r && W.rest > now) {
+      r.textContent = fmtDown(W.rest - now);
+      const b = $('#wkRoot [data-wk="restbar"]'); if (b) b.style.transform = 'scaleX(' + Math.max(0, Math.min(1, (W.rest - now) / Math.max(1, W.rest - W.restAt))).toFixed(3) + ')';
+    }
+  }
+  if (on && W.rest && W.rest <= now) {
+    const late = now - W.rest; W.rest = 0; saveWk();
+    if (late < 8000 && document.visibilityState === 'visible') {
+      wkBeep(); try { if (navigator.vibrate) navigator.vibrate([180, 90, 180]); } catch (e) {}
+      toast('Pauza s-a terminat. Următoarea serie!');
+    }
+    if (sheet && WKV.view === 'main') { const rr = $('#wkRoot'); if (rr) { rr.innerHTML = wkHTML(); FIG.mount(rr); } }
+  }
+  if (on && !wkT) wkT = setInterval(wkTick, 1000);
+  if (!on && wkT) { clearInterval(wkT); wkT = 0; }
+}
+/* ecranul nu se stinge cât antrenamentul e pornit (unde se poate) */
+let wkLock = null;
+async function wkWake(on) {
+  try {
+    if (on) {
+      if (!wkLock && navigator.wakeLock && document.visibilityState === 'visible') { wkLock = await navigator.wakeLock.request('screen'); wkLock.addEventListener('release', () => { wkLock = null; }); }
+    } else if (wkLock) { const l = wkLock; wkLock = null; await l.release(); }
+  } catch (e) { wkLock = null; }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && wkOn()) { wkWake(true); wkTick(); } });
+{
+  const pill = document.createElement('button');
+  pill.type = 'button'; pill.id = 'wkPill'; pill.className = 'wk-pill'; pill.hidden = true; pill.dataset.act = 'wkOpen';
+  pill.setAttribute('aria-label', 'Antrenamentul în desfășurare: deschide-l');
+  document.body.appendChild(pill);
+}
+
+/* ---- terminare ---- */
+ACT.wkEnd = () => { if (!S.wk) return; WKV.view = 'end'; wkPaint(); };
+ACT.wkQuit = el => {
+  if (!S.wk) return;
+  if (!arm(el, 'Apasă încă o dată: antrenamentul se anulează, fără să se salveze nimic.')) return;
+  S.wk = null; saveWk(); wkWake(false); WKV.view = 'main'; closeSheet(); render(); wkTick(); toast('Antrenament anulat');
+};
+ACT.wkSave = () => {
+  const W = S.wk; if (!W) return;
+  const res = []; let vol = 0, nSets = 0;
+  W.items.forEach(it => {
+    const sets = it.sets.filter(s => s.done).map(s => { const kgT = String(s.kg).trim(); return { kg: kgT ? Math.round(pn(kgT) * 1000) / 1000 : 0, reps: Math.round(pn(s.reps)) }; })
+      .filter(s => isFinite(s.kg) && s.kg >= 0 && isFinite(s.reps) && s.reps >= 1);
+    if (!sets.length) return;
+    const ex0 = exByName(it.name), id = ex0 ? ex0.id : makeEx(it.name.slice(0, 60)), ex = S.ex[id];
+    const before = sortedSess(ex).filter(s => s.date < W.date).slice(-1)[0];
+    const same = ex.sessions.find(s => s.date === W.date);
+    if (same) same.sets = same.sets.concat(sets).slice(0, 60); else ex.sessions.push({ id: uid(), date: W.date, sets });
+    ex.sessions = sortedSess(ex); saveEx(id);
+    const now = ex.sessions.find(s => s.date === W.date), isLast = ex.sessions[ex.sessions.length - 1] === now;
+    vol += sets.reduce((a, s) => a + s.kg * s.reps, 0); nSets += sets.length;
+    res.push({ name: ex.name, top: setTxt(topSet(now)), cmp: before ? compare(now, before) : null, pr: isLast && isRecord(ex), n: sets.length });
+  });
+  const end = Date.now();
+  if (W.sp && W.day >= 0) {                              /* ziua din split e făcută */
+    const s = SP(), sp = s.list[W.sp];
+    if (sp && sp.days[W.day] && s.active === sp.id) { const L = s.last; if (!L || L.id !== sp.id || L.date <= W.date) { s.last = { id: sp.id, day: W.day, date: W.date }; SPV.day = null; saveSplit(); } }
+  }
+  const log = S.wklog || (S.wklog = { list: [] });
+  log.list.push({ id: W.id, date: W.date, start: W.start, end, title: W.title, sets: nSets, vol: Math.round(vol), ex: res.length }); log.list = log.list.slice(-500); saveWkLog();
+  WKV.sum = { title: W.title, dur: end - W.start, sets: nSets, vol, res };
+  S.wk = null; saveWk(); wkWake(false);
+  WKV.view = 'sum'; wkPaint(); render();
+  if (res.some(r => r.pr)) setTimeout(() => FX.burst($('#wkRoot .wk-pr'), true), 450);
+  if (typeof lbPublish === 'function') lbPublish();
+};
 
 /* ================= CLASAMENT: cine are cea mai lungă serie =================
    Două clasamente în același tab: Global (toți cei care au intrat) și Prieteni (doar pe invitație, după numele de utilizator).
@@ -3625,9 +4006,11 @@ async function boot() {
   render();
   await Store.init();
   try {
-    const [t, fd, exs, act, spl] = await Promise.all([Store.get('meta', 'targets'), Store.get('meta', 'foods'), Store.list('ex'), Store.get('meta', 'active'), Store.get('meta', 'split')]);
+    const [t, fd, exs, act, spl, wk, prf, wkl] = await Promise.all([Store.get('meta', 'targets'), Store.get('meta', 'foods'), Store.list('ex'), Store.get('meta', 'active'),
+      Store.get('meta', 'split'), Store.get('meta', 'workout'), Store.get('meta', 'prefs'), Store.get('meta', 'wklog')]);
     if (t) S.targets = { ...S.targets, ...t };
-    S.split = splitNorm(spl);
+    S.split = splitNorm(spl); S.wk = wkNorm(wk); S.prefs = prefsNorm(prf);
+    S.wklog = { list: wkl && Array.isArray(wkl.list) ? wkl.list.filter(x => x && typeof x === 'object').slice(-500) : [] };
     if (fd && fd.items) { S.foods = fd.items; S.seedVer = fd.seedVer || 0; }
     exs.forEach(x => { S.ex[x._id] = { id: x._id, name: x.name || 'Exercițiu', sessions: x.sessions || [], created: x.created || 0 }; });
     if (act && Array.isArray(act.days)) S.active = new Set(act.days);
@@ -3645,7 +4028,7 @@ async function boot() {
     toast('Nu am putut încărca toate datele.');
     S.days[S.date] = S.days[S.date] || { entries: [] };
   }
-  S.loaded = true; render(); sampleReady(); lbInit();
+  S.loaded = true; render(); sampleReady(); lbInit(); wkTick();
 }
 
 
