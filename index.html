@@ -586,6 +586,17 @@ body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .wt-list .h-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
 .wt-list .h-row>span:first-child{flex:1}
 .wt-list .num{font:800 18px/1 var(--f-display);font-variant-numeric:tabular-nums}
+/* caloriile reale de menținere */
+.tdee{display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px dashed var(--line)}
+.tdee b{font:900 34px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.tdee b small{font:700 14px/1 var(--f-display);letter-spacing:.1em;color:var(--ink-2)}
+.tdee .small{font-size:13px;line-height:1.4;color:var(--ink-2)}
+.tdee .btn{align-self:flex-start;margin-top:4px}
+.tdee-bar{height:6px;border-radius:3px;background:var(--paper-2);overflow:hidden}
+.tdee-bar i{display:block;height:100%;background:var(--flame)}
+.tdee-new{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px;border-radius:3px;background:var(--slab);color:var(--on-slab)}
+.tdee-new .label{color:var(--on-slab-2)}
+.tdee-new b{display:block;margin-top:6px;font:900 24px/1 var(--f-display);font-variant-numeric:tabular-nums;white-space:nowrap}
 /* harta săptămânii */
 .wkmap{display:flex;flex-direction:column;gap:12px;padding:16px 14px 14px;border-radius:2px;background:var(--paper);box-shadow:0 10px 14px -10px rgba(0,0,0,.5),0 0 0 1px var(--line)}
 .wkmap-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
@@ -1836,7 +1847,7 @@ function weightHTML(open) {
       ? '<div class="wt-f"><label class="field"><span>' + esc(label) + '</span><input class="inp" id="wtKg" inputmode="decimal" placeholder="kg" autocomplete="off" value="' + (cur ? kg1(cur) : '') + '" aria-label="' + esc(label) + ', în kilograme"></label>' +
         '<button class="btn sm" type="button" data-act="wtSave">' + (cur ? 'Schimbă' : 'Salvează') + '</button></div>'
       : '<div class="wt-now"><span class="label">' + esc(label) + '</span><b>' + (cur ? kg1(cur) + ' <small>kg</small>' : '—') + '</b></div>') +
-    wtSummaryHTML(end) + wtChartHTML(30, false) +
+    wtSummaryHTML(end) + wtChartHTML(30, false) + (Object.keys(L).length && typeof tdeeHTML === 'function' ? tdeeHTML() : '') +
     (Object.keys(L).length ? '' : '<div class="note">Cântărește-te dimineața, după baie și înainte de micul dejun. Contează media pe săptămână, nu o zi anume.</div>') +
     '</div></section>';
 }
@@ -1875,6 +1886,89 @@ ACT.wtDel = el => {
   if (!el.dataset.armed) { el.dataset.armed = '1'; el.textContent = 'Sigur?'; setTimeout(() => { if (el.isConnected) { delete el.dataset.armed; el.textContent = 'Șterge'; } }, 3000); return; }
   delete WT().log[el.dataset.d]; saveWeight(); openSheet(wtHistHTML()); sheetClose = () => render(); toast('Cântărire ștearsă');
   if (typeof weightChanged === 'function') weightChanged();
+};
+
+
+/* ================= CALORIILE REALE DE MENȚINERE =================
+   Din ultimele 4 săptămâni (fără azi, care nu e terminată): media caloriilor din zilele cu mâncarea notată
+   și cât a coborât sau a urcat greutatea (dreapta care trece cel mai bine prin cântăriri). Un kilogram de țesut ≈ 7700 kcal,
+   deci menținerea = media mâncată − schimbarea greutății pe zi × 7700. Zilele cu foarte puține calorii notate sunt lăsate
+   deoparte (probabil notate incomplet). Apare sub greutate, cu „Ajustează țintele” pentru slăbire, menținere sau masă. */
+const TD_WIN = 28, TD_MIN_DAYS = 10, TD_MIN_SPAN = 10, TD_MIN_WEIGHS = 4, KCAL_KG = 7700;
+const TD_GOALS = [['cut', 'Slăbire', -500], ['cut2', 'Slăbire ușoară', -250], ['keep', 'Menținere', 0], ['bulk', 'Masă', 250]];
+let tdLoading = false;
+const tdRange = () => { const end = addDays(todayStr(), -1); return { from: addDays(end, -(TD_WIN - 1)), end }; };
+async function tdEnsure() {
+  if (tdLoading) return;
+  const { from, end } = tdRange(), need = [...S.active].filter(d => d >= from && d <= end && !S.days[d]);
+  if (!need.length) return;
+  tdLoading = true;
+  try { await Promise.all(need.map(loadDay)); } catch (e) {}
+  tdLoading = false;
+  if (S.tab === 'azi' && !sheetOpen()) render();
+}
+function tdCalc() {
+  const { from, end } = tdRange();
+  const logged = [...S.active].filter(d => d >= from && d <= end);
+  if (logged.some(d => !S.days[d])) { tdEnsure(); return { loading: true }; }
+  const floor = Math.max(800, (S.targets.kcal || 2000) * .4);
+  const kc = logged.map(d => sumEntries(S.days[d].entries).k), good = kc.filter(k => k >= floor);
+  const W = WT().log, wd = Object.keys(W).filter(d => d >= from && d <= todayStr()).sort();
+  const span = wd.length >= 2 ? Math.round((pdate(wd[wd.length - 1]) - pdate(wd[0])) / 864e5) : 0;
+  const st = { days: good.length, partial: kc.length - good.length, weighs: wd.length, span, ok: false };
+  if (good.length < TD_MIN_DAYS || wd.length < TD_MIN_WEIGHS || span < TD_MIN_SPAN) return st;
+  const xs = wd.map(d => (pdate(d) - pdate(wd[0])) / 864e5), ys = wd.map(d => W[d]);
+  const mx = xs.reduce((a, b) => a + b, 0) / xs.length, my = ys.reduce((a, b) => a + b, 0) / ys.length;
+  let sxy = 0, sxx = 0; xs.forEach((x, i) => { sxy += (x - mx) * (ys[i] - my); sxx += (x - mx) * (x - mx); });
+  const slope = sxx ? sxy / sxx : 0, intake = good.reduce((a, b) => a + b, 0) / good.length;
+  const tdee = intake - slope * KCAL_KG;
+  if (!(tdee >= 1200 && tdee <= 6000)) return { ...st, odd: true };
+  return { ...st, ok: true, intake, week: slope * 7, tdee: Math.round(tdee / 10) * 10 };
+}
+const kcalTxt = v => num(Math.round(v / 10) * 10) + ' kcal';
+function tdeeHTML() {
+  const t = tdCalc();
+  if (t.loading) return '<div class="tdee wait"><span class="label">Caloriile reale de menținere</span><span class="muted small"><span class="spin"></span> Se calculează…</span></div>';
+  if (!t.ok) {
+    const f = Math.min(1, t.days / TD_MIN_DAYS, t.weighs / TD_MIN_WEIGHS, t.span / TD_MIN_SPAN);
+    return '<div class="tdee wait"><span class="label">Caloriile reale de menținere</span>' +
+      '<span class="small">' + (t.odd ? 'Din datele de acum iese un rezultat nerealist. De obicei înseamnă zile notate incomplet; mai notează câteva zile întregi.'
+        : 'Le calculez din ce mănânci și cum se schimbă greutatea. Am nevoie de cel puțin ' + TD_MIN_DAYS + ' zile cu mâncarea notată complet și de ' + TD_MIN_WEIGHS + ' cântăriri pe cel puțin 2 săptămâni (în ultimele 4). Acum: ' +
+          pl(t.days, 'zi', 'zile') + ', ' + pl(t.weighs, 'cântărire', 'cântăriri') + (t.span ? ' pe ' + pl(t.span, 'zi', 'zile') : '') + '.') + '</span>' +
+      '<div class="tdee-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(f * 100) + '" aria-label="Cât mai trebuie până la calcul"><i style="width:' + Math.round(f * 100) + '%"></i></div></div>';
+  }
+  const wk = t.week, ch = Math.abs(wk) < .05 ? 'greutatea a rămas aproape la fel' : (wk < 0 ? 'ai slăbit ' : 'ai pus ') + kg1(Math.abs(wk)) + ' kg pe săptămână';
+  return '<div class="tdee"><span class="label">Caloriile tale reale de menținere</span><b>' + num(t.tdee) + ' <small>kcal / zi</small></b>' +
+    '<span class="small">Din ultimele 4 săptămâni: ai mâncat în medie ' + kcalTxt(t.intake) + ' pe zi și ' + ch + '.' + (t.partial ? ' Am lăsat deoparte ' + pl(t.partial, 'zi care pare notată', 'zile care par notate') + ' incomplet.' : '') + '</span>' +
+    '<button class="btn sm" type="button" data-act="tdeeOpen">Ajustează țintele</button></div>';
+}
+/* țintele noi: proteinele rămân cele de acum, grăsimile ~27% din calorii, restul carbohidrați */
+function tdTargets(kcal) {
+  const p = Math.max(0, Math.round(S.targets.p || 0)), f = Math.round(kcal * .27 / 9), c = Math.max(50, Math.round((kcal - 4 * p - 9 * f) / 4));
+  return { kcal: Math.round(kcal / 10) * 10, p, c, f };
+}
+const TDV = { goal: '' };
+function tdeeSheetHTML() {
+  const t = tdCalc(); if (!t.ok) return '';
+  const g = TD_GOALS.find(x => x[0] === TDV.goal) || TD_GOALS[2], n = tdTargets(t.tdee + g[2]);
+  return sheetHead('Țintele după datele tale') +
+    '<div class="hint">Menținerea ta reală e în jur de <b>' + num(t.tdee) + ' kcal</b> pe zi. Alege ce vrei acum și îți potrivesc țintele.</div>' +
+    '<div class="field"><span>Obiectivul</span><div class="chips" id="tdGoals">' + TD_GOALS.map(([id, name, d]) =>
+      '<button class="chip" type="button" data-act="tdGoal" data-g="' + id + '" aria-pressed="' + (id === g[0]) + '">' + esc(name) + (d ? ' (' + (d > 0 ? '+' : '−') + Math.abs(d) + ')' : '') + '</button>').join('') + '</div></div>' +
+    '<div class="tdee-new"><div><span class="label">Calorii</span><b>' + num(n.kcal) + '</b></div><div><span class="label">Proteine</span><b>' + n.p + ' g</b></div>' +
+    '<div><span class="label">Carbo</span><b>' + n.c + ' g</b></div><div><span class="label">Grăsimi</span><b>' + n.f + ' g</b></div></div>' +
+    '<div class="note">' + (g[2] < 0 ? 'Cu ' + Math.abs(g[2]) + ' kcal sub menținere slăbești cam ' + kg1(Math.abs(g[2]) * 7 / KCAL_KG) + ' kg pe săptămână.' : g[2] > 0 ? 'Cu ' + g[2] + ' kcal peste menținere urci cam ' + kg1(g[2] * 7 / KCAL_KG) + ' kg pe săptămână, ca masa să fie mai mult mușchi.' : 'La menținere greutatea ar trebui să rămână cam la fel.') +
+    ' Proteinele rămân cele de acum; le schimbi oricând din Ținte.</div>' +
+    '<button class="btn block" type="button" data-act="tdeeApply">Aplică țintele</button>';
+}
+ACT.tdeeOpen = () => { if (!PREFS().goal) PREFS().goal = 'keep'; TDV.goal = PREFS().goal; const h = tdeeSheetHTML(); if (h) openSheet(h); };
+ACT.tdGoal = el => { TDV.goal = el.dataset.g; openSheet(tdeeSheetHTML()); };
+ACT.tdeeApply = () => {
+  const t = tdCalc(); if (!t.ok) return;
+  const g = TD_GOALS.find(x => x[0] === TDV.goal) || TD_GOALS[2], n = tdTargets(t.tdee + g[2]);
+  S.targets = { ...S.targets, kcal: n.kcal, p: n.p, c: n.c, f: n.f, custom: true }; saveTargets();
+  PREFS().goal = g[0]; savePrefs();
+  closeSheet(); render(); toast('Ținte noi: ' + num(n.kcal) + ' kcal pe zi');
 };
 
 
