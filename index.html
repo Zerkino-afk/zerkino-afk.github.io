@@ -543,6 +543,19 @@ body.wk-on{padding-bottom:172px}
 body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .btn.danger.armed{background:var(--down);color:#fff}
 @media (prefers-reduced-motion:reduce){.wk-bar i,.wk-done{transition:none}.wk-pill i{animation:none}}
+/* sugestiile de progresie */
+.coach{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:3px;background:var(--paper);box-shadow:inset 3px 0 0 var(--flame),0 0 0 1px var(--line)}
+.wk-ex .coach{background:var(--bg)}
+.coach.deload{box-shadow:inset 3px 0 0 var(--carb),0 0 0 1px var(--line)}
+.coach .grow{flex:1;min-width:0;font-size:14px;line-height:1.35}
+.coach b{font-weight:700}
+.coach-n{display:block;margin-top:3px;font-size:12.5px;color:var(--ink-2)}
+.coach-i{flex:none;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:var(--flame);color:#1B0E02}
+.coach-i svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.coach.deload .coach-i{background:var(--carb);color:#fff}
+.coach .btn{flex:none}
+#lgCoach:empty{display:none}
+.sp-coach{display:block;margin-top:2px;font-size:12.5px;font-weight:700;line-height:1.3;color:var(--s-fat)}
 
 /* streak sheet */
 .streak-big{display:flex;align-items:center;gap:14px}
@@ -2793,7 +2806,7 @@ function openLog(id) {
   const same = ss.find(s => s.date === LG.date), last = same || ss[ss.length - 1];
   LG.sets = last ? last.sets.map(s => ({ kg: s.kg ? String(s.kg).replace('.', ',') : '', reps: String(s.reps) })) : [{ kg: '', reps: '' }];
   openSheet(sheetHead(ex.name) + demoHTML(ex.name) +
-    '<div class="hint" id="lgPrev"></div>' +
+    '<div class="hint" id="lgPrev"></div><div id="lgCoach"></div>' +
     '<label class="field"><span>Data</span><input class="inp" id="lgDate" data-in="lgDate" type="date" value="' + LG.date + '"></label>' +
     '<div><div class="label" style="margin-bottom:8px">Serii (kg × repetări)</div><div id="lgRows" style="display:flex;flex-direction:column;gap:8px"></div></div>' +
     '<button class="btn ghost block" type="button" data-act="addSet">' + ic('plus') + 'Încă o serie</button>' +
@@ -2806,6 +2819,7 @@ function lgPrev() {
   const ex = S.ex[LG.id], before = sortedSess(ex).filter(s => s.date < LG.date).slice(-1)[0], same = ex.sessions.find(s => s.date === LG.date);
   $('#lgPrev').textContent = same ? 'Există deja o sesiune pe ' + fmtShort(LG.date) + '. Salvarea o înlocuiește.' :
     before ? 'Data trecută (' + fmtShort(before.date) + '): ' + before.sets.map(setTxt).join(' · ') : 'Prima sesiune la acest exercițiu.';
+  if (typeof coachLog === 'function') coachLog();
 }
 function lgRows() {
   $('#lgRows').innerHTML = LG.sets.map((s, i) =>
@@ -2976,6 +2990,7 @@ function lastTxt(name) {
   const ss = sortedSess(ex), l = ss[ss.length - 1];
   return 'ultima: ' + setTxt(topSet(l)) + ' · ' + fmtShort(l.date);
 }
+const coachSpan = name => { const c = typeof coachShort === 'function' ? coachShort(name) : ''; return c ? '<span class="sp-coach">' + esc(c) + '</span>' : ''; };
 function splitCardHTML() {
   if (!S.loaded) return '';
   const sp = activeSplit();
@@ -2999,7 +3014,7 @@ function splitCardHTML() {
     '<b class="sp-dname">' + esc(d.name) + '</b><span class="sp-mus">' + (d.mus.length ? esc(d.mus.map(m => MUSN[m]).join(' · ')) : 'Alege grupele de mușchi din „Editează ziua”.') + '</span></div></div>' +
     '<div class="sp-ex">' + (d.ex.length ? d.ex.map(name => { const t = loggedToday(name);
       return '<button class="sp-row' + (t ? ' done' : '') + '" type="button" data-act="splitLog" data-name="' + esc(name) + '">' + thumbHTML(name) +
-        '<span class="grow"><span class="name">' + esc(name) + '</span><span class="sub">' + esc(lastTxt(name)) + '</span></span>' +
+        '<span class="grow"><span class="name">' + esc(name) + '</span><span class="sub">' + esc(lastTxt(name)) + '</span>' + (t ? '' : coachSpan(name)) + '</span>' +
         (t ? '<i class="sp-ok" aria-label="înregistrat azi">✓</i>' : '<i class="sp-go" aria-hidden="true">+</i>') + '</button>'; }).join('')
       : '<div class="sp-muted">Ziua nu are încă exerciții. Le alegi din „Editează ziua”.</div>') + '</div>' +
     (wkOn() ? '<button class="btn" type="button" data-act="wkOpen">' + ic('right') + 'Continuă antrenamentul</button>'
@@ -3523,6 +3538,67 @@ ACT.wkSave = () => {
   if (res.some(r => r.pr)) setTimeout(() => FX.burst($('#wkRoot .wk-pr'), true), 450);
   if (typeof lbPublish === 'function') lbPublish();
 };
+
+
+/* ================= SUGESTII DE PROGRESIE =================
+   Din ultima sesiune (dinaintea zilei de azi) aplicația propune ținta de azi, după dubla progresie:
+   întâi o repetare în plus la aceeași greutate, iar de la 12 repetări în sus greutate mai mare
+   (pasul depinde de exercițiu: 2 kg la gantere, 5 kg la picioare și îndreptări, 10 kg la presa de picioare, altfel 2,5 kg).
+   Dacă ultimele 3 sesiuni n-au crescut deloc, propune o descărcare: cu ~10% mai ușor, apoi urci din nou.
+   Apare în antrenament (cu „Folosește”), la înregistrarea unei sesiuni și în cardul splitului. */
+const coachInc = name => {
+  const n = String(name).toLowerCase(), g = groupOf(name);
+  if (/leg press calf/.test(n)) return 5;
+  if (/leg press|hack squat/.test(n)) return 10;
+  if (/dumbbell|kettlebell|goblet/.test(n)) return 2;
+  if (/deadlift|squat|hip thrust|rack pull|good morning|lunge|step-up/.test(n) || g === 'Cvadriceps' || g === 'Femurali și fesieri' || g === 'Gambe') return 5;
+  return 2.5;
+};
+const roundStep = (v, step) => Math.round(v / step) * step;
+function coachFor(name, date) {
+  const ex = exByName(name); if (!ex) return null;
+  const ss = sortedSess(ex).filter(s => s.date < date && s.sets.length); if (!ss.length) return null;
+  const last = topSet(ss[ss.length - 1]); if (!last || !(last.reps >= 1)) return null;
+  const inc = coachInc(name);
+  if (!(last.kg > 0)) {                                        /* greutatea corpului: o repetare în plus */
+    const reps = last.reps + 1;
+    return { kg: 0, reps, txt: reps + ' rep', alt: last.reps >= 15 ? 'sau pune o greutate mică (2,5–5 kg)' : '', note: '' };
+  }
+  const sc = ss.slice(-3).map(s => score(topSet(s)));
+  if (sc.length === 3 && sc[1] <= sc[0] * 1.005 && sc[2] <= sc[0] * 1.005) {
+    const kg = Math.max(inc, roundStep(last.kg * 0.9, inc));
+    return { kg, reps: last.reps, txt: setTxt({ kg, reps: last.reps }), alt: '', deload: true,
+      note: 'Ai rămas pe loc 3 sesiuni la rând. Azi mergi cu ~10% mai ușor și urci din nou de acolo.' };
+  }
+  if (last.reps >= 12) { const kg = last.kg + inc, reps = Math.max(6, last.reps - 4); return { kg, reps, txt: setTxt({ kg, reps }), alt: 'sau ' + setTxt({ kg: last.kg, reps: last.reps + 1 }), note: '' }; }
+  const reps = last.reps + 1;
+  return { kg: last.kg, reps, txt: setTxt({ kg: last.kg, reps }), alt: 'sau ' + setTxt({ kg: last.kg + inc, reps: Math.max(1, last.reps - 2) }), note: '' };
+}
+const COACH_UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>';
+const COACH_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l6 6 4-4 8 8"/><path d="M15 17h6v-6"/></svg>';
+const coachBoxHTML = (c, act, i) => '<div class="coach' + (c.deload ? ' deload' : '') + '"><span class="coach-i">' + (c.deload ? COACH_DOWN : COACH_UP) + '</span>' +
+  '<span class="grow"><b>Azi: ' + esc(c.txt) + '</b>' + (c.alt ? ' <span class="muted">' + esc(c.alt) + '</span>' : '') + (c.note ? '<span class="coach-n">' + esc(c.note) + '</span>' : '') + '</span>' +
+  '<button class="btn sm" type="button" data-act="' + act + '"' + (i != null ? ' data-i="' + i + '"' : '') + ' aria-label="Folosește ținta de azi: ' + esc(c.txt) + '">Folosește</button></div>';
+/* în antrenament: ținta pentru exercițiul deschis */
+function coachHTML(name, date, i) { const c = coachFor(name, date); return c ? coachBoxHTML(c, 'wkCoach', i) : ''; }
+ACT.wkCoach = el => {
+  const W = S.wk, it = W && W.items[+el.dataset.i]; if (!it) return;
+  const c = coachFor(it.name, W.date); if (!c) return;
+  it.sets.forEach(s => { if (!s.done) { s.kg = c.kg ? kgTxt(c.kg) : ''; s.reps = String(c.reps); } });
+  saveWk(); wkPaint(); toast('Seriile nebifate au ținta de azi: ' + c.txt);
+};
+/* la înregistrarea unei sesiuni (fereastra „Înregistrează”) */
+function coachLog() {
+  const box = $('#lgCoach'), ex = S.ex[LG.id]; if (!box || !ex) return;
+  const c = ex.sessions.some(s => s.date === LG.date) ? null : coachFor(ex.name, LG.date);
+  box.innerHTML = c ? coachBoxHTML(c, 'lgCoach') : '';
+}
+ACT.lgCoach = () => {
+  const ex = S.ex[LG.id], c = ex && coachFor(ex.name, LG.date); if (!c) return;
+  LG.sets = LG.sets.map(() => ({ kg: c.kg ? kgTxt(c.kg) : '', reps: String(c.reps) })); lgRows(); toast('Seriile au ținta de azi: ' + c.txt);
+};
+/* în cardul splitului, sub ultima sesiune */
+const coachShort = name => { const c = coachFor(name, todayStr()); return c ? 'azi: ' + c.txt : ''; };
 
 /* ================= CLASAMENT: cine are cea mai lungă serie =================
    Două clasamente în același tab: Global (toți cei care au intrat) și Prieteni (doar pe invitație, după numele de utilizator).
