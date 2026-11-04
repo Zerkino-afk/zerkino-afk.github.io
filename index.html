@@ -586,6 +586,11 @@ body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .wt-list .h-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
 .wt-list .h-row>span:first-child{flex:1}
 .wt-list .num{font:800 18px/1 var(--f-display);font-variant-numeric:tabular-nums}
+/* clasamentul de sală */
+.lb-metric{margin-top:-6px}
+.lb-s.lb-g svg{fill:none;stroke:var(--ink);stroke-width:2.2}
+.lb-r.off .lb-s.lb-g svg{stroke:var(--flat)}
+.lb-me.gym svg{fill:none;stroke:var(--ink);stroke-width:2;filter:none}
 /* amintirea pentru copia de siguranță */
 .bk-nag{flex-wrap:wrap}
 .bk-nag>span:first-child{flex:1 1 200px}
@@ -3508,7 +3513,7 @@ ACT.toggleHist = el => { S.openEx = S.openEx === el.dataset.id ? null : el.datas
 ACT.delSess = el => {
   if (!el.dataset.armed) { el.dataset.armed = '1'; el.textContent = 'Sigur?'; setTimeout(() => { if (el.isConnected) { delete el.dataset.armed; el.textContent = 'Șterge'; } }, 3000); return; }
   const ex = S.ex[el.dataset.ex]; ex.sessions = ex.sessions.filter(s => s.id !== el.dataset.sid);
-  saveEx(ex.id); render(); toast('Sesiune ștearsă');
+  saveEx(ex.id); render(); toast('Sesiune ștearsă'); if (typeof lbPublish === 'function') lbPublish();
 };
 
 /* ---- exercițiu nou: bibliotecă în engleză sau nume propriu ---- */
@@ -3651,6 +3656,7 @@ ACT.saveSess = () => {
   saveEx(ex.id); closeSheet(); render();
   toast(prev ? 'Salvat · ' + compare(ex.sessions[i], prev).txt + ' față de ' + fmtShort(prev.date) : 'Salvat');
   if (i === ex.sessions.length - 1 && isRecord(ex)) setTimeout(() => FX.burst($('.pr'), true), 700);
+  if (typeof lbPublish === 'function') lbPublish();
 };
 ACT.logSess = el => { if (S.ex[el.dataset.id]) openLog(el.dataset.id); };
 
@@ -4538,7 +4544,7 @@ function weekMapHTML() {
    Lista de invitații a fiecăruia se ține și privat (meta/lb). Intrarea e opțională. */
 const LB = {
   st: 'init', joined: false, uname: '', claimed: 0, prefill: '', g: 1, friends: [], ignore: [], view: 'global',
-  swapT: 0, doneT: 0, board: null, me: null, rows: [], got: false, canWrite: null, isOwner: false, err: '', last: '', busy: false, pending: null, unsub: null, claiming: false, losing: false
+  metric: 'food', swapT: 0, doneT: 0, board: null, me: null, rows: [], got: false, canWrite: null, isOwner: false, err: '', last: '', busy: false, pending: null, unsub: null, claiming: false, losing: false
 };
 const LB_ID = /^\d{4}-\d{2}-\d{2}$/;
 const LB_MAXF = 100;
@@ -4547,7 +4553,7 @@ const UNAME_HELP = 'Numele de utilizator are 3–20 de caractere: litere, cifre,
 const cleanUser = s => String(s || '').replace(/^\s*@+/, '').replace(/[^A-Za-z0-9_.]/g, '').slice(0, 20);
 const slugUser = s => cleanUser(String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().replace(/\s+/g, '_'));
 const strArr = a => Array.isArray(a) ? a.filter(x => typeof x === 'string' && x && x.length <= 200).slice(0, 200) : [];
-const lbKey = 'gantera-ui:lbview';
+const lbKey = 'gantera-ui:lbview', lbMetricKey = 'gantera-ui:lbmetric';
 
 /* un rând din colecție e valid doar cu nume de utilizator corect și cheia lui în litere mici */
 const lbValid = r => !!r && typeof r.name === 'string' && UNAME_RE.test(r.name) && r.lu === r.name.toLowerCase();
@@ -4576,6 +4582,7 @@ async function lbInit() {
     try { LB.canWrite = await user.can('data.write'); } catch (e) { LB.canWrite = null; }
     try { LB.isOwner = await user.isOwner(); } catch (e) { LB.isOwner = false; }
     try { const v = localStorage.getItem(lbKey); if (v === 'friends' || v === 'global') LB.view = v; } catch (e) {}
+    try { if (localStorage.getItem(lbMetricKey) === 'gym') LB.metric = 'gym'; } catch (e) {}
     const cfg = await Store.get('meta', 'lb');
     let legacy = '';
     if (cfg) {
@@ -4600,10 +4607,14 @@ async function lbInit() {
 
 /* seria mea, în forma în care o văd ceilalți: ultima zi a seriei + lungimea (+ numele splitului de la Sală, dacă ai unul) */
 const lbMySplit = () => !LB.noSp && typeof splitLabel === 'function' ? splitLabel() : '';
+/* zilele cu antrenament din ultimele 14 zile (pentru clasamentul de sală); ceilalți le numără după ziua lor de azi */
+const lbGymDays = () => { const to = todayStr(), from = addDays(to, -13), set = new Set(); Object.values(S.ex).forEach(ex => ex.sessions.forEach(s => { if (s.date >= from && s.date <= to && s.sets.length) set.add(s.date); })); return [...set].sort().reverse().slice(0, 14); };
+const lbGym = arr => { const t = todayStr(), a7 = addDays(t, -6), a14 = addDays(t, -13), ds = [...new Set(strArr(arr).filter(d => LB_ID.test(d) && d <= t))]; return { g7: ds.filter(d => d >= a7).length, g14: ds.filter(d => d >= a14).length }; };
 function lbPayload() {
   const st = streakInfo(), today = todayStr(), sp = lbMySplit();
   const p = { name: LB.uname, lu: LB.uname.toLowerCase(), claimed: LB.claimed, n: st.n, best: Math.max(st.best, st.n), end: st.n > 0 ? (st.doneToday ? today : addDays(today, -1)) : '', g: LB.g ? 1 : 0, fr: LB.friends.slice(0, LB_MAXF), v: 3 };
   if (sp) p.sp = sp;
+  const gd = LB.noSp ? [] : lbGymDays(); if (gd.length) p.gd = gd;
   return p;
 }
 async function lbPublish(force) {
@@ -4620,8 +4631,8 @@ async function lbPublish(force) {
       try { await LB.board.doc(LB.me).set(q); }
       catch (e) {
         /* regulile vechi ale clasamentului nu știu de split: intrarea merge mai departe fără el */
-        if (!('sp' in q) || !e || e.code !== 'permission-denied') throw e;
-        LB.noSp = true; delete q.sp; await LB.board.doc(LB.me).set(q);
+        if (!('sp' in q || 'gd' in q) || !e || e.code !== 'permission-denied') throw e;
+        LB.noSp = true; delete q.sp; delete q.gd; await LB.board.doc(LB.me).set(q);
       }
       LB.last = JSON.stringify(q);
     }
@@ -4687,15 +4698,16 @@ function lbAll() {
   const out = lbUnique(LB.rows.filter(lbValid)).filter(r => r.id !== LB.me).map(r => {
     const n = Math.min(9999, Math.max(0, Math.floor(Number(r.n) || 0))), best = Math.min(9999, Math.max(n, Math.floor(Number(r.best) || 0)));
     const alive = n > 0 && typeof r.end === 'string' && LB_ID.test(r.end) && r.end >= y;
-    return { id: r.id, name: r.name, cur: alive ? n : 0, best, today: alive && r.end >= today, me: false, g: r.g === 0 ? 0 : 1, fr: strArr(r.fr), sp: typeof r.sp === 'string' ? r.sp.trim().slice(0, 30) : '' };
+    return { id: r.id, name: r.name, cur: alive ? n : 0, best, today: alive && r.end >= today, me: false, g: r.g === 0 ? 0 : 1, fr: strArr(r.fr), sp: typeof r.sp === 'string' ? r.sp.trim().slice(0, 30) : '', ...lbGym(r.gd) };
   });
-  if (LB.joined && LB.uname) out.push({ id: LB.me, name: LB.uname, cur: st.n, best: Math.max(st.best, st.n), today: st.doneToday, me: true, g: LB.g, fr: LB.friends, sp: lbMySplit() });
+  if (LB.joined && LB.uname) out.push({ id: LB.me, name: LB.uname, cur: st.n, best: Math.max(st.best, st.n), today: st.doneToday, me: true, g: LB.g, fr: LB.friends, sp: lbMySplit(), ...lbGym(lbGymDays()) });
   return out;
 }
 function lbRank(rows) {
-  rows.sort((a, b) => b.cur - a.cur || b.best - a.best || a.name.toLowerCase().localeCompare(b.name.toLowerCase()) || (a.id < b.id ? -1 : 1));
+  const gym = LB.metric === 'gym', byName = (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()) || (a.id < b.id ? -1 : 1);
+  rows.sort((a, b) => (gym ? b.g7 - a.g7 || b.g14 - a.g14 : b.cur - a.cur || b.best - a.best) || byName(a, b));
   let pos = 0, prev = null;
-  rows.forEach((r, i) => { const key = r.cur + ':' + r.best; if (key !== prev) { pos = i + 1; prev = key; } r.rank = pos; });
+  rows.forEach((r, i) => { const key = gym ? r.g7 + ':' + r.g14 : r.cur + ':' + r.best; if (key !== prev) { pos = i + 1; prev = key; } r.rank = pos; });
   return rows;
 }
 /* prieten = invitație în ambele sensuri: eu l-am invitat și el m-a invitat pe mine */
@@ -4712,7 +4724,7 @@ const lbSent = () => !LB.joined ? [] : lbAll().filter(r => !r.me && LB.friends.i
 /* gantera mică din fața splitului (aceeași iconiță ca tabul Sală, Lucide) */
 const LB_DB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.596 12.768a2 2 0 1 0 2.829-2.829l-1.768-1.767a2 2 0 0 0 2.828-2.829l-2.828-2.828a2 2 0 0 0-2.829 2.828l-1.767-1.768a2 2 0 1 0-2.829 2.829z"/><path d="m2.5 21.5 1.4-1.4"/><path d="m20.1 3.9 1.4-1.4"/><path d="M5.343 21.485a2 2 0 1 0 2.829-2.828l1.767 1.768a2 2 0 1 0 2.829-2.829l-6.364-6.364a2 2 0 1 0-2.829 2.829l1.768 1.767a2 2 0 0 0-2.828 2.829z"/><path d="m9.6 14.4 4.8-4.8"/></svg>';
 function lbRowHTML(r) {
-  const flame = r.cur > 0, friendsView = LB.view === 'friends';
+  const gym = LB.metric === 'gym', flame = gym ? r.g7 > 0 : r.cur > 0, friendsView = LB.view === 'friends';
   let x = '';
   if (!r.me && friendsView && LB.friends.includes(r.id)) x = '<button class="lb-x" type="button" data-act="lbUnfriend" data-id="' + esc(r.id) + '" aria-label="Scoate pe ' + esc(r.name) + ' din prieteni">' + ic('x') + '</button>';
   else if (!r.me && !friendsView && LB.isOwner) x = '<button class="lb-x" type="button" data-act="lbRemove" data-id="' + esc(r.id) + '" aria-label="Elimină ' + esc(r.name) + ' din clasament">' + ic('x') + '</button>';
@@ -4720,8 +4732,9 @@ function lbRowHTML(r) {
     '<span class="lb-n">' + r.rank + '</span>' +
     '<span class="lb-who"><span class="lb-name">' + esc(r.name) + (r.me ? '<em>tu</em>' : '') + '</span>' +
     (r.sp ? '<span class="lb-sp" title="Splitul de la sală">' + LB_DB + '<span>' + esc(r.sp) + '</span></span>' : '') +
-    '<span class="lb-sub">' + (flame ? (r.today ? 'a adăugat azi' : 'încă nu a adăugat azi') : 'serie întreruptă') + ' · record ' + esc(zile(r.best)) + '</span></span>' +
-    '<span class="lb-s">' + FLAME + '<b>' + r.cur + '</b></span>' + x + '</li>';
+    '<span class="lb-sub">' + (gym ? (r.g7 ? esc(pl(r.g7, 'zi', 'zile')) + ' la sală în ultimele 7' : 'nicio zi la sală în ultimele 7') + ' · ' + r.g14 + ' în ultimele 14'
+      : (flame ? (r.today ? 'a adăugat azi' : 'încă nu a adăugat azi') : 'serie întreruptă') + ' · record ' + esc(zile(r.best))) + '</span></span>' +
+    (gym ? '<span class="lb-s lb-g">' + LB_DB + '<b>' + r.g7 + '</b></span>' : '<span class="lb-s">' + FLAME + '<b>' + r.cur + '</b></span>') + x + '</li>';
 }
 function lbListHTML() {
   if (LB.err === 'revoked') return '<div class="meal-empty">Nu mai ai acces la clasament.</div>';
@@ -4742,6 +4755,9 @@ function lbMeHTML() {
   if (!LB.joined) return '';
   const rows = lbScope(), me = rows.find(r => r.me), st = streakInfo();
   const sub = me ? 'locul ' + me.rank + ' din ' + rows.length : 'ascuns din clasamentul global';
+  if (LB.metric === 'gym') { const g = me ? me.g7 : lbGym(lbGymDays()).g7;
+    return '<div class="lb-me gym">' + LB_DB + '<div><div class="num" style="font-size:44px;line-height:.9;font-weight:900;text-transform:uppercase">' + esc(pl(g, 'zi', 'zile')) + '</div>' +
+      '<div class="scrawl">la sală în ultimele 7 · ' + sub + '</div></div></div>'; }
   return '<div class="lb-me">' + FLAME + '<div><div class="num" style="font-size:44px;line-height:.9;font-weight:900;text-transform:uppercase">' + esc(zile(me ? me.cur : st.n)) + '</div>' +
     '<div class="scrawl">' + sub + '</div></div></div>';
 }
@@ -4764,16 +4780,25 @@ function lbSegHTML() {
     '<button type="button" data-act="lbView" data-v="global" aria-pressed="' + (LB.view === 'global') + '">Global</button>' +
     '<button type="button" data-act="lbView" data-v="friends" aria-pressed="' + (LB.view === 'friends') + '">Prieteni' + (n ? '<i class="lb-dot" aria-label="' + n + ' invitații noi"></i>' : '') + '</button></div>';
 }
+/* ce compari: seria de mâncare sau zilele la sală din ultima săptămână */
+const lbMetricHTML = () => '<div class="chips lb-metric" role="group" aria-label="Ce compari">' +
+  '<button class="chip" type="button" data-act="lbMetric" data-m="food" aria-pressed="' + (LB.metric !== 'gym') + '">Seria de mâncare</button>' +
+  '<button class="chip" type="button" data-act="lbMetric" data-m="gym" aria-pressed="' + (LB.metric === 'gym') + '">Zile la sală</button></div>';
+ACT.lbMetric = el => {
+  const m = el.dataset.m === 'gym' ? 'gym' : 'food'; if (m === LB.metric) return;
+  LB.metric = m; try { localStorage.setItem(lbMetricKey, m); } catch (e) {}
+  lbPaint();
+};
 function lbPaint() {
   if (S.tab !== 'clasament') return;
   const set = (id, h) => { const el = $(id); if (el) el.innerHTML = h; };
-  set('#lbMe', lbMeHTML()); set('#lbList', lbListHTML()); set('#lbReq', lbReqHTML()); set('#lbSeg', lbSegHTML());
+  set('#lbMe', lbMeHTML()); set('#lbList', lbListHTML()); set('#lbReq', lbReqHTML()); set('#lbSeg', lbSegHTML()); set('#lbMetric', lbMetricHTML());
 }
 
 function lbJoinCard() {
   if (LB.canWrite === false) return '<div class="hint">Ai acces doar de citire la aplicație, deci poți vedea clasamentul, dar nu poți intra în el. Cere acces de Contributor ca să apari și tu.</div>';
   return '<div class="empty"><h3>Cine ține seria cel mai mult?</h3>' +
-    '<div class="muted">Alege un nume de utilizator și apari în clasamentul global. Numele e unic: nimeni altcineva nu îl poate avea. Ceilalți văd doar numele, câte zile la rând ai adăugat mâncare și ce split folosești la sală (dacă ți-ai ales unul), iar prietenii te invită după nume. Poți ieși oricând și poți fi vizibil doar pentru prieteni.</div>' +
+    '<div class="muted">Alege un nume de utilizator și apari în clasamentul global. Numele e unic: nimeni altcineva nu îl poate avea. Ceilalți văd doar numele, câte zile la rând ai adăugat mâncare, în ce zile ai fost la sală în ultimele două săptămâni și ce split folosești (dacă ți-ai ales unul), iar prietenii te invită după nume. Poți ieși oricând și poți fi vizibil doar pentru prieteni.</div>' +
     '<label class="field"><span>Numele tău de utilizator</span><input class="inp" id="lbName" maxlength="21" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="ex. dima_92" value="' + esc(LB.prefill) + '"></label>' +
     '<div class="note">3–20 de caractere: litere, cifre, _ sau .</div>' +
     '<button class="btn block" type="button" data-act="lbJoin">' + ic('trophy') + 'Intră în clasament</button></div>';
@@ -4787,7 +4812,7 @@ function lbFriendBox() {
 
 /* tot ce e sub comutator: cardul meu, formularul / invitațiile și lista */
 function lbBodyHTML() {
-  return '<div id="lbMe">' + lbMeHTML() + '</div>' + (!LB.joined ? lbJoinCard() : LB.view === 'friends' ? lbFriendBox() : '') +
+  return '<div id="lbMetric">' + lbMetricHTML() + '</div><div id="lbMe">' + lbMeHTML() + '</div>' + (!LB.joined ? lbJoinCard() : LB.view === 'friends' ? lbFriendBox() : '') +
     '<div id="lbReq">' + lbReqHTML() + '</div><div id="lbList">' + lbListHTML() + '</div>';
 }
 function viewBoard() {
@@ -5150,7 +5175,7 @@ $('#importInput').addEventListener('change', async e => {
   } catch (err) { toast('Fișierul nu e o copie Gantera validă.'); }
 });
 
-const PRIVACY = {"updated":"2026-10-27","ro":{"title":"Politica de confidențialitate – Gantera","updatedLabel":"Ultima actualizare: 4 noiembrie 2026","sections":[{"h":"","p":["Gantera este o aplicație pentru jurnalul de calorii și macronutrienți, apă și progresul la sală. Această politică explică ce se întâmplă cu datele tale când folosești aplicația.","Pe scurt: aplicația nu are conturi cu e-mail sau parolă, nu afișează reclame și nu folosește instrumente de analiză sau de urmărire. Jurnalul tău rămâne pe dispozitiv și dezvoltatorul nu îl primește."]},{"h":"Unde stau datele tale","p":["Tot ce introduci în aplicație (alimente, cantități, apă, antrenamente, greutate, ținte și datele pentru calculul lor: sex, vârstă, înălțime, cât de activ ești) se salvează doar pe dispozitivul tău, în spațiul de stocare al browserului sau, dacă ai adăugat-o pe ecranul principal, al aplicației.","Aplicația se încarcă de pe GitHub Pages (un serviciu GitHub), ca orice site: la deschidere, GitHub primește adresa IP și informațiile obișnuite ale browserului. Ce introduci în aplicație nu ajunge acolo."]},{"h":"Căutarea după codul de bare","p":["Când scanezi sau scrii un cod de bare care nu e deja salvat în aplicație, codul produsului este trimis la Open Food Facts (openfoodfacts.org), o bază de date publică despre alimente, ca să primești valorile nutriționale. Cererea nu conține numele tău sau alte date despre tine. Ca orice cerere pe internet, ajunge la serverele lor împreună cu adresa IP a telefonului. Open Food Facts are propria politică de confidențialitate.","Codurile pe care le ai deja salvate se găsesc direct pe telefon, fără nicio cerere pe internet."]},{"h":"Clasamentul (opțional)","p":["Clasamentul e opțional. Dacă intri în el, se salvează în Firebase (un serviciu Google), ca să le vadă ceilalți: numele de utilizator ales, seria curentă și cea mai lungă, ultima zi a seriei, numele splitului ales la Sală (dacă ai unul), dacă apari în clasamentul global și pe cine ai invitat ca prieten. Ce scrii în jurnal (mese, apă, antrenamente) nu ajunge acolo.","Pentru clasament, telefonul primește de la Firebase un cont anonim, fără nume real, e-mail sau parolă. Ca orice cerere pe internet, cererile ajung la Google împreună cu adresa IP. Firebase se încarcă doar dacă intri în clasament sau îl deschizi.","Dezvoltatorul poate vedea intrările din clasament și le poate șterge (de exemplu un nume nepotrivit). Când ieși din clasament, intrarea ta se șterge."]},{"h":"Camera","p":["Aplicația cere acces la cameră doar ca să citească codurile de bare. Imaginea se analizează pe telefon și nu este trimisă nicăieri.","Dacă alegi să faci o poză codului, poza este citită pe dispozitiv și nu este trimisă nicăieri."]},{"h":"Copia de siguranță","p":["Exportul creează un fișier cu datele tale și deschide meniul de partajare al telefonului; tu alegi unde îl salvezi sau cui îl trimiți. Importul citește doar fișierul pe care îl alegi tu."]},{"h":"Permisiuni","p":["Camera: pentru citirea codurilor de bare, doar când pornești scanarea. Internet: pentru încărcarea aplicației, căutarea produselor în Open Food Facts și clasament."]},{"h":"Ștergerea datelor","p":["Poți șterge oricând toate datele din setările browserului, ștergând datele acestui site.","Intrarea din clasament se șterge când ieși din clasament (Clasament › creionul de sus › Ieși din clasament)."]},{"h":"Copii","p":["Gantera nu este destinată copiilor sub 13 ani."]},{"h":"Modificări","p":["Dacă politica se schimbă, versiunea nouă apare la aceeași adresă și în aplicație, cu data actualizării."]},{"h":"Contact","p":["Pentru întrebări despre această politică, scrie la adresa de e-mail afișată la Gantera în Google Play, în secțiunea „Contactul dezvoltatorului”."]}]},"en":{"title":"Privacy Policy – Gantera","updatedLabel":"Last updated: October 27, 2026","sections":[{"h":"","p":["Gantera is an app for logging calories and macronutrients, water and gym progress. This policy explains what happens to your data when you use the app.","In short: the app has no accounts, shows no ads and uses no analytics or tracking tools. The developer does not receive your data."]},{"h":"Where your data is stored","p":["Everything you enter in the app (foods, amounts, water, workouts, goals) is saved only on your phone, in the app's own storage.","If Android backup is turned on, the system may include this data in your Google account backup, according to your phone settings."]},{"h":"Barcode lookup","p":["When you scan or type a barcode that is not already saved in the app, the product code is sent to Open Food Facts (openfoodfacts.org), a public food database, to get the nutrition values. The request does not contain your name or any other information about you. Like any internet request, it reaches their servers together with your phone's IP address. Open Food Facts has its own privacy policy.","Barcodes you have already saved are found directly on your phone, without any internet request."]},{"h":"Camera","p":["The app asks for camera access only to read barcodes. The image is analyzed on your phone and is not sent anywhere.","If you choose to take a photo of a barcode, the photo is read on your phone, is not sent anywhere and stays only in the app's own storage, which is deleted when you uninstall the app."]},{"h":"Backup copy","p":["Export creates a file with your data and opens your phone's share menu; you choose where to save it or whom to send it to. Import only reads the file you pick."]},{"h":"Permissions","p":["Camera: to read barcodes. Internet: to look up products in Open Food Facts. Vibration: a short vibration when a barcode has been read."]},{"h":"Deleting your data","p":["You can delete all data at any time by uninstalling the app or from your phone settings: Apps › Gantera › Storage › Clear data."]},{"h":"Children","p":["Gantera is not intended for children under 13."]},{"h":"Changes","p":["If this policy changes, the new version is published at the same address and in the app, with the date of the update."]},{"h":"Contact","p":["For questions about this policy, write to the email address shown for Gantera on Google Play, in the \"Developer contact\" section."]}]}};
+const PRIVACY = {"updated":"2026-10-27","ro":{"title":"Politica de confidențialitate – Gantera","updatedLabel":"Ultima actualizare: 4 noiembrie 2026","sections":[{"h":"","p":["Gantera este o aplicație pentru jurnalul de calorii și macronutrienți, apă și progresul la sală. Această politică explică ce se întâmplă cu datele tale când folosești aplicația.","Pe scurt: aplicația nu are conturi cu e-mail sau parolă, nu afișează reclame și nu folosește instrumente de analiză sau de urmărire. Jurnalul tău rămâne pe dispozitiv și dezvoltatorul nu îl primește."]},{"h":"Unde stau datele tale","p":["Tot ce introduci în aplicație (alimente, cantități, apă, antrenamente, greutate, ținte și datele pentru calculul lor: sex, vârstă, înălțime, cât de activ ești) se salvează doar pe dispozitivul tău, în spațiul de stocare al browserului sau, dacă ai adăugat-o pe ecranul principal, al aplicației.","Aplicația se încarcă de pe GitHub Pages (un serviciu GitHub), ca orice site: la deschidere, GitHub primește adresa IP și informațiile obișnuite ale browserului. Ce introduci în aplicație nu ajunge acolo."]},{"h":"Căutarea după codul de bare","p":["Când scanezi sau scrii un cod de bare care nu e deja salvat în aplicație, codul produsului este trimis la Open Food Facts (openfoodfacts.org), o bază de date publică despre alimente, ca să primești valorile nutriționale. Cererea nu conține numele tău sau alte date despre tine. Ca orice cerere pe internet, ajunge la serverele lor împreună cu adresa IP a telefonului. Open Food Facts are propria politică de confidențialitate.","Codurile pe care le ai deja salvate se găsesc direct pe telefon, fără nicio cerere pe internet."]},{"h":"Clasamentul (opțional)","p":["Clasamentul e opțional. Dacă intri în el, se salvează în Firebase (un serviciu Google), ca să le vadă ceilalți: numele de utilizator ales, seria curentă și cea mai lungă, ultima zi a seriei, numele splitului ales la Sală (dacă ai unul), zilele în care te-ai antrenat în ultimele două săptămâni, dacă apari în clasamentul global și pe cine ai invitat ca prieten. Ce scrii în jurnal (mese, apă, antrenamente) nu ajunge acolo.","Pentru clasament, telefonul primește de la Firebase un cont anonim, fără nume real, e-mail sau parolă. Ca orice cerere pe internet, cererile ajung la Google împreună cu adresa IP. Firebase se încarcă doar dacă intri în clasament sau îl deschizi.","Dezvoltatorul poate vedea intrările din clasament și le poate șterge (de exemplu un nume nepotrivit). Când ieși din clasament, intrarea ta se șterge."]},{"h":"Camera","p":["Aplicația cere acces la cameră doar ca să citească codurile de bare. Imaginea se analizează pe telefon și nu este trimisă nicăieri.","Dacă alegi să faci o poză codului, poza este citită pe dispozitiv și nu este trimisă nicăieri."]},{"h":"Copia de siguranță","p":["Exportul creează un fișier cu datele tale și deschide meniul de partajare al telefonului; tu alegi unde îl salvezi sau cui îl trimiți. Importul citește doar fișierul pe care îl alegi tu."]},{"h":"Permisiuni","p":["Camera: pentru citirea codurilor de bare, doar când pornești scanarea. Internet: pentru încărcarea aplicației, căutarea produselor în Open Food Facts și clasament."]},{"h":"Ștergerea datelor","p":["Poți șterge oricând toate datele din setările browserului, ștergând datele acestui site.","Intrarea din clasament se șterge când ieși din clasament (Clasament › creionul de sus › Ieși din clasament)."]},{"h":"Copii","p":["Gantera nu este destinată copiilor sub 13 ani."]},{"h":"Modificări","p":["Dacă politica se schimbă, versiunea nouă apare la aceeași adresă și în aplicație, cu data actualizării."]},{"h":"Contact","p":["Pentru întrebări despre această politică, scrie la adresa de e-mail afișată la Gantera în Google Play, în secțiunea „Contactul dezvoltatorului”."]}]},"en":{"title":"Privacy Policy – Gantera","updatedLabel":"Last updated: October 27, 2026","sections":[{"h":"","p":["Gantera is an app for logging calories and macronutrients, water and gym progress. This policy explains what happens to your data when you use the app.","In short: the app has no accounts, shows no ads and uses no analytics or tracking tools. The developer does not receive your data."]},{"h":"Where your data is stored","p":["Everything you enter in the app (foods, amounts, water, workouts, goals) is saved only on your phone, in the app's own storage.","If Android backup is turned on, the system may include this data in your Google account backup, according to your phone settings."]},{"h":"Barcode lookup","p":["When you scan or type a barcode that is not already saved in the app, the product code is sent to Open Food Facts (openfoodfacts.org), a public food database, to get the nutrition values. The request does not contain your name or any other information about you. Like any internet request, it reaches their servers together with your phone's IP address. Open Food Facts has its own privacy policy.","Barcodes you have already saved are found directly on your phone, without any internet request."]},{"h":"Camera","p":["The app asks for camera access only to read barcodes. The image is analyzed on your phone and is not sent anywhere.","If you choose to take a photo of a barcode, the photo is read on your phone, is not sent anywhere and stays only in the app's own storage, which is deleted when you uninstall the app."]},{"h":"Backup copy","p":["Export creates a file with your data and opens your phone's share menu; you choose where to save it or whom to send it to. Import only reads the file you pick."]},{"h":"Permissions","p":["Camera: to read barcodes. Internet: to look up products in Open Food Facts. Vibration: a short vibration when a barcode has been read."]},{"h":"Deleting your data","p":["You can delete all data at any time by uninstalling the app or from your phone settings: Apps › Gantera › Storage › Clear data."]},{"h":"Children","p":["Gantera is not intended for children under 13."]},{"h":"Changes","p":["If this policy changes, the new version is published at the same address and in the app, with the date of the update."]},{"h":"Contact","p":["For questions about this policy, write to the email address shown for Gantera on Google Play, in the \"Developer contact\" section."]}]}};
 
 
 /* ================= doar aplicația Android (Capacitor) ================= */
