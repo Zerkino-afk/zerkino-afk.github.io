@@ -567,6 +567,25 @@ body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .pl-w span{font-size:13px;color:var(--ink-2);text-align:right}
 .pl-warm .label{margin-bottom:6px}
 #lgPlates:empty{display:none}
+/* greutatea corporală */
+.wt{display:flex;flex-direction:column}
+.wt-card{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:2px;background:var(--paper);box-shadow:0 0 0 1px var(--line)}
+.wt-f{display:flex;align-items:flex-end;gap:10px}
+.wt-f .field{flex:1;min-width:0}
+.wt-f .btn,.wt-add .btn{min-height:50px}
+.wt-now b,.wt-avg b{display:block;margin-top:4px;font:900 34px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.wt-now small,.wt-avg small{font:700 14px/1 var(--f-display);letter-spacing:.1em;color:var(--ink-2)}
+.wt-avg{display:flex;flex-direction:column;gap:3px}
+.wt-d{font-size:13px;color:var(--ink-2)}
+.wt-chart{display:block;width:100%;height:auto;overflow:visible}
+.wt-chart text{font:600 11px var(--f-body);fill:var(--ink-2)}
+.wt-chart .grid{stroke:var(--line);stroke-dasharray:3 4}
+.wt-chart .pt{fill:var(--ink-2);opacity:.55}
+.wt-chart .avg{fill:none;stroke:var(--flame);stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.wt-add{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:8px;align-items:end}
+.wt-list .h-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+.wt-list .h-row>span:first-child{flex:1}
+.wt-list .num{font:800 18px/1 var(--f-display);font-variant-numeric:tabular-nums}
 /* harta săptămânii */
 .wkmap{display:flex;flex-direction:column;gap:12px;padding:16px 14px 14px;border-radius:2px;background:var(--paper);box-shadow:0 10px 14px -10px rgba(0,0,0,.5),0 0 0 1px var(--line)}
 .wkmap-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
@@ -1257,6 +1276,7 @@ function viewAzi() {
   });
   S.fresh = null;
 
+  if (typeof weightHTML === 'function') h += weightHTML(open);
   h += '<button class="btn ghost" type="button" data-act="targets">Schimbă țintele zilnice</button>';
   return h;
 }
@@ -1757,6 +1777,105 @@ async function onLabel(file) {
     if ($('#lblNote')) { note.className = 'note warn'; note.textContent = labelErr(e); }
   } finally { if ($('#lblBtn')) $('#lblBtn').disabled = false; }
 }
+
+
+/* ================= GREUTATEA CORPORALĂ (în tabul Azi) =================
+   Te cântărești când vrei (de preferat dimineața); aplicația arată media ultimelor 7 zile și cât s-a schimbat față de
+   cele 7 zile dinainte, ca să nu te sperie variațiile de la o zi la alta (apă, sare, mâncarea din stomac).
+   Graficul arată cântăririle și linia mediei pe 7 zile. Date: meta/weight = { log: { 'YYYY-MM-DD': kg } }. */
+const WT_MIN = 30, WT_MAX = 300;
+const WT = () => S.weight || (S.weight = { log: {} });
+const saveWeight = () => persist('meta', 'weight', () => S.weight);
+function weightNorm(o) {
+  const log = {};
+  if (o && o.log && typeof o.log === 'object') Object.entries(o.log).forEach(([d, v]) => { const k = Number(v); if (/^\d{4}-\d{2}-\d{2}$/.test(d) && isFinite(k) && k >= WT_MIN && k <= WT_MAX) log[d] = Math.round(k * 10) / 10; });
+  const keys = Object.keys(log).sort(); keys.slice(0, Math.max(0, keys.length - 2000)).forEach(d => delete log[d]);
+  return { log };
+}
+/* media cântăririlor dintr-un interval de 7 zile care se termină în ziua „end” */
+const wtAvg = (end, log) => { const L = log || WT().log, from = addDays(end, -6), v = Object.keys(L).filter(d => d >= from && d <= end).map(d => L[d]); return v.length ? { avg: v.reduce((a, b) => a + b, 0) / v.length, n: v.length } : null; };
+const kg1 = v => num(v, 1);
+function wtChartHTML(days, big) {
+  const L = WT().log, to = todayStr(), from = addDays(to, -(days - 1));
+  const pts = Object.keys(L).filter(d => d >= from && d <= to).sort().map(d => [d, L[d]]);
+  if (pts.length < 2) return '';
+  const avg = pts.map(([d]) => wtAvg(d, L).avg);
+  const W = 320, H = big ? 150 : 96, Lm = 40, R = 10, T = 10, B = 22;
+  const t0 = pdate(pts[0][0]).getTime(), t1 = pdate(to).getTime();
+  const all = pts.map(p => p[1]).concat(avg);
+  let lo = Math.min(...all), hi = Math.max(...all); if (hi - lo < 1) { const m = (hi + lo) / 2; lo = m - .5; hi = m + .5; }
+  const pad = (hi - lo) * .12; lo -= pad; hi += pad;
+  const x = d => Lm + (t1 === t0 ? (W - Lm - R) / 2 : (pdate(d).getTime() - t0) / (t1 - t0) * (W - Lm - R));
+  const y = v => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
+  const vMax = Math.max(...pts.map(p => p[1])), vMin = Math.min(...pts.map(p => p[1]));
+  return '<svg class="wt-chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Greutatea în ultimele ' + days + ' de zile: de la ' + kg1(pts[0][1]) + ' la ' + kg1(pts[pts.length - 1][1]) + ' kg; media pe 7 zile acum ' + kg1(avg[avg.length - 1]) + ' kg">' +
+    '<line class="grid" x1="' + Lm + '" x2="' + (W - R) + '" y1="' + y(vMax).toFixed(1) + '" y2="' + y(vMax).toFixed(1) + '"/>' +
+    (vMax !== vMin ? '<line class="grid" x1="' + Lm + '" x2="' + (W - R) + '" y1="' + y(vMin).toFixed(1) + '" y2="' + y(vMin).toFixed(1) + '"/>' : '') +
+    '<text x="' + (Lm - 6) + '" y="' + (y(vMax) + 4).toFixed(1) + '" text-anchor="end">' + kg1(vMax) + '</text>' +
+    (vMax !== vMin ? '<text x="' + (Lm - 6) + '" y="' + (y(vMin) + 4).toFixed(1) + '" text-anchor="end">' + kg1(vMin) + '</text>' : '') +
+    pts.map(([d, v]) => '<circle class="pt" cx="' + x(d).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="' + (big ? 3.4 : 2.8) + '"/>').join('') +
+    '<polyline class="avg" points="' + pts.map(([d], i) => x(d).toFixed(1) + ',' + y(avg[i]).toFixed(1)).join(' ') + '"/>' +
+    '<text x="' + Lm + '" y="' + (H - 6) + '" text-anchor="start">' + esc(fmtShort(pts[0][0])) + '</text>' +
+    '<text x="' + (W - R) + '" y="' + (H - 6) + '" text-anchor="end">' + esc(fmtShort(to)) + '</text></svg>';
+}
+function wtSummaryHTML(end) {
+  const a = wtAvg(end), b = wtAvg(addDays(end, -7));
+  if (!a) return '';
+  const d = b ? a.avg - b.avg : null;
+  return '<div class="wt-avg"><span class="label">Media pe 7 zile</span><b>' + kg1(a.avg) + ' <small>kg</small></b>' +
+    (d != null ? '<span class="wt-d">' + (Math.abs(d) < .05 ? 'la fel ca săptămâna dinainte' : (d < 0 ? '−' : '+') + kg1(Math.abs(d)) + ' kg față de săptămâna dinainte') + '</span>'
+      : '<span class="wt-d">din ' + pl(a.n, 'cântărire', 'cântăriri') + '</span>') + '</div>';
+}
+function weightHTML(open) {
+  if (!S.loaded) return '';
+  const L = WT().log, cur = L[S.date], end = S.date > todayStr() ? todayStr() : S.date;
+  const label = S.date === todayStr() ? 'Cântărirea de azi' : 'Cântărirea din ' + fmtShort(S.date);
+  return '<section class="wt" aria-label="Greutatea corporală"><div class="meal-h"><h3 class="tape" style="--r:.7deg">Greutate</h3>' +
+    (Object.keys(L).length ? '<button class="linkbtn" type="button" data-act="wtHist">Istoric</button>' : '') + '</div>' +
+    '<div class="wt-card">' + (open
+      ? '<div class="wt-f"><label class="field"><span>' + esc(label) + '</span><input class="inp" id="wtKg" inputmode="decimal" placeholder="kg" autocomplete="off" value="' + (cur ? kg1(cur) : '') + '" aria-label="' + esc(label) + ', în kilograme"></label>' +
+        '<button class="btn sm" type="button" data-act="wtSave">' + (cur ? 'Schimbă' : 'Salvează') + '</button></div>'
+      : '<div class="wt-now"><span class="label">' + esc(label) + '</span><b>' + (cur ? kg1(cur) + ' <small>kg</small>' : '—') + '</b></div>') +
+    wtSummaryHTML(end) + wtChartHTML(30, false) +
+    (Object.keys(L).length ? '' : '<div class="note">Cântărește-te dimineața, după baie și înainte de micul dejun. Contează media pe săptămână, nu o zi anume.</div>') +
+    '</div></section>';
+}
+ACT.wtSave = () => {
+  if (locked()) return;
+  const el = $('#wtKg'), v = pn(el ? el.value : '');
+  if (!isFinite(v) || v < WT_MIN || v > WT_MAX) { toast('Scrie greutatea în kg (între ' + WT_MIN + ' și ' + WT_MAX + ').'); if (el) el.focus(); return; }
+  WT().log[S.date] = Math.round(v * 10) / 10; saveWeight();
+  const a = wtAvg(S.date > todayStr() ? todayStr() : S.date);
+  render(); toast('Salvat · media pe 7 zile ' + kg1(a.avg) + ' kg');
+  if (typeof weightChanged === 'function') weightChanged();
+};
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'wtKg') { e.preventDefault(); ACT.wtSave(); } });
+
+/* istoricul: graficul pe 90 de zile, lista, adăugare pentru o zi trecută, ștergere */
+function wtHistHTML() {
+  const L = WT().log, days = Object.keys(L).sort().reverse();
+  return sheetHead('Greutatea') + wtSummaryHTML(todayStr()) + wtChartHTML(90, true) +
+    '<div class="note">Punctele sunt cântăririle, linia e media pe 7 zile.</div>' +
+    '<div class="wt-add"><label class="field"><span>Data</span><input class="inp" id="wtDate" type="date" max="' + todayStr() + '" value="' + todayStr() + '"></label>' +
+    '<label class="field"><span>Kg</span><input class="inp" id="wtKg2" inputmode="decimal" placeholder="kg" autocomplete="off"></label>' +
+    '<button class="btn sm" type="button" data-act="wtAdd">Adaugă</button></div>' +
+    '<div class="wt-list">' + days.slice(0, 120).map(d => '<div class="h-row"><span><b>' + esc(fmtShort(d)) + '</b> ' + esc(pdate(d).getFullYear() !== new Date().getFullYear() ? String(pdate(d).getFullYear()) : '') + '</span>' +
+      '<span class="num">' + kg1(L[d]) + ' kg</span><button class="btn ghost sm" type="button" data-act="wtDel" data-d="' + d + '">Șterge</button></div>').join('') + '</div>' +
+    (days.length > 120 ? '<div class="note">Se arată ultimele 120 de cântăriri din ' + days.length + '.</div>' : '');
+}
+ACT.wtHist = () => { openSheet(wtHistHTML()); sheetClose = () => render(); };
+ACT.wtAdd = () => {
+  const d = ($('#wtDate') || {}).value, v = pn(($('#wtKg2') || {}).value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '') || d > todayStr()) { toast('Alege o zi de azi sau din trecut.'); return; }
+  if (!isFinite(v) || v < WT_MIN || v > WT_MAX) { toast('Scrie greutatea în kg (între ' + WT_MIN + ' și ' + WT_MAX + ').'); return; }
+  WT().log[d] = Math.round(v * 10) / 10; saveWeight(); openSheet(wtHistHTML()); sheetClose = () => render(); toast('Salvat pentru ' + fmtShort(d));
+  if (typeof weightChanged === 'function') weightChanged();
+};
+ACT.wtDel = el => {
+  if (!el.dataset.armed) { el.dataset.armed = '1'; el.textContent = 'Sigur?'; setTimeout(() => { if (el.isConnected) { delete el.dataset.armed; el.textContent = 'Șterge'; } }, 3000); return; }
+  delete WT().log[el.dataset.d]; saveWeight(); openSheet(wtHistHTML()); sheetClose = () => render(); toast('Cântărire ștearsă');
+  if (typeof weightChanged === 'function') weightChanged();
+};
 
 
 /* ================= ilustrații: manechin 3D desenat în SVG =================
@@ -4249,10 +4368,10 @@ async function boot() {
   render();
   await Store.init();
   try {
-    const [t, fd, exs, act, spl, wk, prf, wkl] = await Promise.all([Store.get('meta', 'targets'), Store.get('meta', 'foods'), Store.list('ex'), Store.get('meta', 'active'),
-      Store.get('meta', 'split'), Store.get('meta', 'workout'), Store.get('meta', 'prefs'), Store.get('meta', 'wklog')]);
+    const [t, fd, exs, act, spl, wk, prf, wkl, wt] = await Promise.all([Store.get('meta', 'targets'), Store.get('meta', 'foods'), Store.list('ex'), Store.get('meta', 'active'),
+      Store.get('meta', 'split'), Store.get('meta', 'workout'), Store.get('meta', 'prefs'), Store.get('meta', 'wklog'), Store.get('meta', 'weight')]);
     if (t) S.targets = { ...S.targets, ...t };
-    S.split = splitNorm(spl); S.wk = wkNorm(wk); S.prefs = prefsNorm(prf);
+    S.split = splitNorm(spl); S.wk = wkNorm(wk); S.prefs = prefsNorm(prf); S.weight = weightNorm(wt);
     S.wklog = { list: wkl && Array.isArray(wkl.list) ? wkl.list.filter(x => x && typeof x === 'object').slice(-500) : [] };
     if (fd && fd.items) { S.foods = fd.items; S.seedVer = fd.seedVer || 0; }
     exs.forEach(x => { S.ex[x._id] = { id: x._id, name: x.name || 'Exercițiu', sessions: x.sessions || [], created: x.created || 0 }; });
