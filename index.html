@@ -555,6 +555,20 @@ body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .coach.deload .coach-i{background:var(--carb);color:#fff}
 .coach .btn{flex:none}
 #lgCoach:empty{display:none}
+/* calculatorul de discuri */
+.top-b{display:flex;align-items:center;gap:8px;flex:none}
+.pl{display:flex;flex-direction:column;gap:14px}
+.pl-res{display:flex;flex-direction:column;gap:6px}
+.pl-res b{font:900 34px/1 var(--f-display);letter-spacing:.02em;overflow-wrap:anywhere}
+.pl-bar{display:block;width:100%;height:auto;margin:2px 0}
+.pl-warm{display:flex;flex-direction:column;background:var(--paper);border-radius:3px;box-shadow:0 0 0 1px var(--line);padding:10px 12px}
+.pl-w{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+.pl-w b{font:800 18px/1 var(--f-display);letter-spacing:.04em;white-space:nowrap}
+.pl-w span{font-size:13px;color:var(--ink-2);text-align:right}
+.pl-warm .label{margin-bottom:6px}
+#lgPlates:empty{display:none}
+#lgPlates{background:var(--paper);border-radius:3px;box-shadow:0 0 0 1px var(--line);padding:12px}
+.sheet>.linkbtn{align-self:flex-start}
 .sp-coach{display:block;margin-top:2px;font-size:12.5px;font-weight:700;line-height:1.3;color:var(--s-fat)}
 
 /* streak sheet */
@@ -2693,7 +2707,9 @@ function viewGym() {
     const la = sortedSess(a).slice(-1)[0], lb = sortedSess(b).slice(-1)[0];
     return (lb ? lb.date : '') < (la ? la.date : '') ? -1 : (lb ? lb.date : '') > (la ? la.date : '') ? 1 : (a.created || 0) - (b.created || 0);
   });
-  let h = '<div class="top"><div><div class="scrawl">Progres</div><h1>Sală</h1></div><button class="btn sm" type="button" data-act="newEx">' + ic('plus') + 'Exercițiu</button></div>' + splitCardHTML();
+  let h = '<div class="top"><div><div class="scrawl">Progres</div><h1>Sală</h1></div><div class="top-b">' +
+    '<button class="icon-btn" type="button" data-act="plOpen" aria-label="Calculator de discuri"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M12 3v3M12 18v3"/></svg></button>' +
+    '<button class="btn sm" type="button" data-act="newEx">' + ic('plus') + 'Exercițiu</button></div></div>' + splitCardHTML();
   const withSplit = S.loaded && !!activeSplit();
   if (!list.length && withSplit) {
     h += '<div class="note sp-all">Exercițiile pe care le înregistrezi apar aici, fiecare cu progresul de la o sesiune la alta.</div>';
@@ -2810,6 +2826,7 @@ function openLog(id) {
     '<label class="field"><span>Data</span><input class="inp" id="lgDate" data-in="lgDate" type="date" value="' + LG.date + '"></label>' +
     '<div><div class="label" style="margin-bottom:8px">Serii (kg × repetări)</div><div id="lgRows" style="display:flex;flex-direction:column;gap:8px"></div></div>' +
     '<button class="btn ghost block" type="button" data-act="addSet">' + ic('plus') + 'Încă o serie</button>' +
+    (typeof plUsable === 'function' && plUsable(ex.name) ? '<button class="linkbtn" type="button" data-act="lgPlates">Ce discuri pun pe bară?</button><div id="lgPlates"></div>' : '') +
     '<div class="note">Pentru exerciții cu greutatea corpului lasă kg gol.</div>' +
     '<button class="btn block" type="button" data-act="saveSess">Salvează sesiunea</button>');
   lgRows(); lgPrev(); FIG.mount($('#sheetRoot'));
@@ -3302,6 +3319,7 @@ function wkHTML() {
   if (WKV.view === 'add') return wkAddHTML();
   if (WKV.view === 'how') return wkHowHTML();
   if (WKV.view === 'end') return wkEndHTML();
+  if (WKV.view === 'plates') return wkPlatesHTML();
   const done = W.items.reduce((a, it) => a + it.sets.filter(s => s.done).length, 0), all = W.items.reduce((a, it) => a + it.sets.length, 0);
   return '<div class="sheet-h"><div class="grow"><span class="label">Antrenament în desfășurare</span><h2>' + esc(W.title) + '</h2></div>' +
     '<button class="icon-btn" type="button" data-act="close" aria-label="Ascunde antrenamentul (merge mai departe)">' + ic('x') + '</button></div>' +
@@ -3599,6 +3617,100 @@ ACT.lgCoach = () => {
 };
 /* în cardul splitului, sub ultima sesiune */
 const coachShort = name => { const c = coachFor(name, todayStr()); return c ? 'azi: ' + c.txt : ''; };
+
+
+/* ================= CALCULATOR DE DISCURI ȘI ÎNCĂLZIRE =================
+   Scrii greutatea totală și vezi ce discuri pui pe fiecare parte a barei (cu bara aleasă și doar cu discurile pe care le ai),
+   plus seriile de încălzire până la ea. Bara și discurile alese rămân ținute minte (meta/prefs).
+   Se deschide din antrenament (butonul „Discuri”), din fereastra de înregistrare și din capul tabului Sală. */
+const PL_BARS = [20, 15, 10, 0];
+const PL_ALL = [25, 20, 15, 10, 5, 2.5, 1.25, 0.5];
+const PL_DEF = [25, 20, 15, 10, 5, 2.5, 1.25];
+const PL_LOOK = { 25: [14, 74, '#D63A2A'], 20: [13, 74, '#2D69DB'], 15: [12, 66, '#E6AA00'], 10: [10, 56, '#1E8E4E'], 5: [8, 44, '#E9EAE6'], 2.5: [7, 36, '#D63A2A'], 1.25: [6, 30, '#A9AFA8'], 0.5: [5, 24, '#C9CEC8'] };
+const PLS = { kg: '' };
+const plBar = () => PL_BARS.includes(PREFS().bar) ? PREFS().bar : 20;
+const plPlates = () => { const p = Array.isArray(PREFS().plates) ? PREFS().plates.filter(x => PL_ALL.includes(x)) : PL_DEF; return (p.length ? p : PL_DEF).slice().sort((a, b) => b - a); };
+const kgFmt = v => num(v, 2);
+/* cea mai mare încărcătură posibilă ≤ ținta, cu cât mai puține discuri (în pași de 0,25 kg pe parte) */
+function plLoad(total, bar, plates) {
+  const side = Math.max(0, (total - bar) / 2), S = Math.min(2400, Math.floor(side * 4 + 1e-6)), units = plates.map(p => Math.round(p * 4));
+  const best = new Int32Array(S + 1).fill(1e9), from = new Int32Array(S + 1).fill(-1); best[0] = 0;
+  for (let s = 1; s <= S; s++) units.forEach((u, k) => { if (u <= s && best[s - u] + 1 < best[s]) { best[s] = best[s - u] + 1; from[s] = k; } });
+  let s = S; while (s > 0 && best[s] >= 1e9) s--;
+  const out = []; for (let t = s; t > 0; t -= units[from[t]]) out.push(plates[from[t]]);
+  out.sort((a, b) => b - a);
+  return { side: out, total: bar + 2 * s / 4, exact: Math.abs(bar + 2 * s / 4 - total) < 1e-6 };
+}
+function plWarm(W, bar, plates) {
+  const steps = bar > 0 ? [{ kg: bar, reps: 10, side: [] }] : [];
+  [[.4, 5], [.6, 3], [.8, 2]].forEach(([f, reps]) => {
+    const l = plLoad(W * f, bar, plates), prev = steps.length ? steps[steps.length - 1].kg : 0;
+    if (l.total > prev + 1e-6 && l.total < W - 1e-6 && l.total > bar + 1e-6) steps.push({ kg: l.total, reps, side: l.side });
+  });
+  return steps;
+}
+const plSideTxt = side => side.length ? side.map(kgFmt).join(' + ') : 'nimic, doar bara';
+function plBarSVG(side) {
+  const W = 330, cx = W / 2, coll = 46, sleeve = W / 2 - coll - 4;
+  let x = 0;
+  const rects = side.map(p => { const [w, h, c] = PL_LOOK[p] || [6, 30, '#A9AFA8']; const r = { off: x, w, h, c }; x += w + 2; return r; });
+  const draw = dir => rects.map(r => {
+    const left = dir > 0 ? cx + coll + 4 + r.off : cx - coll - 4 - r.off - r.w;
+    return '<rect x="' + left + '" y="' + (40 - r.h / 2) + '" width="' + r.w + '" height="' + r.h + '" rx="2" fill="' + r.c + '" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>';
+  }).join('');
+  return '<svg class="pl-bar" viewBox="0 0 ' + W + ' 80" role="img" aria-label="Bara încărcată: pe fiecare parte ' + esc(plSideTxt(side)) + '">' +
+    '<rect x="' + (cx - coll) + '" y="37.5" width="' + (2 * coll) + '" height="5" rx="2.5" fill="var(--ink-2)"/>' +
+    '<rect x="4" y="35" width="' + sleeve + '" height="10" rx="3" fill="var(--fig-bar)"/><rect x="' + (cx + coll + 4) + '" y="35" width="' + sleeve + '" height="10" rx="3" fill="var(--fig-bar)"/>' +
+    '<rect x="' + (cx - coll - 4) + '" y="30" width="5" height="20" rx="1.5" fill="var(--ink)"/><rect x="' + (cx + coll - 1) + '" y="30" width="5" height="20" rx="1.5" fill="var(--ink)"/>' +
+    draw(-1) + draw(1) + '</svg>';
+}
+function plOutHTML() {
+  const bar = plBar(), plates = plPlates(), W = pn(PLS.kg);
+  if (!isFinite(W) || W <= 0) return '<div class="note">Scrie greutatea totală, cu tot cu bara.</div>';
+  if (W > 1000) return '<div class="note">E prea mult pentru o bară.</div>';
+  if (W < bar) return '<div class="note">E mai puțin decât bara (' + kgFmt(bar) + ' kg).</div>';
+  const l = plLoad(W, bar, plates), warm = plWarm(l.total, bar, plates);
+  return '<div class="pl-res"><span class="label">' + (bar ? 'Pe fiecare parte' : 'Pe fiecare parte (fără bară)') + '</span><b>' + esc(plSideTxt(l.side)) + '</b></div>' + plBarSVG(l.side) +
+    (l.exact ? '' : '<div class="hint">Cu discurile tale nu iese exact ' + kgFmt(W) + ' kg. Cel mai aproape: <b>' + kgFmt(l.total) + ' kg</b>.</div>') +
+    (warm.length ? '<div class="pl-warm"><span class="label">Încălzire până la ' + kgFmt(l.total) + ' kg</span>' + warm.map(s =>
+      '<div class="pl-w"><b>' + kgFmt(s.kg) + ' kg × ' + s.reps + '</b><span>' + (s.side.length ? esc(plSideTxt(s.side)) + ' pe parte' : 'doar bara') + '</span></div>').join('') + '</div>' : '');
+}
+function plPanelHTML(kg) {
+  if (kg != null) PLS.kg = kg;
+  const bar = plBar(), have = new Set(plPlates());
+  return '<div class="pl" id="plBox"><label class="field"><span>Greutatea totală (kg)</span><input class="inp" id="plKg" data-in="plKg" inputmode="decimal" placeholder="ex. 100" value="' + esc(PLS.kg) + '" autocomplete="off"></label>' +
+    '<div class="field"><span>Bara</span><div class="chips" id="plBars">' + PL_BARS.map(b => '<button class="chip" type="button" data-act="plBar" data-b="' + b + '" aria-pressed="' + (b === bar) + '">' + (b ? kgFmt(b) + ' kg' : 'Fără bară') + '</button>').join('') + '</div></div>' +
+    '<div id="plOut">' + plOutHTML() + '</div>' +
+    '<div class="field"><span>Discurile pe care le ai</span><div class="chips" id="plHave">' + PL_ALL.map(p => '<button class="chip" type="button" data-act="plPlate" data-p="' + p + '" aria-pressed="' + have.has(p) + '">' + kgFmt(p) + '</button>').join('') + '</div></div></div>';
+}
+const plPaint = () => { const o = $('#plOut'); if (o) o.innerHTML = plOutHTML(); };
+INP.plKg = el => { PLS.kg = el.value.slice(0, 8); plPaint(); };
+ACT.plBar = el => { const b = +el.dataset.b; if (!PL_BARS.includes(b)) return; PREFS().bar = b; savePrefs(); document.querySelectorAll('#plBars .chip').forEach(c => c.setAttribute('aria-pressed', String(+c.dataset.b === b))); plPaint(); };
+ACT.plPlate = el => {
+  const p = +el.dataset.p, have = new Set(plPlates());
+  if (have.has(p)) { if (have.size === 1) { toast('Lasă cel puțin un disc.'); return; } have.delete(p); } else have.add(p);
+  PREFS().plates = [...have].sort((a, b) => b - a); savePrefs(); el.setAttribute('aria-pressed', String(have.has(p))); plPaint();
+};
+/* ce exerciții se încarcă cu discuri (bară, aparate cu discuri) */
+const plUsable = name => { const n = String(name).toLowerCase();
+  return !/dumbbell|kettlebell|cable|goblet/.test(n) && /barbell|ez-bar|squat|deadlift|bench press|overhead press|push press|pendlay|t-bar|hip thrust|good morning|rack pull|clean|snatch|thruster|jerk|shrug|rdl|skull crusher|jm press|leg press|landmine|glute bridge/.test(n); };
+
+/* în antrenament */
+function platesBtn(it, i) { return plUsable(it.name) ? '<button class="btn sm ghost" type="button" data-act="wkPlates" data-i="' + i + '">Discuri</button>' : ''; }
+ACT.wkPlates = el => {
+  const it = S.wk && S.wk.items[+el.dataset.i]; if (!it) return;
+  const s = it.sets.find(x => !x.done && String(x.kg).trim()) || it.sets.find(x => String(x.kg).trim());
+  WKV.pl = it.name; PLS.kg = s ? String(s.kg) : ''; WKV.view = 'plates'; wkPaint();
+};
+const wkPlatesHTML = () => wkBackHTML() + '<h2>Discuri · ' + esc(WKV.pl || '') + '</h2>' + plPanelHTML();
+/* în fereastra de înregistrare */
+ACT.lgPlates = () => {
+  const box = $('#lgPlates'); if (!box) return;
+  if (box.innerHTML) { box.innerHTML = ''; return; }
+  const s = LG.sets.find(x => String(x.kg).trim()); box.innerHTML = plPanelHTML(s ? String(s.kg) : '');
+};
+/* din capul tabului Sală */
+ACT.plOpen = () => { openSheet(sheetHead('Discuri pe bară') + plPanelHTML()); };
 
 /* ================= CLASAMENT: cine are cea mai lungă serie =================
    Două clasamente în același tab: Global (toți cei care au intrat) și Prieteni (doar pe invitație, după numele de utilizator).
