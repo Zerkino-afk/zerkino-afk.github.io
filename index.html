@@ -944,7 +944,7 @@ const INP = {};
 
 /* ================= date inițiale: alimente comune + exerciții ================= */
 /* Valori medii la 100 g (tipice, de tip USDA). Produsele de marcă diferă: verifică-le pe etichetă. */
-const SEED_VER = 2;   /* 2: meniul McDonald's România */
+const SEED_VER = 3;   /* 2: meniul McDonald's România; 3: KFC și Burger King România */
 const SEED_ROWS = [
   /* carne, pește, ouă */
   ['Piept de pui, crud', 120, 22.5, 0, 2.6],
@@ -1143,18 +1143,176 @@ const MCD_MENU = [
     ["ursus-cooler", "Ursus Cooler (500 ml)", 100, 23, 0, 5.3, 0, 500, "sticlă"]
   ]]
 ];
+/* KFC România: valorile oficiale la 100 g (tabelul „Nutriționale și alergeni”, ediția 1, revizia 22, 16.11.2023), cu porțiile din tabel.
+   Meniurile combinate (cu băutură) nu sunt puse: notezi separat ce ai luat. */
+const KFC_MENU = [
+  ["Pui", [
+    ["copan", "Copan pui Kentucky", 100, 241, 17.29, 12.55, 13.46, 75, "bucată"],
+    ["piept", "Piept pui Kentucky", 100, 234, 22.59, 8.96, 12, 75, "bucată"],
+    ["pulpa", "Pulpă pui Kentucky", 100, 268, 14.88, 11.09, 18.25, 75, "bucată"],
+    ["coasta", "Coastă pui Kentucky", 100, 136, 5.81, 5.81, 9.87, 75, "bucată"],
+    ["strips-3", "Crispy Strips (3 buc.)", 100, 170, 14.21, 12.59, 6.68, 90, "porție"],
+    ["strips-5", "Crispy Strips (5 buc.)", 100, 170, 14.21, 12.59, 6.68, 150, "porție"],
+    ["strips-8", "Crispy Strips (8 buc.)", 100, 170, 14.21, 12.59, 6.68, 240, "porție"],
+    ["strips-np-3", "Strips nepicanți (3 buc.)", 100, 209, 20.16, 10.69, 9.1, 90, "porție"],
+    ["strips-np-5", "Strips nepicanți (5 buc.)", 100, 209, 20.16, 10.69, 9.1, 150, "porție"],
+    ["strips-np-8", "Strips nepicanți (8 buc.)", 100, 209, 20.16, 10.69, 9.1, 240, "porție"],
+    ["wings-3", "Hot Wings (3 buc.)", 100, 299, 20.25, 10.67, 19.5, 75, "porție"],
+    ["wings-5", "Hot Wings (5 buc.)", 100, 299, 20.25, 10.67, 19.5, 125, "porție"],
+    ["wings-8", "Hot Wings (8 buc.)", 100, 299, 20.25, 10.67, 19.5, 200, "porție"],
+    ["bites-6", "Fillet Bites (6 buc.)", 100, 214, 21.84, 10.28, 9.14, 105, "porție"],
+    ["bites-9", "Fillet Bites (9 buc.)", 100, 214, 21.84, 10.28, 9.14, 155, "porție"]
+  ]],
+  ["Burgeri și wrapuri", [
+    ["zinger", "Zinger Burger", 100, 269, 15.68, 23.63, 12.36, 150, "bucată"],
+    ["fillet-burger", "Fillet Burger", 100, 226, 16.04, 21.24, 8.49, 150, "bucată"],
+    ["dublu-crispy", "Dublu Crispy Burger", 100, 257, 13.64, 21.11, 12.28, 150, "bucată"],
+    ["dublu-booster", "Dublu Booster", 100, 261, 11.25, 29.07, 10.12, 165, "bucată"],
+    ["dublu-hot-booster", "Dublu Hot Booster", 100, 282, 12.89, 26.04, 13.41, 165, "bucată"],
+    ["real-picant", "Real Burger picant", 100, 234, 10.72, 18.99, 12.1, 210, "bucată"],
+    ["real-nepicant", "Real Burger nepicant", 100, 244, 12.77, 18.15, 12.8, 210, "bucată"],
+    ["meltz-picant", "Meltz picant", 100, 271, 19.68, 19.41, 12.64, 190, "bucată"],
+    ["meltz-nepicant", "Meltz nepicant", 100, 254, 13.28, 23.44, 11.54, 190, "bucată"],
+    ["twister-picant", "Twister picant", 100, 199, 8.88, 19.96, 9.12, 180, "bucată"],
+    ["twister-nepicant", "Twister nepicant", 100, 234, 12.12, 21.89, 10.59, 180, "bucată"],
+    ["twister-bacon-picant", "Twister Bacon picant", 100, 237, 11.86, 18.43, 12.28, 200, "bucată"],
+    ["twister-bacon-nepicant", "Twister Bacon nepicant", 100, 229, 12.68, 18.46, 11.07, 200, "bucată"],
+    ["twister-fara-carne", "Twister fără carne", 100, 251, 5.78, 36.15, 8.99, 200, "bucată"]
+  ]],
+  ["Garnituri", [
+    ["cartofi-mici", "Cartofi prăjiți, porție mică", 100, 307, 3.56, 39.19, 14.29, 60, "porție"],
+    ["cartofi-medii", "Cartofi prăjiți, porție medie", 100, 307, 3.56, 39.19, 14.29, 90, "porție"],
+    ["cartofi-mari", "Cartofi prăjiți, porție mare", 100, 307, 3.56, 39.19, 14.29, 120, "porție"],
+    ["dipping-fries", "Dipping Fries", 100, 272, 3.43, 30.61, 14.24, 125, "porție"],
+    ["chili-nuggets", "Chili Cheese Nuggets (5 buc.)", 100, 278, 9, 19, 18, 75, "porție"],
+    ["porumb", "Porumb fiert", 100, 115, 3.46, 22.73, 0.32, 90, "porție"],
+    ["coleslaw", "Coleslaw", 100, 168, 0.49, 22.34, 8.27, 180, "porție"],
+    ["chifla", "Chiflă", 100, 254, 8.4, 51, 1.2, 50, "bucată"]
+  ]],
+  ["Salate", [
+    ["salata-zinger", "Salată cu Zinger", 100, 63, 6.32, 5.12, 1.83, 240, "porție"],
+    ["salata-fillet", "Salată cu Fillet", 100, 77, 5.96, 4.87, 3.74, 240, "porție"],
+    ["salata-bites", "Salată cu Fillet Bites", 100, 56, 4.84, 2.84, 2.4, 240, "porție"],
+    ["salata-greek", "Salată Greek cu feta", 100, 54, 2.83, 3.43, 3.21, 210, "porție"],
+    ["salata-veggie", "Salată Veggie", 100, 24, 0.96, 3.69, 0.6, 200, "porție"]
+  ]],
+  ["Sosuri", [
+    ["sos-glenn", "Sos Glenn", 100, 395, 1, 5.9, 39.7, 58, "porție"],
+    ["sos-ketchup", "Ketchup", 100, 101, 1.32, 22.6, 0.5, 58, "porție"],
+    ["sos-rosii-usturoi", "Sos cu roșii și usturoi", 100, 349, 0.8, 13.6, 32.2, 58, "porție"],
+    ["sos-american", "Sos American Dip", 100, 404, 1.5, 7.8, 40.05, 58, "porție"],
+    ["sos-bbq", "Sos barbecue", 100, 138, 0.7, 32, 0.2, 25, "plic"],
+    ["sos-maioneza", "Maioneză", 100, 640, 1, 3.4, 69, 25, "plic"],
+    ["sos-curry-mango", "Sos curry-mango", 100, 332, 1.7, 18, 28, 25, "plic"],
+    ["sos-dulce-acrisor", "Sos dulce-acrișor", 100, 145, 0.4, 36, 0.1, 25, "plic"],
+    ["sos-iaurt", "Dressing de iaurt", 100, 211, 1.1, 6.3, 20, 75, "porție"],
+    ["sos-ierburi", "Dressing cu ierburi", 100, 199, 0.8, 5.9, 18.9, 75, "porție"],
+    ["sos-otet-ulei", "Dressing cu oțet și ulei", 100, 316, 0.1, 8.5, 30.8, 75, "porție"]
+  ]]
+];
+/* Burger King România: valorile oficiale pe porție (tabelul de alergeni și valori nutriționale, martie 2024).
+   Tabelul are rânduri care nu se potrivesc între ele (porția față de valorile la 100 g sau caloriile față de macro);
+   le-am lăsat deoparte și am păstrat doar produsele cu valori coerente. Sosurile sunt la 100 ml. */
+const BK_MENU = [
+  ["Burgeri", [
+    ["whopper", "Whopper", 269, 617, 27, 50, 34, 269, "bucată"],
+    ["whopper-jr", "Whopper Junior", 135, 320, 13, 29, 16, 135, "bucată"],
+    ["double-whopper", "Double Whopper", 349, 836, 45, 50, 50, 349, "bucată"],
+    ["triple-whopper", "Triple Whopper", 429, 1056, 64, 50, 66, 429, "bucată"],
+    ["whopper-bacon-cheese", "Whopper Bacon & Cheese", 299, 733, 34, 51, 43, 299, "bucată"],
+    ["big-king", "Big King", 160, 412.3, 22.6, 24.8, 24, 160, "bucată"],
+    ["big-king-xxl", "Big King XXL", 362, 995, 58, 50, 58, 362, "bucată"],
+    ["steakhouse", "Steakhouse", 270, 678, 33, 53, 37, 270, "bucată"],
+    ["bacon-king", "Bacon King", 220, 759, 39.1, 48.7, 48.7, 220, "bucată"],
+    ["extralong-chili", "Extralong Chili Cheese", 225, 759, 44.1, 40.2, 46, 225, "bucată"],
+    ["lady-brie", "Lady Brie", 264, 793, 42, 48, 48, 264, "bucată"],
+    ["lord-pepper", "Lord Pepper", 265, 822, 41, 48, 52, 265, "bucată"],
+    ["hamburger", "Hamburger", 101, 263, 13, 30, 10, 101, "bucată"],
+    ["double-cheeseburger", "Double Cheeseburger", 149, 422, 24, 30, 22, 149, "bucată"],
+    ["chili-cheese-burger", "Chili Cheese Burger", 109, 384, 12, 28, 25, 109, "bucată"]
+  ]],
+  ["Pui", [
+    ["chicken-royale", "Chicken Royale", 224, 662, 29, 54, 36, 224, "bucată"],
+    ["tender-crispy", "Tender Crispy", 228, 635, 30, 56, 32, 228, "bucată"],
+    ["crispy-chicken", "Crispy Chicken", 161, 489, 18, 39, 29, 161, "bucată"],
+    ["chicken-burger", "Chicken Burger", 126, 377, 10, 40, 20, 126, "bucată"],
+    ["chicken-junior", "Chicken Junior", 120, 389, 18, 33, 26, 120, "bucată"],
+    ["chicken-wrap", "Chicken Wrap", 181, 599, 18, 52, 34, 181, "bucată"],
+    ["halloumi-wrap", "Halloumi Wrap", 164, 574, 20, 41, 36, 164, "bucată"],
+    ["nuggets-6", "Chicken Nuggets (6 buc.)", 85, 221.6, 13, 12, 13, 85, "porție"],
+    ["nuggets-9", "Chicken Nuggets (9 buc.)", 127, 398.9, 23, 22, 24, 127, "porție"],
+    ["pops-mic", "Chick'n Pops Teriyaki, porție mică", 170, 424, 17, 42, 20, 170, "porție"],
+    ["pops-mare", "Chick'n Pops Teriyaki, porție mare", 250, 623, 25, 62, 30, 250, "porție"]
+  ]],
+  ["Plant based", [
+    ["royale-pb", "Chicken Royale Plant Based", 185, 601, 17, 53, 34, 185, "bucată"],
+    ["cheeseburger-pb", "Cheeseburger Plant Based", 109, 290, 14, 33, 10, 109, "bucată"],
+    ["hamburger-pb", "Hamburger Plant Based", 99, 251, 11, 32, 7.3, 99, "bucată"]
+  ]],
+  ["Garnituri și salate", [
+    ["cartofi-mica", "Cartofi prăjiți, porție mică", 74, 115.4, 1.9, 18.5, 3.3, 74, "porție"],
+    ["cartofi-medie", "Cartofi prăjiți, porție medie", 110, 171.6, 2.9, 27.5, 5, 110, "porție"],
+    ["cartofi-xxl", "Cartofi prăjiți, porție XXL", 160, 249.6, 4.2, 40, 7.2, 160, "porție"],
+    ["bacon-cheese-fries", "Bacon Cheese Fries", 199, 593, 8, 65.1, 30.8, 199, "porție"],
+    ["onion-rings", "Onion Rings (6 buc.)", 60, 185.4, 3.1, 22, 8.9, 60, "porție"],
+    ["chilli-cheese-nuggets", "Chilli Cheese Nuggets (6 buc.)", 90, 274.5, 8.1, 29, 15, 90, "porție"],
+    ["salata-pui", "Salată cu pui", 187, 155, 24, 6.8, 3.6, 187, "porție"]
+  ]],
+  ["Sosuri", [
+    ["sos-maioneza", "Maioneză", 100, 663, 0.9, 3.1, 72, 0, ""],
+    ["sos-ketchup", "Ketchup", 100, 102, 1.2, 23.2, 0.1, 0, ""],
+    ["sos-usturoi", "Sos de usturoi", 100, 546, 1.1, 6.9, 57, 0, ""],
+    ["sos-bbq", "Sos barbecue", 100, 136, 0.9, 31, 0.3, 0, ""],
+    ["sos-dulce-acrisor", "Sos dulce-acrișor", 100, 145, 0.4, 36, 0.1, 0, ""],
+    ["sos-mustar-miere", "Sos de muștar cu miere", 100, 318, 1, 15, 28, 0, ""],
+    ["sos-chili-dulce", "Sos dulce de ardei iute", 100, 187, 0.4, 46, 0.1, 0, ""],
+    ["sos-salsa", "Sos salsa", 100, 135, 1.1, 31, 0.1, 0, ""],
+    ["sos-curry", "Sos curry", 100, 184, 1, 44, 0, 0, ""]
+  ]],
+  ["Deserturi", [
+    ["fusion-oreo", "BK Fusion Oreo", 180, 278, 4.9, 42, 10, 180, "porție"],
+    ["fusion-smarties", "BK Fusion Smarties", 180, 333, 5.4, 52.5, 11.2, 180, "porție"],
+    ["sundae-ciocolata", "King Sundae cu ciocolată", 145, 237, 4.2, 42, 6.7, 145, "porție"],
+    ["sundae-caramel", "King Sundae cu caramel", 145, 251.8, 4.1, 41, 8.5, 145, "porție"],
+    ["shake-ciocolata", "Shake de ciocolată", 150, 594, 12.9, 103.2, 14.1, 150, "pahar"],
+    ["shake-caramel", "Shake de caramel", 150, 507, 13, 91.8, 9.8, 150, "pahar"],
+    ["shake-oreo", "Shake Oreo", 150, 439, 10.6, 72.7, 11.6, 150, "pahar"],
+    ["brownie", "Hot Brownie", 80, 364.8, 4.5, 31, 25, 80, "bucată"],
+    ["brownie-inghetata", "Hot Brownie cu înghețată", 140, 462.8, 6.6, 47, 28, 140, "porție"],
+    ["gogoasa-ciocolata", "Gogoașă cu ciocolată", 55, 241, 4.3, 21, 15, 55, "bucată"],
+    ["gogoasa-rosy", "Gogoașă Rosy", 58, 229, 3.5, 28, 11, 58, "bucată"]
+  ]],
+  ["Băuturi", [
+    ["cafea", "Cafea (200 ml)", 200, 4, 0.2, 0, 0.4, 200, "pahar"],
+    ["cappuccino", "Cappuccino (200 ml)", 200, 60, 3.2, 4.7, 3.2, 200, "pahar"],
+    ["cafe-latte", "Cafe Latte (200 ml)", 200, 72, 3.8, 5.6, 3.8, 200, "pahar"],
+    ["pepsi", "Pepsi (330 ml)", 330, 141, 0, 35, 0, 330, "pahar"],
+    ["pepsi-max", "Pepsi Max (330 ml)", 330, 2, 0, 0, 0, 330, "pahar"],
+    ["pepsi-twist", "Pepsi Twist (330 ml)", 330, 145, 0, 36.3, 0, 330, "pahar"],
+    ["mirinda", "Mirinda (330 ml)", 330, 106, 0, 26, 0, 330, "pahar"],
+    ["7up-zero", "7Up Zero Zahăr (330 ml)", 330, 2, 0, 0, 0, 330, "pahar"],
+    ["lipton-lemon", "Lipton Ice Tea lămâie (500 ml)", 500, 100, 0, 21, 0, 500, "sticlă"],
+    ["lipton-green", "Lipton Green (500 ml)", 500, 50, 0, 12, 0, 500, "sticlă"],
+    ["lipton-piersica", "Lipton Ice Tea piersică (500 ml)", 500, 100, 0, 23, 0, 500, "sticlă"],
+    ["prigat-portocala", "Prigat portocale (500 ml)", 500, 228, 0, 57, 0, 500, "sticlă"],
+    ["prigat-piersica", "Prigat piersici (500 ml)", 500, 238, 0, 58, 0, 500, "sticlă"]
+  ]]
+];
 const mcd1 = v => Math.round(v * 10) / 10;
-const MCD_FOODS = [];
-MCD_MENU.forEach(([cat, rows]) => rows.forEach(([id, name, base, k, p, c, f, serv, servName]) => MCD_FOODS.push({
-  id: 'mcd-' + id, name, brand: "McDonald's", barcode: '',
+/* lanțurile de restaurante: [id, nume, baza în g, kcal, P, C, G pentru „baza”, porția în g, numele porției] → valori la 100 g */
+const CHAINS = [['mcd', "McDonald's", MCD_MENU], ['kfc', 'KFC', KFC_MENU], ['bk', 'Burger King', BK_MENU]];
+const CHAIN_FOODS = [];
+CHAINS.forEach(([chain, brand, menu]) => menu.forEach(([cat, rows]) => rows.forEach(([id, name, base, k, p, c, f, serv, servName]) => CHAIN_FOODS.push({
+  id: chain + '-' + id, name, brand, barcode: '',
   k: mcd1(k * 100 / base), p: mcd1(p * 100 / base), c: mcd1(c * 100 / base), f: mcd1(f * 100 / base),
-  serv, servName, used: 0, created: 0, std: false, chain: 'mcd', cat, ord: MCD_FOODS.length
-})));
+  serv, servName, used: 0, created: 0, std: false, chain, cat, ord: CHAIN_FOODS.length
+}))));
+const MCD_FOODS = CHAIN_FOODS.filter(f => f.chain === 'mcd');
 
 const SEED_FOODS = SEED_ROWS.map((r, i) => ({
   id: 's' + String(i + 1).padStart(3, '0'), name: r[0], brand: '', barcode: '', k: r[1], p: r[2], c: r[3], f: r[4],
   serv: r[5] || 0, servName: r[6] || '', used: 0, created: 0, std: true
-})).concat(MCD_FOODS);
+})).concat(CHAIN_FOODS);
 
 /* Exerciții: [grupă, [nume în engleză]] */
 const EXLIB = [
@@ -1496,14 +1654,18 @@ const foodRowsHTML = (list, act, q, set) => {
   let cat = null;
   return list.map(f => {
     let h = '';
-    if (set === 'mcd' && !(q || '').trim() && f.cat && f.cat !== cat) { cat = f.cat; h = '<div class="label food-cat">' + esc(cat) + '</div>'; }
+    if (isChainSet(set) && !(q || '').trim() && f.cat && f.cat !== cat) { cat = f.cat; h = '<div class="label food-cat">' + esc(cat) + '</div>'; }
     return h + foodRow(f, act);
   }).join('');
 };
-const FOOD_SETS = [['all', 'Toate'], ['mcd', "McDonald's"], ['rec', 'Rețete']];
+const FOOD_SETS = [['all', 'Toate'], ['mcd', "McDonald's"], ['kfc', 'KFC'], ['bk', 'Burger King'], ['rec', 'Rețete']];
+const isChainSet = set => !!set && set !== 'all' && set !== 'rec';
 const foodSetHTML = (scope, cur) => '<div class="chips scroll food-set" role="group" aria-label="Ce alimente arăt">' +
   FOOD_SETS.map(([v, l]) => '<button class="chip" type="button" data-act="foodSet" data-scope="' + scope + '" data-set="' + v + '" aria-pressed="' + ((cur || 'all') === v) + '">' + l + '</button>').join('') + '</div>';
 const MCD_NOTE = '<div class="note">Valorile oficiale McDonald\'s România (septembrie 2026), pe porție. Apasă pe produs și alege porția.</div>';
+const CHAIN_NOTES = { mcd: MCD_NOTE,
+  kfc: '<div class="note">Valorile oficiale KFC România (tabelul din noiembrie 2023), la 100 g, cu porțiile din tabel. Apasă pe produs și alege porția.</div>',
+  bk: '<div class="note">Valorile oficiale Burger King România (tabelul din martie 2024), pe porție. Am pus doar produsele la care valorile din tabel se potrivesc între ele.</div>' };
 ACT.foodSet = el => {
   const v = FOOD_SETS.some(s => s[0] === el.dataset.set) ? el.dataset.set : 'all', add = el.dataset.scope === 'add';
   if (add) A.set = v; else S.foodSet = v;
@@ -1528,7 +1690,7 @@ function renderPick(q) {
 }
 function pickListHTML(q, list) {
   const t = (q || '').trim();
-  if (list.length) return (A.set === 'mcd' && !t ? MCD_NOTE : '') + foodRowsHTML(list, 'pickFood', t, A.set);
+  if (list.length) return (!t && CHAIN_NOTES[A.set] || '') + foodRowsHTML(list, 'pickFood', t, A.set);
   if (A.set === 'rec') return '<div class="meal-empty">' + (t ? 'Nicio rețetă găsită.' : 'Nicio rețetă încă. O faci în tabul Alimente, la „Rețete”.') + '</div>';
   if (/^\d{8,14}$/.test(t)) return '<div class="hint">Codul ' + esc(t) + ' nu e încă în memorie.</div><button class="btn block" type="button" data-act="lookupCode" data-code="' + esc(t) + '" style="margin-top:10px">Caută sau creează alimentul cu acest cod</button>';
   if (t) return '<div class="meal-empty">Niciun aliment găsit. Apasă „Aliment nou” ca să-l adaugi.</div>';
@@ -1641,7 +1803,7 @@ function foodListHTML() {
   }
   const l = sortedFoods(S.foodQ, S.foodSet);
   if (!l.length) return '<div class="meal-empty">Niciun rezultat.</div>';
-  return '<div>' + (S.foodSet === 'mcd' && !(S.foodQ || '').trim() ? MCD_NOTE : '') + foodRowsHTML(l, 'editFood', S.foodQ, S.foodSet) + '</div>';
+  return '<div>' + (!(S.foodQ || '').trim() && CHAIN_NOTES[S.foodSet] || '') + foodRowsHTML(l, 'editFood', S.foodQ, S.foodSet) + '</div>';
 }
 INP.foodQ = el => { S.foodQ = el.value; $('#foodList').innerHTML = foodListHTML(); };
 
