@@ -3008,7 +3008,7 @@ P.backext = (o = {}) => {
   const hip = [-4, 58, 0], d = [-.707, -.707], n = [.707, -.707], a = add(hip, [n[0] * 7 + 7, n[1] * 7 + 7, 0]), b = add(hip, [n[0] * 7 + d[0] * 40, n[1] * 7 + d[1] * 40, 0]);
   const sc = [prism(padPts([a[0], a[1]], [b[0], b[1]], 6), -12, 12, 'pad', 1), post(hip[0] - 18, hip[0] - 10, hip[1] - 22, 12)];
   const fixed = { hip, F: J => [J.hip[0] - 41, J.hip[1] - 41, 8], H: J => [J.shc[0] + 3, J.shc[1] - 9, 3] };
-  return mk([Object.assign({ to: 132, hd: -35 }, fixed), Object.assign({ to: 46, hd: -5 }, fixed)], { pk: [0, -.2, .1], pe: [.5, -1, .6], sc, fa: 40, hl: ['lowback', 'glutes'], dur: 1700,
+  return mk([Object.assign({ to: 132, hd: -35 }, fixed), Object.assign({ to: 46, hd: -5 }, fixed)], { pk: [0, -.2, .1], pe: [.5, -1, .6], sc, fa: 40, hl: o.hl || ['lowback', 'glutes'], dur: 1700,
     cue: o.cue || 'Coboară trunchiul cu spatele drept, apoi ridică-l până corpul face o linie dreaptă. Nu arcui peste.' });
 };
 
@@ -3296,7 +3296,7 @@ P.slam = (o = {}) => {
 /* ---- numele exercițiului → mișcarea desenată (prima potrivire câștigă) ---- */
 {
 const M = [
-  [/wrist curl/, 'wrist'],
+  [/wrist curl/, 'wrist'], [/incline dumbbell curl/, 'inccurl'],
   [/lying leg curl/, 'legcurl'], [/seated leg curl/, 'legext', { curl: 1 }], [/nordic/, 'nordic'],
   [/bulgarian/, 'lunge', { bulg: 1 }], [/lunge/, 'lunge'], [/step-up/, 'stepup'],
   [/reverse pec deck/, 'pecdeck', { rear: 1 }], [/rear delt/, 'rearfly'], [/pec deck/, 'pecdeck'],
@@ -3325,13 +3325,13 @@ const M = [
   [/close-grip lat/, 'pulldown', { close: 1 }], [/straight-arm/, 'straightarm'], [/lat pulldown/, 'pulldown'],
   [/weighted pull-up/, 'pullup', { plate: 1 }], [/chin-up/, 'pullup', { gz: 12, cue: 'Palmele spre tine, mâinile apropiate. Trage până bărbia trece de bară, cu bicepsul activ, și coboară controlat.' }],
   [/neutral-grip/, 'pullup', { gz: 9, cue: 'Prindere cu palmele față în față. Trage până bărbia trece de bară și coboară controlat.' }], [/pull-up/, 'pullup'],
-  [/inverted row/, 'invrow'], [/back extension/, 'backext'], [/glute-ham/, 'backext', { cue: 'Coboară trunchiul controlat, apoi ridică-te strângând fesele și femurala. Păstrează corpul drept.' }],
+  [/inverted row/, 'invrow'], [/back extension/, 'backext'], [/glute-ham/, 'backext', { hl: ['hams', 'glutes', 'lowback'], cue: 'Coboară trunchiul controlat, apoi ridică-te strângând fesele și femurala. Păstrează corpul drept.' }],
   [/cable overhead triceps/, 'ohext', { cable: 1 }], [/overhead triceps/, 'ohext'],
   [/overhead press/, 'ohp'], [/seated dumbbell shoulder/, 'dbpress'], [/arnold/, 'dbpress', { arnold: 1, cue: 'Pornește cu palmele spre tine în fața pieptului, rotește palmele în timp ce împingi ganterele deasupra capului.' }],
   [/push press/, 'pushpress'], [/landmine/, 'landmine'],
   [/cable lateral/, 'lateral', { cable: 1 }], [/lateral raise/, 'lateral'], [/front raise/, 'frontraise'], [/face pull/, 'facepull'], [/upright row/, 'upright'],
   [/barbell shrug/, 'shrug'], [/dumbbell shrug/, 'shrug', { db: 1 }],
-  [/preacher/, 'preacher', { bar: 1 }], [/concentration/, 'conc'], [/incline dumbbell curl/, 'inccurl'], [/spider/, 'prone', { curl: 1, cue: 'Pieptul pe bancă înclinată, brațele atârnă drept. Ridică bara fără să miști umerii.' }],
+  [/preacher/, 'preacher', { bar: 1 }], [/concentration/, 'conc'], [/spider/, 'prone', { curl: 1, cue: 'Pieptul pe bancă înclinată, brațele atârnă drept. Ridică bara fără să miști umerii.' }],
   [/cable curl/, 'curl', { cable: 1 }], [/hammer/, 'curl', { eq: 'db', cue: 'Palmele față în față, coatele lipite de corp. Ridică ganterele până la umăr și coboară încet.' }],
   [/dumbbell curl/, 'curl', { eq: 'db' }], [/reverse curl/, 'curl', { cue: 'Palmele în jos. Ridică bara fără să balansezi, simțind antebrațul și partea exterioară a bicepsului.' }], [/curl/, 'curl'],
   [/pushdown/, 'pushdown'], [/skull/, 'skull'],
@@ -4518,19 +4518,22 @@ ACT.plOpen = () => { openSheet(sheetHead('Discuri pe bară') + plPanelHTML()); }
 /* ================= HARTA SĂPTĂMÂNII (în tabul Sală) =================
    Omulețul colorat după câte serii a primit fiecare mușchi în ultimele 7 zile (cu azi): cu cât mai multe, cu atât mai aprins.
    Mușchiul principal al exercițiului primește seria întreagă, cei ajutători câte o jumătate. Mușchii vin din mișcarea desenată
-   a exercițiului; la exercițiile proprii, din grupa lui din bibliotecă. Arată și ce mușchi mari n-au primit nimic. */
+   a exercițiului; la exercițiile proprii, din grupa lui din bibliotecă. Exercițiile de spate (dorsali) lucrează și trapezul,
+   care primește tot seria întreagă. Arată și ce mușchi mari n-au primit nimic. */
 const WM_GROUP = { 'Piept': ['chest'], 'Spate': ['back'], 'Umeri': ['delts'], 'Biceps': ['biceps'], 'Triceps': ['triceps'], 'Cvadriceps': ['quads'],
   'Femurali și fesieri': ['hams', 'glutes'], 'Gambe': ['calves'], 'Abdomen': ['abs'], 'Antebraț': ['forearms'], 'Corp întreg': ['quads', 'glutes', 'back', 'delts'] };
 const WM_MAJOR = ['chest', 'back', 'delts', 'biceps', 'triceps', 'quads', 'hams', 'glutes', 'calves', 'abs'];
 const wmMuscles = name => { const pat = FIG.get(name); if (pat && Array.isArray(pat.hl) && pat.hl.length) return pat.hl.filter(m => MUSN[m]); return WM_GROUP[groupOf(name)] || []; };
+/* [mușchi, cât din serie primește]: principalul 1, ajutătorii 0,5; la spate și trapezul 1 */
+const wmWeights = name => { const l = wmMuscles(name), w = l.map((m, k) => [m, k ? .5 : 1]); if (l[0] === 'back' && !l.includes('traps')) w.splice(1, 0, ['traps', 1]); return w; };
 function weekSets(end) {
   const to = end || todayStr(), from = addDays(to, -6), sets = {}, days = new Set();
   Object.values(S.ex).forEach(ex => {
-    const mus = wmMuscles(ex.name);
+    const mus = wmWeights(ex.name);
     ex.sessions.forEach(s => {
       if (s.date < from || s.date > to || !s.sets.length) return;
       days.add(s.date);
-      mus.forEach((m, k) => { sets[m] = (sets[m] || 0) + s.sets.length * (k ? .5 : 1); });
+      mus.forEach(([m, f]) => { sets[m] = (sets[m] || 0) + s.sets.length * f; });
     });
   });
   return { sets, days: days.size };
@@ -4574,20 +4577,37 @@ IC.img = '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9"
 IC.copy = '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>';
 
 /* ---- datele cardului ---- */
-/* seriile pe mușchi: principalul primește seria întreagă, ajutătorii câte o jumătate (ca la harta săptămânii) */
+/* pe card se aprind doar mușchii principali ai fiecărui exercițiu, ca să se vadă ce ai lucrat de fapt (nu și ajutătorii):
+   cei din grupa exercițiului din bibliotecă (piept la împinsul înclinat, triceps la împinsul cu priză îngustă),
+   altfel primul din mișcare; la exercițiile pentru tot corpul, toți. Spatele (dorsalii) se aprinde împreună cu trapezul. */
+function shMain(name) {
+  const all = wmMuscles(name); if (!all.length) return [];
+  const g = groupOf(name), grp = WM_GROUP[g] || [];
+  let m = g === 'Corp întreg' ? all.slice() : all.filter(x => grp.includes(x));
+  if (!m.length) m = all.slice(0, 1);
+  if (m.includes('back') && !m.includes('traps')) m.push('traps');
+  return m;
+}
 function shMus(list) {
   const sets = {};
-  list.forEach(r => wmMuscles(r.name).forEach((m, k) => { sets[m] = (sets[m] || 0) + r.n * (k ? .5 : 1); }));
+  list.forEach(r => shMain(r.name).forEach(m => { sets[m] = (sets[m] || 0) + r.n; }));
   const lv = {}; Object.keys(sets).forEach(m => { lv[m] = sets[m] >= 6 ? 3 : sets[m] >= 3 ? 2 : 1; });
   return { lv, sets };
 }
-/* „Antrenament liber” nu spune nimic pe un story: atunci titlul vine din mușchii lucrați cel mai mult */
+/* „Antrenament liber” nu spune nimic pe un story: atunci titlul vine din grupele lucrate cel mai mult
+   (trapezul care vine cu spatele nu e o grupă în plus) */
+const SH_LEGS = ['quads', 'hams', 'glutes', 'calves'];
 function shTitle(title, sets) {
   const t = String(title || '').trim();
   if (!['', 'antrenament', 'antrenament liber'].includes(t.toLowerCase())) return t;
-  const top = Object.keys(sets).filter(m => MUSN[m]).sort((a, b) => sets[b] - sets[a]), big = top.filter(m => sets[m] >= 2);
-  if (big.length >= 4) return 'Tot corpul';
-  const n = (big.length ? big : top).slice(0, 2).map(m => MUSN[m]);
+  const top = Object.keys(sets).filter(m => MUSN[m] && !(m === 'traps' && sets.back)).sort((a, b) => sets[b] - sets[a]);
+  const big = top.filter(m => sets[m] >= 2), legs = big.filter(m => SH_LEGS.includes(m)), up = big.length - legs.length;
+  /* tot corpul: picioare mari (nu doar gambe la final) și cel puțin două grupe de sus */
+  if (legs.some(m => m !== 'calves') && up >= 2) return 'Tot corpul';
+  if (legs.length >= 2 && up <= 1) return 'Picioare';
+  const two = (big.length ? big : top).slice(0, 2);
+  if (two.length === 2 && two.includes('biceps') && two.includes('triceps')) return 'Brațe';
+  const n = two.map(m => MUSN[m]);
   return n.length ? n[0] + (n[1] ? ' și ' + n[1].toLowerCase() : '') : 'Antrenament';
 }
 function shFromSum(s) {
@@ -4854,7 +4874,7 @@ function shTabla(c, d, R) {
   st.forEach(s => { c.font = shF(900, 100, 'd'); let w = c.measureText(s.v).width; if (s.u) { c.font = shF(800, 42, 'd'); w += c.measureText(s.u).width + 8; } px = Math.min(px, 360 * 100 / w); sw = Math.max(sw, w); });
   sw = Math.max(sw * px / 100, 150);
   const mw = Math.max(540, Math.min(680, (RT - L - sw - 30) / .93, (1692 - end - 80) * 208 / 190)), mh = mw * 190 / 208, my = 1692 - mh;
-  shBody(c, d.lv, RT - mw + 30, my, mw, { sil: '#C3C6BE', off: '#A0A59D', on: SH_FLAME, fa: [0, .55, .82, 1] });
+  shBody(c, d.lv, RT - mw + 30, my, mw, { sil: '#C3C6BE', off: '#A0A59D', on: SH_FLAME, fa: SH_LIT });
   st.forEach((s, i) => {
     const b = 1692 - 52 - (st.length - 1 - i) * 156;
     c.textAlign = 'left'; c.font = shF(900, px, 'd'); c.fillStyle = ink; c.fillText(s.v, L - 3, b);
