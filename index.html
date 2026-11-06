@@ -667,6 +667,20 @@ body.wk-on .toast{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
 .wkmap-l i.h1{opacity:.38} .wkmap-l i.h2{opacity:.7}
 .wkmap-none{font-size:13.5px;line-height:1.35}
 .wkmap-none.ok{color:var(--up);font-weight:600}
+.wkmap-sh{align-self:flex-start}
+/* cardul de partajat: previzualizarea imaginii pentru story și variantele */
+.sh{display:flex;flex-direction:column;gap:14px}
+.sh-prev{position:relative;align-self:center;height:min(46vh,520px);aspect-ratio:9/16;max-width:100%;border-radius:8px;overflow:hidden;background:var(--slab);box-shadow:0 18px 28px -18px rgba(0,0,0,.7),0 0 0 1px var(--line)}
+.sh-prev img{display:block;width:100%;height:100%;object-fit:contain;transition:opacity .2s ease}
+.sh-prev img:not([src]){visibility:hidden}
+.sh-prev.busy img{opacity:.55}
+.sh-prev[data-t="sticker"]{background:radial-gradient(130% 70% at 72% 18%,#6E7B80 0,#343C40 52%,#15181A 100%)}
+.sh-pick{position:absolute;left:50%;top:34%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 16px;white-space:nowrap;border-radius:3px;border:2px solid var(--on-slab);background:rgba(16,19,21,.55);color:var(--on-slab);font:800 15px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.sh-pick svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sh-pick[hidden]{display:none}
+.sh-ctl{display:flex;flex-direction:column;gap:12px}
+.sh-t{justify-content:center}
+.sh-ph{align-self:center}
 #lgPlates{background:var(--paper);border-radius:3px;box-shadow:0 0 0 1px var(--line);padding:12px}
 .sheet>.linkbtn{align-self:flex-start}
 .sp-coach{display:block;margin-top:2px;font-size:12.5px;font-weight:700;line-height:1.3;color:var(--s-fat)}
@@ -4175,7 +4189,8 @@ function wkSumHTML() {
       '<span class="sub">' + esc(pl(r.n, 'serie', 'serii')) + ' · cea mai bună: ' + esc(r.top) + '</span></span>' +
       (r.cmp ? '<span class="wk-d ' + (r.cmp.dir > 0 ? 'up' : r.cmp.dir < 0 ? 'down' : 'flat') + '">' + esc(r.cmp.txt) + '</span>' : '<span class="wk-d new">prima dată</span>') + '</div>').join('') + '</div>' +
     (s.res.some(r => r.cmp) ? '<div class="note">Comparația e cu cea mai bună serie din sesiunea de data trecută.</div>' : '') +
-    '<button class="btn block" type="button" data-act="close">Gata</button>';
+    (s.res.length ? '<button class="btn block" type="button" data-act="shSum">' + ic('share') + 'Distribuie pe story</button>' : '') +
+    '<button class="btn ' + (s.res.length ? 'ghost ' : '') + 'block" type="button" data-act="close">Gata</button>';
 }
 
 /* ---- serii ---- */
@@ -4315,7 +4330,7 @@ ACT.wkQuit = el => {
 };
 ACT.wkSave = () => {
   const W = S.wk; if (!W) return;
-  const res = []; let vol = 0, nSets = 0;
+  const res = []; let vol = 0, nSets = 0, reps = 0;
   W.items.forEach(it => {
     const sets = it.sets.filter(s => s.done).map(s => { const kgT = String(s.kg).trim(); return { kg: kgT ? Math.round(pn(kgT) * 1000) / 1000 : 0, reps: Math.round(pn(s.reps)) }; })
       .filter(s => isFinite(s.kg) && s.kg >= 0 && isFinite(s.reps) && s.reps >= 1);
@@ -4326,7 +4341,7 @@ ACT.wkSave = () => {
     if (same) same.sets = same.sets.concat(sets).slice(0, 60); else ex.sessions.push({ id: uid(), date: W.date, sets });
     ex.sessions = sortedSess(ex); saveEx(id);
     const now = ex.sessions.find(s => s.date === W.date), isLast = ex.sessions[ex.sessions.length - 1] === now;
-    vol += sets.reduce((a, s) => a + s.kg * s.reps, 0); nSets += sets.length;
+    vol += sets.reduce((a, s) => a + s.kg * s.reps, 0); nSets += sets.length; reps += sets.reduce((a, s) => a + s.reps, 0);
     res.push({ name: ex.name, top: setTxt(topSet(now)), cmp: before ? compare(now, before) : null, pr: isLast && isRecord(ex), n: sets.length });
   });
   const end = Date.now();
@@ -4336,7 +4351,8 @@ ACT.wkSave = () => {
   }
   const log = S.wklog || (S.wklog = { list: [] });
   log.list.push({ id: W.id, date: W.date, start: W.start, end, title: W.title, sets: nSets, vol: Math.round(vol), ex: res.length }); log.list = log.list.slice(-500); saveWkLog();
-  WKV.sum = { title: W.title, dur: end - W.start, sets: nSets, vol, res };
+  const spl = W.sp && W.day >= 0 ? SP().list[W.sp] : null;
+  WKV.sum = { title: W.title, date: W.date, dur: end - W.start, sets: nSets, vol, reps, res, sub: spl && spl.days[W.day] ? 'Ziua ' + (W.day + 1) + ' din ' + spl.name : '' };
   S.wk = null; saveWk(); wkWake(false);
   WKV.view = 'sum'; wkPaint(); render();
   if (res.some(r => r.pr)) setTimeout(() => FX.burst($('#wkRoot .wk-pr'), true), 450);
@@ -4532,8 +4548,517 @@ function weekMapHTML() {
     '<div class="wkmap-b"><div class="wkmap-fig">' + BODY([], 'heat', lv, label) + '</div>' +
     '<ul class="wkmap-l">' + done.map(([m, n]) => '<li><i class="h' + lv[m] + '" aria-hidden="true"></i><span>' + esc(n) + '</span><b>' + num(sets[m], 1) + '</b></li>').join('') + '</ul></div>' +
     (none.length ? '<div class="wkmap-none"><b>Neatinse:</b> ' + esc(none.join(', ')) + '</div>' : '<div class="wkmap-none ok">Ai lucrat toate grupele mari săptămâna asta.</div>') +
-    '<div class="note">Numărul e de serii (mușchii ajutători primesc jumătate). Ca reper, multe programe țintesc cam 10–20 de serii pe săptămână pentru fiecare mușchi.</div></section>';
+    '<div class="note">Numărul e de serii (mușchii ajutători primesc jumătate). Ca reper, multe programe țintesc cam 10–20 de serii pe săptămână pentru fiecare mușchi.</div>' +
+    '<button class="btn ghost sm wkmap-sh" type="button" data-act="shOpen">' + ic('share') + 'Distribuie ultimul antrenament</button></section>';
 }
+
+
+/* ================= CARDUL DE PARTAJAT (story pentru Instagram) =================
+   După antrenament (Distribuie, din rezumat) sau din Sală (ultimele antrenamente) faci o imagine 1080×1920:
+   omulețul cu mușchii lucrați aprinși, titlul zilei, durata, kilogramele ridicate, seriile și recordurile.
+   Variante: Tablă (foaia de jurnal prinsă cu bandă, cu exercițiile și recordurile încercuite), Noapte (omulețul
+   strălucește pe întuneric), Poza ta (o poză din galerie, cu datele peste ea) și Sticker (PNG transparent, de lipit
+   peste orice story, ca la Strava). Totul se desenează pe telefon, pe canvas: poza aleasă nu pleacă de pe telefon. */
+const SH = { d: null, t: 'noapte', src: '', days: [], photo: null, purl: '', file: null, url: '', seq: 0 };
+const SH_T = [['noapte', 'Noapte'], ['tabla', 'Tablă'], ['poza', 'Poza ta'], ['sticker', 'Sticker']];
+const SH_KEY = 'gantera-ui:share';
+const shLast = () => { try { const t = localStorage.getItem(SH_KEY); return ['noapte', 'tabla', 'sticker'].includes(t) ? t : 'noapte'; } catch (e) { return 'noapte'; } };
+const SHW = 1080, SHH = 1920;
+const SHF = { d: '"Big Shoulders Display","Arial Narrow",sans-serif', b: 'Archivo,system-ui,sans-serif', m: '"Permanent Marker",Archivo,cursive' };
+const shF = (w, px, f) => w + ' ' + Math.round(px) + 'px ' + SHF[f];
+const SH_LV = [0, .45, .75, 1];                      /* cât de aprins e un mușchi după câte serii a primit */
+const SH_LIT = [0, 1, 1, 1], SH_GLOW = [0, .35, .7, 1];
+const SH_FLAME = '#FF6A13', SH_CHALK = '#F3F2ED';
+IC.share = '<path d="M12 2v13"/><path d="m16 6-4-4-4 4"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>';
+IC.img = '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>';
+IC.copy = '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>';
+
+/* ---- datele cardului ---- */
+/* seriile pe mușchi: principalul primește seria întreagă, ajutătorii câte o jumătate (ca la harta săptămânii) */
+function shMus(list) {
+  const sets = {};
+  list.forEach(r => wmMuscles(r.name).forEach((m, k) => { sets[m] = (sets[m] || 0) + r.n * (k ? .5 : 1); }));
+  const lv = {}; Object.keys(sets).forEach(m => { lv[m] = sets[m] >= 6 ? 3 : sets[m] >= 3 ? 2 : 1; });
+  return { lv, sets };
+}
+/* „Antrenament liber” nu spune nimic pe un story: atunci titlul vine din mușchii lucrați cel mai mult */
+function shTitle(title, sets) {
+  const t = String(title || '').trim();
+  if (!['', 'antrenament', 'antrenament liber'].includes(t.toLowerCase())) return t;
+  const top = Object.keys(sets).filter(m => MUSN[m]).sort((a, b) => sets[b] - sets[a]), big = top.filter(m => sets[m] >= 2);
+  if (big.length >= 4) return 'Tot corpul';
+  const n = (big.length ? big : top).slice(0, 2).map(m => MUSN[m]);
+  return n.length ? n[0] + (n[1] ? ' și ' + n[1].toLowerCase() : '') : 'Antrenament';
+}
+function shFromSum(s) {
+  const m = shMus(s.res);
+  return { title: shTitle(s.title, m.sets), date: s.date || todayStr(), dur: s.dur || 0, sets: s.sets, vol: Math.round(s.vol), reps: s.reps || 0,
+    ex: s.res.map(r => ({ name: r.name, top: r.top, pr: !!r.pr, n: r.n })), lv: m.lv, sub: s.sub || '' };
+}
+function shFromDay(date) {
+  const ex = []; let vol = 0, sets = 0, reps = 0;
+  Object.values(S.ex).forEach(e => {
+    const ss = sortedSess(e), i = ss.findIndex(x => x.date === date); if (i < 0 || !ss[i].sets.length) return;
+    const now = ss[i], sc = score(topSet(now));
+    now.sets.forEach(x => { vol += x.kg * x.reps; reps += x.reps; }); sets += now.sets.length;
+    ex.push({ name: e.name, top: setTxt(topSet(now)), pr: i > 0 && ss.slice(0, i).every(x => !x.sets.length || score(topSet(x)) < sc), n: now.sets.length });
+  });
+  ex.sort((a, b) => (b.pr - a.pr) || (b.n - a.n));
+  const log = ((S.wklog && S.wklog.list) || []).filter(x => x.date === date), last = log[log.length - 1];
+  const dur = log.reduce((a, x) => a + Math.max(0, (x.end || 0) - (x.start || 0)), 0);
+  const L = SP().last, sp = L && L.date === date && SP().list[L.id], day = sp && sp.days[L.day];
+  const m = shMus(ex);
+  return { title: shTitle(last ? last.title : day ? day.name : '', m.sets), date, dur: dur < 864e5 ? dur : 0, sets, vol: Math.round(vol), reps,
+    ex, lv: m.lv, sub: day ? 'Ziua ' + (L.day + 1) + ' din ' + sp.name : '' };
+}
+/* zilele cu antrenament, cele mai noi primele */
+function shDays() {
+  const s = new Set(); Object.values(S.ex).forEach(e => e.sessions.forEach(x => { if (x.sets.length) s.add(x.date); }));
+  return [...s].filter(d => d <= todayStr()).sort().reverse().slice(0, 8);
+}
+/* cele trei cifre mari */
+function shStats(d) {
+  const out = [], m = Math.round(d.dur / 60000);
+  if (m >= 1) out.push(m >= 60 ? { v: Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0'), u: 'h', l: 'durată' } : { v: String(m), u: 'min', l: 'durată' });
+  else out.push({ v: String(d.ex.length), u: '', l: d.ex.length === 1 ? 'exercițiu' : 'exerciții' });
+  if (d.vol > 0) out.push({ v: num(d.vol), u: 'kg', l: 'ridicate' });
+  else if (d.reps > 0) out.push({ v: num(d.reps), u: '', l: d.reps === 1 ? 'repetare' : 'repetări' });
+  out.push({ v: String(d.sets), u: '', l: d.sets === 1 ? 'serie' : 'serii' });
+  return out;
+}
+const shLong = s => { const t = pdate(s).toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' }); return t.charAt(0).toUpperCase() + t.slice(1); };
+const shPlain = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '');    /* Permanent Marker nu are ă, ș, ț */
+const shDayLbl = s => s === todayStr() ? 'Azi' : s === addDays(todayStr(), -1) ? 'Ieri' : fmtShort(s);
+function shRnd(seed) {
+  let a = 0; for (const ch of String(seed)) a = (Math.imul(a, 31) + ch.charCodeAt(0)) | 0;
+  return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const shPRs = d => d.ex.filter(e => e.pr);
+function shPRline(c, d, maxW) {
+  const p = shPRs(d); if (!p.length) return '';
+  if (p.length === 1) { const t = 'Record nou la ' + p[0].name + ': ' + p[0].top; return c.measureText(t).width <= maxW ? t : shCut(c, 'Record nou: ' + p[0].top + ' la ' + p[0].name, maxW); }
+  const head = pl(p.length, 'record nou', 'recorduri noi');
+  for (let k = p.length; k >= 1; k--) {
+    const t = head + ': ' + p.slice(0, k).map(e => e.name).join(', ') + (k < p.length ? ' și încă ' + (p.length - k) : '');
+    if (c.measureText(t).width <= maxW) return t;
+  }
+  return head;
+}
+
+/* ---- unelte de desen ---- */
+const shCv = {};
+const shCnv = (k, w, h) => { const c = shCv[k] || (shCv[k] = document.createElement('canvas')); c.width = Math.ceil(w); c.height = Math.ceil(h); return c; };
+function shCut(c, s, maxW) {
+  if (c.measureText(s).width <= maxW) return s;
+  let t = s; while (t.length > 1 && c.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+  return t.trimEnd() + '…';
+}
+const shCap = c => c.measureText('H').actualBoundingBoxAscent || parseFloat(c.font) * .72;
+const shTail = T => /[ȘȚŞŢQJ,]/.test(T.lines[T.lines.length - 1]) ? T.px * .14 : 0;
+/* titlul: pe un rând dacă încape destul de mare, altfel pe două rânduri cât mai egale */
+function shTitleFit(c, title, maxW, max, min1) {
+  const T = String(title).toUpperCase().trim() || 'ANTRENAMENT';
+  c.font = shF(900, 100, 'd');
+  const per = s => c.measureText(s).width / 100, px = Math.min(max, maxW / per(T));
+  if (px >= min1 || !/\s/.test(T)) return { lines: [T], px, lh: 1 };
+  const w = T.split(/\s+/); let best = null;
+  for (let i = 1; i < w.length; i++) { const a = w.slice(0, i).join(' '), b = w.slice(i).join(' '), m = Math.max(per(a), per(b)); if (!best || m < best.m) best = { lines: [a, b], m }; }
+  return { lines: best.lines, px: Math.min(max * .8, maxW / best.m), lh: /[ȘȚŞŢQJ]/.test(best.lines[0]) || /[ĂÂÎ]/.test(best.lines[1]) ? 1.07 : .92 };
+}
+let shNz = null;
+function shGrain(c, a, mode, w, h) {
+  if (!shNz) {
+    shNz = document.createElement('canvas'); shNz.width = shNz.height = 240;
+    const g = shNz.getContext('2d'), im = g.createImageData(240, 240), R = shRnd('grain');
+    for (let i = 0; i < im.data.length; i += 4) { const v = 70 + R() * 185 | 0; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+    g.putImageData(im, 0, 0);
+  }
+  c.save(); c.globalAlpha = a; c.globalCompositeOperation = mode; c.fillStyle = c.createPattern(shNz, 'repeat'); c.fillRect(0, 0, w || SHW, h || SHH); c.restore();
+}
+/* semnul: GANTERA cu bara în trei culori de sub G-ul din iconiță */
+function shMark(c, x, y, px, col, align) {
+  c.save(); c.font = shF(900, px, 'd'); c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+  const w = c.measureText('GANTERA').width, x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x;
+  c.fillStyle = col; c.fillText('GANTERA', x0, y);
+  const bh = Math.max(4, px * .17); c.shadowColor = 'transparent';
+  c.translate(x0 + w / 2, y + px * .13 + bh / 2); c.rotate(-.03);
+  ['#FF5C4A', '#5D95F7', '#F6C32B'].forEach((k, i) => { c.fillStyle = k; c.fillRect(-w / 2 + i * w / 3, -bh / 2, w / 3 + .6, bh); });
+  c.restore();
+}
+/* bandă de hârtie cu capetele rupte */
+function shTape(c, cx, cy, w, h, rot, R, col) {
+  c.save(); c.translate(cx, cy); c.rotate(rot);
+  const x0 = -w / 2, x1 = w / 2, y0 = -h / 2, n = 7;
+  c.beginPath(); c.moveTo(x0 + 3, y0); c.lineTo(x1 - 3, y0);
+  for (let i = 1; i <= n; i++) c.lineTo(x1 - (i % 2 ? 6 + R() * 6 : R() * 3), y0 + h * i / n);
+  c.lineTo(x0 + R() * 3, -y0);
+  for (let i = n - 1; i >= 1; i--) c.lineTo(x0 + (i % 2 ? 6 + R() * 6 : R() * 3), y0 + h * i / n);
+  c.closePath();
+  c.shadowColor = 'rgba(48,42,20,.25)'; c.shadowBlur = 14; c.shadowOffsetY = 5; c.fillStyle = col; c.fill();
+  c.shadowColor = 'transparent'; c.globalAlpha = .22; c.fillStyle = '#FFFFFF'; c.fillRect(x0 + 14, y0 + 9, w - 28, 5);
+  c.restore();
+}
+/* cerc de marker, tras din mână (aceeași formă la fiecare desen, pentru aceeași zi) */
+function shRing(c, cx, cy, rx, ry, R, col, lw) {
+  c.save(); c.strokeStyle = col; c.lineWidth = lw; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath();
+  const a0 = -2.5 + R() * .5, ph = R() * 6, N = 72;
+  for (let i = 0; i <= N; i++) {
+    const t = i / N, a = a0 + t * Math.PI * 2 * 1.1, wob = 1 + Math.sin(t * 7 + ph) * .028 + (t - .5) * .07;
+    const x = cx + Math.cos(a) * rx * wob, y = cy + Math.sin(a) * ry * wob;
+    if (i) c.lineTo(x, y); else c.moveTo(x, y);
+  }
+  c.stroke(); c.restore();
+}
+
+/* iconițele Lucide, din aceleași căi ca în aplicație */
+function shIcon(c, name, x, y, size, col, lw) {
+  c.save(); c.translate(x, y); c.scale(size / 24, size / 24); c.strokeStyle = col; c.lineWidth = lw || 2; c.lineCap = 'round'; c.lineJoin = 'round';
+  (IC[name].match(/ d="[^"]+"/g) || []).forEach(m => c.stroke(new Path2D(m.slice(4, -1))));
+  c.restore();
+}
+/* insigna cu recordurile: trofeu + text, într-o pastilă; y = mijlocul ei */
+function shBadge(c, d, x, y, align, maxW, o) {
+  const px = o.px || 30, ic = px * 1.1, pad = px * .75, gap = px * .45, h = px * 2;
+  c.save(); c.font = shF(700, px, 'b');
+  const txt = shPRline(c, d, maxW - pad * 2 - ic - gap); if (!txt) { c.restore(); return 0; }
+  const w = pad * 2 + ic + gap + c.measureText(txt).width, x0 = align === 'center' ? x - w / 2 : x, r = h / 2;
+  if (o.shadow) { c.shadowColor = o.shadow; c.shadowBlur = 18; }
+  c.beginPath(); c.moveTo(x0 + r, y - r); c.lineTo(x0 + w - r, y - r); c.arc(x0 + w - r, y, r, -Math.PI / 2, Math.PI / 2); c.lineTo(x0 + r, y + r); c.arc(x0 + r, y, r, Math.PI / 2, Math.PI * 1.5); c.closePath();
+  c.fillStyle = o.bg; c.fill(); c.shadowColor = 'transparent'; c.lineWidth = 2.5; c.strokeStyle = o.line; c.stroke();
+  shIcon(c, 'trophy', x0 + pad, y - ic / 2, ic, o.icon, 2.1);
+  c.fillStyle = o.fg; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText(txt, x0 + pad + ic + gap, y + px * .05);
+  c.restore();
+  return h;
+}
+
+/* ---- omulețul pe canvas: aceleași forme ca în aplicație (BODY), desenate direct, ca să fie clare la orice mărime ---- */
+let shPartsC = null;
+function shPath(el) {
+  const a = n => parseFloat(el.getAttribute(n)) || 0, tag = el.tagName.toLowerCase(), p = new Path2D();
+  if (tag === 'path') return new Path2D(el.getAttribute('d'));
+  const r = /rotate\(\s*([-\d.]+)/.exec(el.getAttribute('transform') || ''), rot = r ? +r[1] * Math.PI / 180 : 0;
+  if (tag === 'circle') { p.arc(a('cx'), a('cy'), a('r'), 0, Math.PI * 2); return p; }
+  if (tag === 'ellipse') { p.ellipse(a('cx'), a('cy'), a('rx'), a('ry'), rot, 0, Math.PI * 2); return p; }
+  if (tag === 'rect') {
+    const x = a('x'), y = a('y'), w = a('width'), h = a('height'), q = Math.min(a('rx'), w / 2, h / 2);
+    p.moveTo(x + q, y); p.arcTo(x + w, y, x + w, y + h, q); p.arcTo(x + w, y + h, x, y + h, q); p.arcTo(x, y + h, x, y, q); p.arcTo(x, y, x + w, y, q); p.closePath(); return p;
+  }
+  return null;
+}
+function shParts() {
+  if (shPartsC) return shPartsC;
+  const svg = new DOMParser().parseFromString(BODY([], '', {}, 'x'), 'image/svg+xml').documentElement, out = [];
+  Array.from(svg.children).forEach(side => {
+    const t = /translate\(\s*([-\d.]+)/.exec(side.getAttribute('transform') || ''), dx = t ? +t[1] : 0;
+    Array.from(side.children).forEach(g => out.push({ dx, m: g.getAttribute('data-m') || '', shapes: Array.from(g.children).map(shPath).filter(Boolean) }));
+  });
+  return (shPartsC = out);
+}
+/* pal: sil (silueta), off (mușchii nelucrați), on (flacăra), glow (strălucirea, opțional), gap (rostul dintre mușchi) */
+function shBody(c, lv, x, y, w, pal) {
+  const k = w / 208, h = 190 * k, parts = shParts();
+  const b = shCnv('body', w, h), g = b.getContext('2d'); g.setTransform(k, 0, 0, k, 0, 0); g.lineJoin = 'round';
+  const gl = pal.glow ? shCnv('glow', w, h) : null, gg = gl && gl.getContext('2d'); if (gg) gg.setTransform(k, 0, 0, k, 0, 0);
+  parts.forEach(p => {
+    const l = p.m ? lv[p.m] || 0 : -1;
+    g.save(); g.translate(p.dx, 0); if (gg) { gg.save(); gg.translate(p.dx, 0); }
+    p.shapes.forEach(s => {
+      if (l < 0) { g.fillStyle = pal.sil; g.fill(s); return; }
+      g.fillStyle = pal.off; g.fill(s);
+      if (l) { g.globalAlpha = (pal.fa || SH_LV)[l]; g.fillStyle = pal.on; g.fill(s); g.globalAlpha = 1; if (gg) { gg.globalAlpha = (pal.ga || SH_LV)[l]; gg.fillStyle = pal.on; gg.fill(s); } }
+      g.globalCompositeOperation = 'destination-out'; g.lineWidth = pal.gap || 1.15; g.stroke(s); g.globalCompositeOperation = 'source-over';
+    });
+    g.restore(); if (gg) gg.restore();
+  });
+  if (gl) {
+    c.save(); c.shadowColor = pal.glow;
+    c.shadowBlur = w * .09; c.globalAlpha = .9; c.drawImage(gl, x, y);
+    c.shadowBlur = w * .035; c.globalAlpha = 1; c.drawImage(gl, x, y);
+    c.restore();
+  }
+  c.drawImage(b, x, y);
+}
+/* cifrele pe un rând, aceeași mărime pentru toate: în coloane egale, centrate (center) sau una după alta, de la stânga (flow) */
+function shStatsRow(c, st, x0, x1, base, o) {
+  const n = st.length, up = .4, gap = .07, lpx = o.lpx || 32, G = o.g || 64;
+  const vw = st.map(s => { c.font = shF(900, 100, 'd'); let w = c.measureText(s.v).width; if (s.u) { c.font = shF(800, 100 * up, 'd'); w += c.measureText(s.u).width + 100 * gap; } return w / 100; });
+  const lw = st.map(s => { c.font = shF(500, lpx, 'b'); return c.measureText(s.l).width; });
+  let px = o.px;
+  if (o.flow) { while (px > 40 && st.reduce((a, s, i) => a + Math.max(vw[i] * px, lw[i]), 0) + G * (n - 1) > x1 - x0) px -= 2; }
+  else { const cw = (x1 - x0) / n; vw.forEach(w => { px = Math.min(px, (cw - (o.pad || 24)) / w); }); }
+  c.save(); c.textBaseline = 'alphabetic';
+  if (o.shadow) { c.shadowColor = o.shadow; c.shadowBlur = 18; c.shadowOffsetY = 2; }
+  let fx = x0;
+  st.forEach((s, i) => {
+    c.font = shF(900, px, 'd'); const w0 = c.measureText(s.v).width, w = vw[i] * px;
+    const cx = o.flow ? fx : x0 + (x1 - x0) / n * (i + .5), left = o.flow ? fx : cx - w / 2;
+    c.textAlign = 'left'; c.fillStyle = o.v; c.fillText(s.v, left, base);
+    if (s.u) { c.fillStyle = o.u; c.font = shF(800, px * up, 'd'); c.fillText(s.u, left + w0 + px * gap, base); }
+    c.fillStyle = o.l; c.font = shF(500, lpx, 'b'); c.textAlign = o.flow ? 'left' : 'center';
+    c.fillText(s.l, o.flow ? left + px * .02 : cx, base + lpx * 1.55);
+    fx += Math.max(w, lw[i]) + G;
+  });
+  c.restore();
+  return px;
+}
+
+/* ---- variantele ---- */
+/* Tablă: foaia din jurnalul de sală, lipită cu bandă: titlul, exercițiile cu cea mai bună serie (recordurile încercuite),
+   jos cifrele și omulețul */
+function shTabla(c, d, R) {
+  const L = 84, RT = SHW - 84, ink = '#15181A', ink2 = '#535C60';
+  let g = c.createLinearGradient(0, 0, SHW * .35, SHH); g.addColorStop(0, '#F1F1EC'); g.addColorStop(1, '#D8D9D1');
+  c.fillStyle = g; c.fillRect(0, 0, SHW, SHH);
+  g = c.createRadialGradient(SHW * .46, SHH * .42, 260, SHW * .5, SHH * .5, SHH * .8); g.addColorStop(0, 'rgba(66,68,60,0)'); g.addColorStop(1, 'rgba(66,68,60,.2)');
+  c.fillStyle = g; c.fillRect(0, 0, SHW, SHH);
+  shGrain(c, .16, 'multiply');
+  /* banda cu data și semnul */
+  const tx = L + 128, ty = 300;
+  shTape(c, tx, ty, 268, 84, -.06, R, 'rgba(229,217,170,.92)');
+  c.save(); c.translate(tx, ty); c.rotate(-.06); c.font = shF(400, 46, 'm'); c.fillStyle = '#1E2123'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText(shPlain(fmtShort(d.date)), 0, 3); c.restore();
+  shMark(c, RT, 318, 46, ink, 'right');
+  /* titlul */
+  const T = shTitleFit(c, d.title, RT - L + 8, 232, 150);
+  c.font = shF(900, T.px, 'd'); c.fillStyle = ink; c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+  let y = 410; const cap = shCap(c);
+  T.lines.forEach((ln, i) => { y += i ? T.px * T.lh : cap; c.fillText(ln, L - T.px * .03, y); });
+  y += shTail(T);
+  if (d.sub) { y += 62; c.font = shF(600, 36, 'b'); c.fillStyle = ink2; c.fillText(shCut(c, d.sub, RT - L), L, y); }
+  /* jurnalul; cu puține exerciții, rândurile cresc (până la +25%) ca foaia să nu pară goală */
+  const LIM = 1150, top = y + 56, fit = Math.max(1, Math.min(5, Math.floor((LIM - top) / 100)));
+  const rows = d.ex.slice(0, d.ex.length > fit && top + fit * 100 + 60 > LIM ? fit - 1 : fit), more = d.ex.length > rows.length;
+  const k = Math.min(1.25, Math.max(1, (LIM - top - (more ? 70 : 0)) / (rows.length * 100 + 60))), RH = 100 * k;
+  const rule = yy => { c.strokeStyle = 'rgba(21,24,26,.15)'; c.lineWidth = 2; c.beginPath(); c.moveTo(L, yy); c.lineTo(RT, yy); c.stroke(); };
+  rule(top);
+  c.font = shF(400, 36 * k, 'm'); const nw = c.measureText('record!').width;
+  rows.forEach((e, i) => {
+    const r0 = top + i * RH, vb = r0 + 66 * k;
+    c.font = shF(800, 60 * k, 'd'); const tw = c.measureText(e.top).width;
+    c.textAlign = 'right'; c.fillStyle = ink; c.fillText(e.top, RT, vb);
+    c.textAlign = 'left'; c.font = shF(600, 37 * k, 'b'); c.fillStyle = ink;
+    c.fillText(shCut(c, e.name, RT - L - tw - 48 - (e.pr ? nw + 40 : 0)), L, r0 + 47 * k);
+    c.font = shF(500, 27 * k, 'b'); c.fillStyle = ink2; c.fillText(pl(e.n, 'serie', 'serii'), L, r0 + 83 * k);
+    rule(r0 + RH);
+    if (e.pr) {
+      shRing(c, RT - tw / 2 - 2, vb - 21 * k, tw / 2 + 26 * k, 41 * k, R, SH_FLAME, 6 * k);
+      c.save(); c.translate(RT - tw - 40 * k, vb - 12 * k); c.rotate(-.1); c.font = shF(400, 36 * k, 'm'); c.fillStyle = SH_FLAME; c.textAlign = 'right';
+      c.fillText('record!', 0, 0); c.restore();
+    }
+  });
+  let end = top + rows.length * RH;
+  if (more) { c.font = shF(600, 31, 'b'); c.fillStyle = ink2; c.textAlign = 'left'; c.fillText('și încă ' + pl(d.ex.length - rows.length, 'exercițiu', 'exerciții'), L, end + 58); end += 70; }
+  /* jos: cifrele, una sub alta, și omulețul (cât mai mare: până la cifre și până sub listă) */
+  const st = shStats(d);
+  let px = 108, sw = 0;
+  st.forEach(s => { c.font = shF(900, 100, 'd'); let w = c.measureText(s.v).width; if (s.u) { c.font = shF(800, 42, 'd'); w += c.measureText(s.u).width + 8; } px = Math.min(px, 360 * 100 / w); sw = Math.max(sw, w); });
+  sw = Math.max(sw * px / 100, 150);
+  const mw = Math.max(540, Math.min(680, (RT - L - sw - 30) / .93, (1692 - end - 80) * 208 / 190)), mh = mw * 190 / 208, my = 1692 - mh;
+  shBody(c, d.lv, RT - mw + 30, my, mw, { sil: '#C3C6BE', off: '#A0A59D', on: SH_FLAME, fa: [0, .55, .82, 1] });
+  st.forEach((s, i) => {
+    const b = 1692 - 52 - (st.length - 1 - i) * 156;
+    c.textAlign = 'left'; c.font = shF(900, px, 'd'); c.fillStyle = ink; c.fillText(s.v, L - 3, b);
+    const vw = c.measureText(s.v).width;
+    if (s.u) { c.font = shF(800, px * .42, 'd'); c.fillStyle = ink2; c.fillText(s.u, L + vw + px * .07, b); }
+    c.font = shF(500, 30, 'b'); c.fillStyle = ink2; c.fillText(s.l, L, b + 44);
+  });
+}
+/* Noapte: omulețul e eroul, aprins pe întuneric */
+function shNoapte(c, d, R) {
+  const dim = '#97A0A4', mw = 860, my = 690;
+  c.fillStyle = '#111416'; c.fillRect(0, 0, SHW, SHH);
+  let g = c.createRadialGradient(SHW / 2, my + 360, 30, SHW / 2, my + 360, 780);
+  g.addColorStop(0, 'rgba(255,106,19,.22)'); g.addColorStop(.5, 'rgba(255,106,19,.07)'); g.addColorStop(1, 'rgba(255,106,19,0)');
+  c.fillStyle = g; c.fillRect(0, 0, SHW, SHH);
+  shGrain(c, .06, 'screen');
+  c.font = shF(600, 34, 'b'); c.fillStyle = dim; c.textAlign = 'left'; c.textBaseline = 'alphabetic'; c.fillText(shLong(d.date), 84, 312);
+  shMark(c, SHW - 84, 314, 44, SH_CHALK, 'right');
+  const T = shTitleFit(c, d.title, SHW - 160, 220, 120);
+  c.font = shF(900, T.px, 'd'); c.fillStyle = SH_CHALK; c.textAlign = 'center';
+  let y = 410; const cap = shCap(c);
+  T.lines.forEach((ln, i) => { y += i ? T.px * T.lh : cap; c.fillText(ln, SHW / 2, y); });
+  y += shTail(T);
+  if (shPRs(d).length) { y += 76; shBadge(c, d, SHW / 2, y - 12, 'center', SHW - 168, { px: 30, bg: 'rgba(255,106,19,.13)', line: SH_FLAME, icon: SH_FLAME, fg: SH_CHALK }); y += 20; }
+  else if (d.sub) { y += 66; c.font = shF(600, 34, 'b'); c.fillStyle = dim; c.fillText(shCut(c, d.sub, SHW - 168), SHW / 2, y); }
+  const by = Math.max(my, y + 50), mh = Math.min(mw * 190 / 208, 1468 - by), mw2 = mh * 208 / 190, mx = (SHW - mw2) / 2;
+  c.save(); c.translate(SHW / 2, by + mh - 6); c.scale(1, .1);
+  g = c.createRadialGradient(0, 0, 0, 0, 0, 430); g.addColorStop(0, 'rgba(255,106,19,.32)'); g.addColorStop(1, 'rgba(255,106,19,0)');
+  c.fillStyle = g; c.fillRect(-440, -440, 880, 880); c.restore();
+  shBody(c, d.lv, mx, by, mw2, { sil: '#22282B', off: '#343C40', on: SH_FLAME, glow: 'rgba(255,106,19,.9)', gap: 1.3, fa: SH_LIT, ga: SH_GLOW });
+  shStatsRow(c, shStats(d), 60, SHW - 60, 1606, { px: 124, v: SH_CHALK, u: SH_FLAME, l: dim, center: true, lpx: 32 });
+}
+/* Poza ta: poza din galerie, cu cifrele jos, pe o umbră care le face lizibile pe orice poză */
+function shPoza(c, d, R, ph) {
+  if (ph) {
+    const iw = ph.naturalWidth || ph.width, ih = ph.naturalHeight || ph.height, s = Math.max(SHW / iw, SHH / ih), w = iw * s, h = ih * s;
+    c.imageSmoothingQuality = 'high'; c.drawImage(ph, (SHW - w) / 2, (SHH - h) / 2, w, h);
+  } else {
+    let g = c.createLinearGradient(0, 0, SHW, SHH); g.addColorStop(0, '#2B3135'); g.addColorStop(1, '#0E1112'); c.fillStyle = g; c.fillRect(0, 0, SHW, SHH);
+    g = c.createRadialGradient(SHW * .7, SHH * .3, 20, SHW * .7, SHH * .3, 900); g.addColorStop(0, 'rgba(255,106,19,.35)'); g.addColorStop(1, 'rgba(255,106,19,0)'); c.fillStyle = g; c.fillRect(0, 0, SHW, SHH);
+    shGrain(c, .07, 'screen');
+  }
+  let g = c.createLinearGradient(0, 0, 0, 470); g.addColorStop(0, 'rgba(6,8,9,.55)'); g.addColorStop(1, 'rgba(6,8,9,0)'); c.fillStyle = g; c.fillRect(0, 0, SHW, 470);
+  g = c.createLinearGradient(0, 860, 0, SHH); g.addColorStop(0, 'rgba(6,8,9,0)'); g.addColorStop(.42, 'rgba(6,8,9,.5)'); g.addColorStop(1, 'rgba(6,8,9,.86)');
+  c.fillStyle = g; c.fillRect(0, 860, SHW, SHH - 860);
+  const sh = 'rgba(0,0,0,.45)';
+  c.save(); c.shadowColor = sh; c.shadowBlur = 16;
+  shMark(c, 84, 316, 48, SH_CHALK, 'left');
+  c.font = shF(600, 34, 'b'); c.fillStyle = 'rgba(243,242,237,.88)'; c.textAlign = 'right'; c.fillText(shLong(d.date), SHW - 84, 312);
+  c.restore();
+  const mw = 380, mh = mw * 190 / 208, st = shStats(d);
+  const T = shTitleFit(c, d.title, SHW - 168, 190, 120);
+  const base = 1580, tH = (T.lines.length - 1) * T.px * T.lh;
+  const pr = shPRs(d).length > 0;
+  let y = base - 118 - (pr ? 86 : 0) - tH;
+  shBody(c, d.lv, 84 - 12, y - T.px * .74 - 40 - mh, mw, { sil: 'rgba(243,242,237,.3)', off: 'rgba(243,242,237,.48)', on: SH_FLAME, glow: 'rgba(255,106,19,.75)', fa: SH_LIT, ga: SH_GLOW });
+  c.save(); c.shadowColor = sh; c.shadowBlur = 20; c.shadowOffsetY = 2;
+  c.font = shF(900, T.px, 'd'); c.fillStyle = SH_CHALK; c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+  T.lines.forEach((ln, i) => c.fillText(ln, 84 - T.px * .03, y + i * T.px * T.lh));
+  c.restore();
+  if (pr) shBadge(c, d, 84, y + tH + 30 + shTail(T) + 38, 'left', SHW - 168, { px: 29, bg: 'rgba(12,14,15,.5)', line: '#FF8A3D', icon: '#FF8A3D', fg: SH_CHALK, shadow: 'rgba(0,0,0,.35)' });
+  shStatsRow(c, st, 84, SHW - 84, base + 40, { px: 112, v: SH_CHALK, u: '#FF8A3D', l: 'rgba(243,242,237,.85)', lpx: 30, shadow: sh, flow: true, g: 70 });
+}
+/* Sticker: doar omulețul și cifrele, pe transparent, de lipit peste orice story; înalt cât îi trebuie */
+function shSticker(c, d) {
+  const mw = 600, mh = mw * 190 / 208, sh = 'rgba(0,0,0,.42)';
+  shBody(c, d.lv, (SHW - mw) / 2, 30, mw, { sil: 'rgba(255,255,255,.34)', off: 'rgba(255,255,255,.55)', on: SH_FLAME, glow: 'rgba(255,106,19,.8)', fa: SH_LIT, ga: SH_GLOW });
+  const T = shTitleFit(c, d.title, SHW - 120, 150, 100);
+  c.save(); c.shadowColor = sh; c.shadowBlur = 22; c.shadowOffsetY = 2;
+  c.font = shF(900, T.px, 'd'); c.fillStyle = '#FFFFFF'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+  let y = 30 + mh + 20; const cap = shCap(c);
+  T.lines.forEach((ln, i) => { y += i ? T.px * T.lh : cap; c.fillText(ln, SHW / 2, y); });
+  c.restore();
+  y += shTail(T);
+  if (shPRs(d).length) { y += 74; shBadge(c, d, SHW / 2, y, 'center', SHW - 120, { px: 30, bg: 'rgba(12,14,15,.55)', line: SH_FLAME, icon: SH_FLAME, fg: '#FFFFFF', shadow: 'rgba(0,0,0,.3)' }); y += 10; }
+  y += 150;
+  shStatsRow(c, shStats(d), 40, SHW - 40, y, { px: 120, v: '#FFFFFF', u: SH_FLAME, l: 'rgba(255,255,255,.92)', center: true, lpx: 32, shadow: sh });
+  y += 130;
+  c.save(); c.shadowColor = sh; c.shadowBlur = 14; shMark(c, SHW / 2, y, 40, '#FFFFFF', 'center'); c.restore();
+  return y + 40;
+}
+function shCanvas(d, t, ph) {
+  const st = t === 'sticker', cv = shCnv('main', SHW, st ? 1500 : SHH), c = cv.getContext('2d');
+  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cv.width, cv.height); c.textBaseline = 'alphabetic';
+  const R = shRnd(d.date + '|' + d.title);
+  if (t === 'noapte') shNoapte(c, d, R); else if (t === 'poza') shPoza(c, d, R, ph); else if (!st) shTabla(c, d, R);
+  else { const h = Math.min(1500, Math.ceil(shSticker(c, d))), out = shCnv('stk', SHW, h); out.getContext('2d').drawImage(cv, 0, 0); return out; }
+  return cv;
+}
+async function shFonts(txt) {
+  const s = 'ĂÂÎȘȚăâîșț×' + txt, want = [shF(900, 80, 'd'), shF(800, 80, 'd'), shF(500, 40, 'b'), shF(600, 40, 'b'), shF(700, 40, 'b'), shF(400, 40, 'm')];
+  if (!document.fonts || !document.fonts.load) return;
+  try { await Promise.race([Promise.all(want.map(f => document.fonts.load(f, s))), new Promise(r => setTimeout(r, 2500))]); } catch (e) {}
+}
+
+/* ---- fereastra ---- */
+const shAlt = d => { const p = shPRs(d);
+  return 'Imaginea pentru story: ' + d.title + ', ' + shStats(d).map(s => s.v + (s.u ? ' ' + s.u : '') + ' ' + s.l).join(', ') + (p.length ? ', ' + pl(p.length, 'record nou', 'recorduri noi') + ': ' + p.map(e => e.name + ' ' + e.top).join(', ') : ''); };
+const shCanCopy = () => !!(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem);
+function shCtlHTML() {
+  const t = SH.t, d = SH.d, ready = SH.file ? '' : ' disabled', copy = t === 'sticker' && shCanCopy();
+  const note = t === 'sticker' ? (copy ? 'Copiezi sticker-ul, deschizi în Instagram un story cu poza ta și îl lipești (Paste). Îl muți și îl mărești cu degetele.' : 'Îl trimiți în Instagram ca sticker sau îl salvezi și îl pui peste o poză.')
+    : 'Din meniul care se deschide alegi Instagram › Story sau salvezi imaginea.' + (t === 'poza' ? ' Poza rămâne pe telefon: imaginea se face aici, nu se trimite nicăieri.' : '');
+  return '<div class="chips sh-t" role="group" aria-label="Varianta">' + SH_T.map(([k, n]) => '<button class="chip" type="button" data-act="shT" data-t="' + k + '" aria-pressed="' + (t === k) + '">' + n + '</button>').join('') + '</div>' +
+    (t === 'poza' && SH.photo ? '<button class="btn ghost sm sh-ph" type="button" data-act="shPhoto">' + ic('img') + 'Schimbă poza</button>' : '') +
+    (copy ? '<button class="btn block" type="button" data-act="shCopy"' + ready + '>' + ic('copy') + 'Copiază sticker-ul</button>' +
+      '<button class="btn ghost block" type="button" data-act="shShare"' + ready + '>' + ic('share') + 'Distribuie</button>'
+      : '<button class="btn block" type="button" data-act="shShare"' + ready + '>' + ic('share') + 'Distribuie</button>') +
+    (SH.days.length > 1 ? '<div class="field"><span>Antrenamentul</span><div class="chips scroll sh-days">' + SH.days.map(x => '<button class="chip" type="button" data-act="shDay" data-d="' + x + '" aria-pressed="' + (x === d.date) + '">' + esc(shDayLbl(x)) + '</button>').join('') + '</div></div>' : '') +
+    '<div class="note">' + esc(note) + '</div>';
+}
+function shSheetHTML() {
+  return '<div id="shRoot" class="sh">' + sheetHead('Distribuie') +
+    '<div class="sh-prev busy" data-t="' + SH.t + '"><img id="shImg" alt=""><button class="sh-pick" type="button" data-act="shPhoto"' + (SH.t === 'poza' && !SH.photo ? '' : ' hidden') + '>' + ic('img') + 'Alege o poză</button></div>' +
+    '<div id="shCtl" class="sh-ctl">' + shCtlHTML() + '</div></div>';
+}
+function shPaint() {
+  const ctl = $('#shCtl'); if (ctl) ctl.innerHTML = shCtlHTML();
+  const pv = $('#shRoot .sh-prev'); if (pv) pv.dataset.t = SH.t;
+  const pk = $('#shRoot .sh-pick'); if (pk) pk.hidden = !(SH.t === 'poza' && !SH.photo);
+}
+async function shDraw() {
+  const seq = ++SH.seq, d = SH.d, t = SH.t;
+  SH.file = null; shPaint();
+  const pv = $('#shRoot .sh-prev'); if (pv) pv.classList.add('busy');
+  await shFonts(d.title + d.sub + d.ex.map(e => e.name + e.top).join('') + shLong(d.date));
+  if (seq !== SH.seq) return;
+  let blob = null;
+  try {
+    const cv = shCanvas(d, t, t === 'poza' ? SH.photo : null), type = t === 'sticker' ? 'image/png' : 'image/jpeg';
+    blob = await new Promise(r => cv.toBlob(r, type, .92));
+    if (seq !== SH.seq) return;
+    if (!blob) throw new Error('toBlob');
+    if (SH.url) URL.revokeObjectURL(SH.url);
+    SH.url = URL.createObjectURL(blob);
+    SH.file = new File([blob], 'gantera-' + d.date + (t === 'sticker' ? '-sticker.png' : '-' + t + '.jpg'), { type });
+  } catch (e) { toast('Nu am putut face imaginea. Încearcă din nou.'); return; }
+  const img = $('#shImg');
+  if (img) { img.alt = shAlt(d); img.src = SH.url; }
+  if (pv) pv.classList.remove('busy');
+  shPaint();
+}
+function shOpen(src, d) {
+  SH.src = src; SH.d = d; SH.days = src === 'day' ? shDays() : [];
+  SH.t = shLast();
+  openSheet(shSheetHTML());
+  const back = src === 'sum' ? () => { WKV.view = 'main'; WKV.sum = null; wkTick(); render(); } : null;
+  sheetClose = () => {
+    SH.seq++; SH.file = null; SH.photo = null;
+    if (SH.url) { URL.revokeObjectURL(SH.url); SH.url = ''; }
+    if (SH.purl) { URL.revokeObjectURL(SH.purl); SH.purl = ''; }
+    if (back) back();
+  };
+  shDraw();
+}
+/* din rezumatul antrenamentului abia terminat */
+ACT.shSum = () => { const s = WKV.sum; if (!s || !s.res.length) return; shOpen('sum', shFromSum(s)); };
+/* din Sală: ultimul antrenament (și alegi altul dintre ultimele) */
+ACT.shOpen = () => { const days = shDays(); if (!days.length) { toast('Nu ai încă niciun antrenament notat.'); return; } shOpen('day', shFromDay(days[0])); };
+ACT.shDay = el => { const x = el.dataset.d; if (!x || x === SH.d.date) return; SH.d = shFromDay(x); shDraw(); };
+ACT.shT = el => {
+  const t = el.dataset.t; if (!t) return;
+  if (t === 'poza' && !SH.photo) { SH.t = 'poza'; shPaint(); shPick(); shDraw(); return; }
+  if (t === SH.t) return; SH.t = t; shDraw();
+  if (t !== 'poza') try { localStorage.setItem(SH_KEY, t); } catch (e) {}
+};
+/* poza: din galerie sau de la cameră; rămâne doar în memoria paginii */
+const shInput = document.createElement('input');
+shInput.type = 'file'; shInput.accept = 'image/*'; shInput.hidden = true; document.body.appendChild(shInput);
+function shPick() { shInput.value = ''; shInput.click(); }
+ACT.shPhoto = () => shPick();
+shInput.addEventListener('change', () => {
+  const f = shInput.files && shInput.files[0]; if (!f) return;
+  const u = URL.createObjectURL(f), im = new Image();
+  im.onload = () => { if (SH.purl) URL.revokeObjectURL(SH.purl); SH.purl = u; SH.photo = im; SH.t = 'poza'; if ($('#shRoot')) shDraw(); };
+  im.onerror = () => { URL.revokeObjectURL(u); toast('Nu am putut deschide poza. Încearcă alta.'); };
+  im.src = u;
+});
+function shDownload(f) {
+  const a = document.createElement('a'); a.href = SH.url; a.download = f.name; document.body.appendChild(a); a.click(); a.remove();
+  toast('Imaginea s-a descărcat');
+}
+/* fișierul e gata înainte de apăsare: Safari deschide meniul de partajare doar direct din atingere */
+ACT.shShare = () => {
+  const f = SH.file; if (!f) { toast('Imaginea se pregătește…'); return; }
+  if (typeof NATIVE !== 'undefined' && NATIVE && plug('Filesystem') && plug('Share')) { shNative(f); return; }
+  if (navigator.canShare && navigator.share && navigator.canShare({ files: [f] })) {
+    navigator.share({ files: [f] }).catch(e => { if (!e || e.name !== 'AbortError') shDownload(f); });
+    return;
+  }
+  shDownload(f);
+};
+async function shNative(f) {
+  try {
+    const data = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(f); });
+    const w = await plug('Filesystem').writeFile({ path: f.name, data, directory: 'CACHE' });
+    await plug('Share').share({ files: [w.uri], dialogTitle: 'Distribuie antrenamentul' });
+  } catch (e) { /* meniul s-a închis fără o alegere */ }
+}
+ACT.shCopy = () => {
+  const f = SH.file; if (!f || !shCanCopy()) return;
+  navigator.clipboard.write([new ClipboardItem({ [f.type]: f })])
+    .then(() => toast('Sticker copiat. Lipește-l în story (Paste).', 3600), () => toast('Nu am putut copia sticker-ul. Folosește Distribuie.'));
+};
 
 /* ================= CLASAMENT: cine are cea mai lungă serie =================
    Două clasamente în același tab: Global (toți cei care au intrat) și Prieteni (doar pe invitație, după numele de utilizator).
