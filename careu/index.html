@@ -21,17 +21,17 @@
 <style>
 :root{
   --page:#EEF1F4;--surface:#FFFFFF;--surface-2:#F3F5F8;--ink:#121A24;--ink-2:#475262;--muted:#76828F;
-  --line:#DDE3E9;--draw:#C2CAD3;--v:#0F7A2E;--e:#687384;--i:#C0352E;--live:#C8302A;--star:#D99A00;--focus:#2A78D6;
+  --line:#DDE3E9;--draw:#C2CAD3;--s1:#2A78D6;--v:#0F7A2E;--e:#687384;--i:#C0352E;--live:#C8302A;--star:#D99A00;--focus:#2A78D6;
   --fa:"Sofia Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --fc:"Sofia Sans Extra Condensed","Sofia Sans Condensed","Arial Narrow",system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){
   --page:#0B111A;--surface:#141C27;--surface-2:#1C2633;--ink:#E9EEF4;--ink-2:#B3BDCA;--muted:#8592A1;
-  --line:#243041;--draw:#4A576B;--v:#13803A;--e:#5F6B7C;--i:#C23A33;--live:#FF6A5E;--star:#F2B630;--focus:#6AA6F0;color-scheme:dark}}
+  --line:#243041;--draw:#4A576B;--s1:#3987E5;--v:#13803A;--e:#5F6B7C;--i:#C23A33;--live:#FF6A5E;--star:#F2B630;--focus:#6AA6F0;color-scheme:dark}}
 :root[data-theme=dark]{
   --page:#0B111A;--surface:#141C27;--surface-2:#1C2633;--ink:#E9EEF4;--ink-2:#B3BDCA;--muted:#8592A1;
-  --line:#243041;--draw:#4A576B;--v:#13803A;--e:#5F6B7C;--i:#C23A33;--live:#FF6A5E;--star:#F2B630;--focus:#6AA6F0;color-scheme:dark}
+  --line:#243041;--draw:#4A576B;--s1:#3987E5;--v:#13803A;--e:#5F6B7C;--i:#C23A33;--live:#FF6A5E;--star:#F2B630;--focus:#6AA6F0;color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--page);color:var(--ink);font:400 16px/1.42 var(--fa);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
@@ -76,6 +76,7 @@ h1,h2,h3{font-weight:700}
 .ci{width:20px;height:20px;object-fit:contain;flex:none}
 .ci.f{display:inline-grid;place-items:center;font-size:16px;line-height:1}
 .ci.lg{width:36px;height:36px;font-size:28px}
+.ci.fl{display:block;width:auto;height:auto}.ci.fl svg{display:block;width:20px;height:14px;border-radius:3px;box-shadow:0 0 0 1px var(--line)}.ci.fl.lg svg{width:36px;height:24px;border-radius:4px}
 
 /* day strip */
 .days{display:flex;gap:6px;overflow-x:auto;padding:2px 12px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -259,6 +260,38 @@ h1,h2,h3{font-weight:700}
 details{margin:6px 0}
 summary{padding:10px 16px;font-weight:600;cursor:pointer}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* model */
+.lead{margin:0 16px 14px;max-width:60ch;color:var(--ink-2);font-size:15.5px}
+.note a{color:var(--ink-2);font-weight:600}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.pri{background:var(--ink);color:var(--surface)}
+.panel .btn{background:var(--surface-2)}
+.panel .btn.pri{background:var(--ink);color:var(--surface)}
+.field small{display:block;margin-top:2px;font-weight:500;font-size:13px;color:var(--muted)}
+.field input[type=checkbox]{flex:none;width:22px;height:22px;accent-color:var(--ink)}
+.field select{max-width:62%;appearance:none;-webkit-appearance:none;border:0;border-radius:10px;background:var(--surface-2);color:var(--ink);font:600 15px var(--fa);padding:9px 32px 9px 12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237B8796' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;background-size:16px}
+.mt .mrw{position:relative;display:grid;grid-template-columns:1fr 70px 70px;align-items:center;gap:8px;padding:11px 14px;font-variant-numeric:tabular-nums}
+.mt .mrw.q{grid-template-columns:1fr 66px 66px 74px;gap:6px}
+.mt .mrw+.mrw::before{content:"";position:absolute;top:0;right:0;left:14px;border-top:1px solid var(--line)}
+.mt .mrw.hd{padding-top:12px;padding-bottom:6px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.mt .v{text-align:right;color:var(--ink-2);font-size:15px;line-height:1.15}
+.mt .v.b{color:var(--ink);font-weight:700}
+.mt .v small{display:block;margin-top:2px;font-size:11.5px;color:var(--muted)}
+.mt .hd .v{font-size:12.5px;color:var(--muted)}
+.mt .v.lo{color:var(--muted)}
+.rel{position:relative;padding:4px 8px 8px}
+.rel svg{display:block;width:100%;max-width:520px;height:auto;margin:0 auto;font:500 11px var(--fa);overflow:visible}
+.rel text{fill:var(--muted)}
+.rel .at{font-size:12px;fill:var(--ink-2)}
+.rel .gl{stroke:var(--line);stroke-width:1}
+.rel .dg{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 4}
+.rel .ln{fill:none;stroke:var(--s1);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.rel .dt{fill:var(--s1);stroke:var(--surface);stroke-width:2}
+.rel .hit{fill:transparent;cursor:pointer;outline:none}
+.rel .hit:focus-visible{stroke:var(--focus);stroke-width:2}
+.tip{position:absolute;z-index:2;pointer-events:none;padding:7px 10px;border-radius:10px;background:var(--ink);color:var(--surface);font-size:13px;line-height:1.3;white-space:nowrap;transform:translate(-50%,calc(-100% - 12px))}
+.tip[hidden]{display:none}
+.pp small{display:block;font-size:12.5px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -268,6 +301,7 @@ summary{padding:10px 16px;font-weight:600;cursor:pointer}
   <a href="#/" data-tab="meciuri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m12 8.2 3.1 2.3-1.2 3.6h-3.8l-1.2-3.6z"/><path d="M12 3v5.2M15.1 10.5l5.3-1.6M13.9 14.1l3.3 4.6M10.1 14.1l-3.3 4.6M8.9 10.5 3.6 8.9"/></svg>Meciuri</a>
   <a href="#/ligi" data-tab="ligi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4.5v1A3.5 3.5 0 0 0 8 10.5M17 6h2.5v1A3.5 3.5 0 0 1 16 10.5M12 13v4M8.5 20h7M9.5 17h5v3h-5z"/></svg>Ligi</a>
   <a href="#/fav" data-tab="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>Favorite</a>
+  <a href="#/model" data-tab="model"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16"/><path d="m7.5 15.5 3.5-4.5 3 2.5 5-6.5"/><circle cx="11" cy="11" r=".6" fill="currentColor"/><circle cx="14" cy="13.5" r=".6" fill="currentColor"/></svg>Model</a>
 </div></nav>
 <div class="sheet" id="sheet" hidden><div class="sh-in" role="dialog" aria-modal="true" id="shin"></div></div>
 <script>
@@ -305,7 +339,7 @@ const store = {
   get(k, d = null) { try { const v = localStorage.getItem('careu.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem('careu.' + k, JSON.stringify(v)); return true; } catch (e) { return false; } },
   cache(k, v) { const s = JSON.stringify(v), old = (() => { try { return (localStorage.getItem('careu.' + k) || '').length; } catch (e) { return 0; } })(); if (storageChars() - old + s.length > 1500000) return false; try { localStorage.setItem('careu.' + k, s); return true; } catch (e) { return false; } },
-  clearCache() { try { Object.keys(localStorage).filter(k => k.startsWith('careu.') && !/^careu\.(favs|picks|settings)$/.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) {} }
+  clearCache() { try { Object.keys(localStorage).filter(k => k.startsWith('careu.') && !/^careu\.(favs|picks|settings|learn)$/.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) {} }
 };
 const settings = Object.assign({ n: 5, theme: 'auto', proxy: '' }, store.get('settings', {}));
 const saveSettings = () => store.set('settings', settings);
@@ -315,6 +349,9 @@ applyTheme();
 /* ---------- competiții ---------- */
 // Top 10 după coeficientul UEFA al țărilor (sezonul 2026/27), apoi cupe și echipe naționale.
 const COMPS = [
+  ['rou.1', 'Liga 1', 'Superliga României', 'ro', '🇷🇴', ['Romanian Liga 1', 'Romanian Liga I', 'SuperLiga Romania', 'Liga I']],
+  ['rou.cup', 'Cupa României', 'Cupa României', 'ro', '🇷🇴', ['Romanian Cup', 'Cupa Romaniei']],
+  ['rou.2', 'Liga 2', 'Liga a II-a', 'ro', '🇷🇴', ['Romanian Liga 2', 'Romanian Liga II']],
   ['eng.1', 'Premier League', 'English Premier League', 'top', '🏴󠁧󠁢󠁥󠁮󠁧󠁿', ['Premier League']],
   ['ita.1', 'Serie A', 'Italian Serie A', 'top', '🇮🇹', ['Serie A', 'Serie A TIM', 'Serie A Enilive']],
   ['esp.1', 'LaLiga', 'Spanish LALIGA', 'top', '🇪🇸', ['LaLiga', 'La Liga', 'Spanish La Liga', 'LALIGA EA SPORTS']],
@@ -353,7 +390,6 @@ const COMPS = [
   ['afc.asian.cup', 'Cupa Asiei', 'AFC Asian Cup', 'nat', '', ['Asian Cup']],
   ['concacaf.gold', 'Gold Cup', 'Concacaf Gold Cup', 'nat', '', ['Gold Cup']],
   ['concacaf.nations.league', 'Liga Națiunilor CONCACAF', 'Concacaf Nations League', 'nat', '', []],
-  ['rou.1', 'Liga 1 (România)', 'Romanian Liga I', 'other', '🇷🇴', ['Liga I', 'Romanian Liga 1', 'SuperLiga']],
   ['sco.1', 'Premiership (Scoția)', 'Scottish Premiership', 'other', '🏴󠁧󠁢󠁳󠁣󠁴󠁿', []],
   ['aut.1', 'Bundesliga (Austria)', 'Austrian Bundesliga', 'other', '🇦🇹', []],
   ['den.1', 'Superliga (Danemarca)', 'Danish Superliga', 'other', '🇩🇰', []],
@@ -364,6 +400,7 @@ const COMPS = [
 ].map(([slug, ro, en, g, flag, alias]) => ({ slug, ro, en, g, flag, alias }));
 const COMP = Object.fromEntries(COMPS.map(c => [c.slug, c]));
 const GROUPS = [
+  { id: 'ro', title: 'România', aside: 'date 365Scores' },
   { id: 'top', title: 'Top 10 ligi', aside: 'după coeficientul UEFA' },
   { id: 'eu', title: 'Cupe europene' },
   { id: 'cup', title: 'Cupe naționale' },
@@ -385,12 +422,13 @@ const MORE = {
   'fra.2': ['French Ligue 2', 'Ligue 2'], 'sco.tennents': ['Scottish Cup', 'Cupa Scoției'], 'sco.cis': ['Scottish League Cup', 'Cupa Ligii (Scoția)'],
   'conmebol.libertadores': ['CONMEBOL Libertadores', 'Copa Libertadores'], 'conmebol.sudamericana': ['CONMEBOL Sudamericana', 'Copa Sudamericana'],
   'afc.champions': ['AFC Champions League Elite', 'Liga Campionilor Asiei'], 'concacaf.champions': ['Concacaf Champions Cup', 'Concacaf Champions Cup'],
+  'rou.super': ['Romanian Supercup', 'Supercupa României'],
   'global.finalissima': ['CONMEBOL-UEFA Cup of Champions', 'Finalissima'], 'fifa.olympics': ["Men's Olympic Soccer Tournament", 'Jocurile Olimpice']
 };
-const HOME_SLUGS = COMPS.filter(c => c.g !== 'other' || c.slug === 'rou.1').map(c => c.slug);
+const HOME_SLUGS = COMPS.filter(c => c.g !== 'other' && c.slug !== 'rou.2').map(c => c.slug);
 const INDEX_SLUGS = ['eng.1', 'ita.1', 'esp.1', 'ger.1', 'fra.1', 'por.1', 'bel.1', 'ned.1', 'tur.1', 'gre.1', 'uefa.champions', 'uefa.europa', 'uefa.europa.conf',
   'uefa.nations', 'fifa.world', 'fifa.worldq.uefa', 'fifa.worldq.conmebol', 'fifa.worldq.concacaf', 'fifa.worldq.caf', 'fifa.worldq.afc', 'fifa.worldq.ofc',
-  'conmebol.america', 'caf.nations', 'afc.asian.cup', 'concacaf.gold', 'rou.1', 'sco.1', 'aut.1', 'den.1', 'ksa.1', 'usa.1', 'bra.1', 'arg.1'];
+  'conmebol.america', 'caf.nations', 'afc.asian.cup', 'concacaf.gold', 'rou.1', 'rou.2', 'sco.1', 'aut.1', 'den.1', 'ksa.1', 'usa.1', 'bra.1', 'arg.1'];
 const NAT = new Set(COMPS.filter(c => c.g === 'nat').map(c => c.slug));
 
 const normLeague = s => norm(String(s || '').replace(/^\s*\d{4}(\s*[-\/]\s*\d{2,4})?\s+/, ''));
@@ -416,8 +454,11 @@ function slugFromName(name) {
 const compLabel = (slug, fallback) => COMP[slug]?.ro || MORE[slug]?.[1] || fallback || slug || '';
 const CLOGO = store.get('clogo', {});
 function setCompLogo(slug, url) { if (url && CLOGO[slug] !== url) { CLOGO[slug] = url; store.set('clogo', CLOGO); } }
+// tricolorul desenat, ca să arate la fel pe orice telefon (steagurile emoji diferă de la un font la altul)
+const ROFLAG = '<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#002B7F"/><rect x="10" width="10" height="20" fill="#FCD116"/><rect x="20" width="10" height="20" fill="#CE1126"/></svg>';
 function compIcon(slug, big) {
   const c = COMP[slug];
+  if (c?.g === 'ro' || slug === 'rou.super') return `<span class="ci fl${big ? ' lg' : ''}" aria-hidden="true">${ROFLAG}</span>`;
   const url = CLOGO[slug];
   const cls = 'ci' + (big ? ' lg' : '');
   if (url) return `<img class="${cls}" src="${esc(small(url, big ? 72 : 40))}" alt="" loading="lazy" data-fb="${esc(c?.flag || '')}" data-fbc="${cls} f">`;
@@ -456,8 +497,10 @@ function teamColors(A, B) {
   const surf = dark ? '141c27' : 'ffffff';
   const pal = dark ? ['3987e5', 'd95926'] : ['2a78d6', 'eb6834'];
   const usable = h => !!h && contrast(h, surf) >= 2;
-  const ca = [A?.color, A?.alt].find(usable) || pal[0];
-  const cb = [B?.color, B?.alt].find(h => usable(h) && apart(h, ca)) || [pal[1], pal[0]].find(h => apart(h, ca)) || pal[1];
+  const chroma = h => { const [, a, b] = oklab(rgbLin(h)); return Math.hypot(a, b); };
+  const order = t => { const c = [t?.color, t?.alt].filter(Boolean); if (c.length === 2 && chroma(c[0]) < 0.04 && chroma(c[1]) >= 0.06) c.reverse(); return c; };
+  const ca = order(A).find(usable) || pal[0];
+  const cb = order(B).find(h => usable(h) && apart(h, ca)) || [pal[1], pal[0]].find(h => apart(h, ca)) || pal[1];
   return ['#' + ca, '#' + cb];
 }
 
@@ -514,7 +557,7 @@ function limiter(n) {
   const next = () => { while (a < n && q.length) { a++; const { f, res, rej } = q.shift(); Promise.resolve().then(f).then(res, rej).finally(() => { a--; next(); }); } };
   return f => new Promise((res, rej) => { q.push({ f, res, rej }); next(); });
 }
-const lim = limiter(6), limSb = limiter(8);
+const lim = limiter(6), limSb = limiter(8), lim365 = limiter(3);
 
 /* ---------- normalizare ESPN ---------- */
 const hex6 = h => { const s = String(h || '').replace('#', '').trim(); return /^[0-9a-f]{6}$/i.test(s) ? s.toLowerCase() : ''; };
@@ -589,9 +632,137 @@ function evFromSummary(d, slugUsed) {
 }
 const pickC = t => t ? { color: t.color || '', alt: t.alt || '', logo: t.logo || '' } : {};
 
+/* ---------- România: date de la 365Scores (ESPN nu mai acoperă Liga 1 din septembrie 2025) ---------- */
+const W365 = 'https://webws.365scores.com/web/';
+const TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Bucharest'; } catch (e) { return 'Europe/Bucharest'; } })();
+const RO_CID = { 'rou.1': 136, 'rou.cup': 387, 'rou.2': 5513 };
+const CID_SLUG = { 136: 'rou.1', 387: 'rou.cup', 5513: 'rou.2', 463: 'rou.super', 572: 'uefa.champions', 573: 'uefa.europa', 7685: 'uefa.europa.conf', 332: 'uefa.champions_qual', 596: 'uefa.europa_qual', 321: 'club.friendly' };
+const is365 = id => /^s\d+$/.test(String(id || ''));
+// 365Scores scrie numele fără diacritice; pentru echipele românești le refacem
+const RO_WORDS = {
+  Bucuresti: 'București', Botosani: 'Botoșani', Galati: 'Galați', Ploiesti: 'Ploiești', Constanta: 'Constanța', Pitesti: 'Pitești',
+  Otelul: 'Oțelul', Arges: 'Argeș', Targu: 'Târgu', Timisoara: 'Timișoara', Iasi: 'Iași', Brasov: 'Brașov', Mures: 'Mureș',
+  Buzau: 'Buzău', Calarasi: 'Călărași', Ramnicu: 'Râmnicu', Valcea: 'Vâlcea', Bacau: 'Bacău', Sfantu: 'Sfântu', Targoviste: 'Târgoviște',
+  Resita: 'Reșița', Dumbravita: 'Dumbrăvița', Selimbar: 'Șelimbăr', Afumati: 'Afumați', Romaniei: 'României', Medias: 'Mediaș',
+  Bistrita: 'Bistrița', Focsani: 'Focșani', Barlad: 'Bârlad', Ceahlaul: 'Ceahlăul', Neamt: 'Neamț', Campina: 'Câmpina', Slatina: 'Slatina'
+};
+const roClub = n => String(n || '').replace(/[A-Za-z]+/g, w => RO_WORDS[w] || w);
+async function w365(path, ttl = 300000) {
+  const key = '365:' + path;
+  const hit = MEM.get(key);
+  if (hit && Date.now() - hit.t < ttl) return hit.d;
+  if (INFLIGHT.has(key)) return INFLIGHT.get(key);
+  const url = `${W365}${path}${path.includes('?') ? '&' : '?'}appTypeId=5&langId=1&timezoneName=${encodeURIComponent(TZ)}&userCountryId=29`;
+  const job = (async () => {
+    try { const d = await getJSON(url); netState = 'ok'; MEM.set(key, { t: Date.now(), d }); return d; }
+    catch (e) { logErr(url, e); if (hit) return hit.d; throw e; }
+  })();
+  INFLIGHT.set(key, job);
+  try { return await job; } finally { INFLIGHT.delete(key); }
+}
+const img365 = c => `https://imagecache.365scores.com/image/upload/f_png,w_64,h_64,c_limit,q_auto:eco,dpr_2,d_Competitors:default1.png/v${c.imageVersion || 1}/Competitors/${c.id}`;
+function team365(c) {
+  if (!c || c.id == null) return null;
+  const ro = c.countryId === 29 || [136, 387, 5513, 463].includes(c.mainCompetitionId);
+  const fix = n => ro ? roClub(n) : roName(n);
+  const name = fix(c.name || '');
+  return { id: 's' + c.id, name, en: c.name || '', short: c.shortName ? fix(c.shortName) : name, abbr: c.symbolicName || '', logo: img365(c), color: hex6(c.color), alt: hex6(c.awayColor) };
+}
+function ev365(g) {
+  if (!g) return null;
+  const home = team365(g.homeCompetitor), away = team365(g.awayCompetitor);
+  if (!home || !away) return null;
+  const txt = g.statusText || '', sg = g.statusGroup;
+  const canc = /cancel|postpon|abandon|suspend|delay/i.test(txt);
+  const state = canc ? 'post' : sg === 3 ? 'in' : sg === 4 ? 'post' : 'pre';
+  const sc = v => fin(v) && v >= 0 ? v : null;
+  const lg = c => CID_SLUG[c?.mainCompetitionId];
+  const prev = EV.get('s' + g.id);
+  const ev = {
+    id: 's' + g.id, date: g.startTime, slug: CID_SLUG[g.competitionId] || prev?.slug || null, league: g.competitionDisplayName || prev?.league || '', neutral: false,
+    state, done: state === 'post' && !canc,
+    status: canc ? (/postpon|delay/i.test(txt) ? 'STATUS_POSTPONED' : 'STATUS_CANCELED') : sg === 4 ? 'STATUS_FULL_TIME' : sg === 3 ? (/half ?time/i.test(txt) ? 'STATUS_HALFTIME' : 'STATUS_IN_PROGRESS') : 'STATUS_SCHEDULED',
+    clock: g.gameTimeDisplay || '',
+    home: { ...remember(home, lg(g.homeCompetitor)), score: state === 'pre' ? null : sc(g.homeCompetitor?.score), pen: null },
+    away: { ...remember(away, lg(g.awayCompetitor)), score: state === 'pre' ? null : sc(g.awayCompetitor?.score), pen: null },
+    venue: g.venue?.name || prev?.venue || ''
+  };
+  EV.set(ev.id, ev);
+  return ev;
+}
+async function schedule365(id, { fixtures = false } = {}) {
+  const cid = String(id).slice(1);
+  const d = await w365(`games/${fixtures ? 'fixtures' : 'results'}/?competitors=${cid}`, 10 * 60e3);
+  const c = (d?.competitors || []).find(x => String(x.id) === cid);
+  const team = c ? remember(team365(c), CID_SLUG[c.mainCompetitionId]) : TEAMS.get(String(id)) || null;
+  return { team, events: (d?.games || []).map(ev365).filter(Boolean), season: null, standing: '' };
+}
+async function game365(id) {
+  const d = await w365(`game/?gameId=${String(id).slice(1)}`, 90000);
+  if (!d?.game) throw Object.assign(new Error('meci negăsit'), { status: 404 });
+  return d.game;
+}
+const STAT365 = { corners: 'c', 'corner kicks': 'c', 'yellow cards': 'y', 'red cards': 'r', 'total shots': 'sh', shots: 'sh', 'shots on target': 'st', 'shots on goal': 'st', fouls: 'f', 'fouls committed': 'f', possession: 'p', 'ball possession': 'p' };
+async function stats365(ev) {
+  const d = await w365(`game/stats/?games=${String(ev.id).slice(1)}`, ev.done ? 864e5 : 60000);
+  const out = { ok: false, t: {} };
+  for (const s of d?.statistics || []) {
+    const k = STAT365[String(s.name || '').trim().toLowerCase()];
+    if (!k || s.competitorId == null) continue;
+    const v = parseFloat(String(s.value ?? '').replace('%', ''));
+    (out.t['s' + s.competitorId] ||= { c: null, y: null, r: null, sh: null, st: null, f: null, p: null })[k] = fin(v) ? v : null;
+  }
+  const ids = Object.keys(out.t);
+  out.ok = ids.length === 2 && ids.some(i => Object.values(out.t[i]).some(v => fin(v) && v > 0));
+  return out;
+}
+// 365Scores dă etichetele clasamentului în engleză
+const DEST_RO = [[/relegation play-?offs?/i, 'Baraj de menținere'], [/promotion play-?offs?/i, 'Baraj de promovare'], [/championship (round|group|play-?offs?)|^play-?offs?$/i, 'Play-off'],
+  [/relegation (round|group)|play-?outs?/i, 'Play-out'], [/^relegation$/i, 'Retrogradare'], [/^promotion$/i, 'Promovare'], [/conference league/i, 'Conference League'], [/europa league/i, 'Europa League'], [/champions league/i, 'Liga Campionilor']];
+const destRo = n => (DEST_RO.find(([r]) => r.test(String(n || ''))) || [0, n || ''])[1];
+async function standings365(slug) {
+  const d = await w365(`standings/?competitions=${RO_CID[slug]}`, 30 * 60e3);
+  const S = d?.standings || [];
+  const dest = {};
+  S.forEach(s => (s.destinations || []).forEach(x => { if (x && x.num != null) dest[x.num] = { name: x.name || '', color: hex6(x.color) }; }));
+  return S.map(s => ({
+    name: s.groupName || (S.length > 1 ? s.displayName : '') || '',
+    rows: (s.rows || []).map(r => ({
+      team: remember(team365(r.competitor), slug), rank: fin(r.position) ? r.position : null, gp: r.gamePlayed,
+      gd: fin(r.for) && fin(r.against) ? r.for - r.against : r.ratio, pts: r.points,
+      note: destRo(dest[r.destinationNum]?.name), nc: dest[r.destinationNum]?.color || ''
+    })).filter(r => r.team)
+  })).filter(g => g.rows.length);
+}
+async function scoreboard365(slug, ymd) {
+  const cid = RO_CID[slug];
+  const mine = g => g && g.competitionId === cid;
+  const uniqG = gs => [...new Map(gs.filter(mine).map(g => [g.id, g])).values()];
+  const both = async ttl => {
+    const [r, f] = await Promise.all([w365(`games/results/?competitions=${cid}`, ttl).catch(() => null), w365(`games/fixtures/?competitions=${cid}`, ttl).catch(() => null)]);
+    if (!r && !f) throw new Error('fără date');
+    return uniqG([...(r?.games || []), ...(f?.games || [])]);
+  };
+  if (ymd) {
+    // ziua cerută, cu rezervă: rezultatele și programul competiției, filtrate pe zi
+    const dmy = `${ymd.slice(6, 8)}/${ymd.slice(4, 6)}/${ymd.slice(0, 4)}`;
+    const today = ymdOf(new Date()), ttl = ymd === today ? 60000 : ymd < today ? 6 * 3600e3 : 20 * 60e3;
+    const onDay = gs => gs.filter(g => ymdOf(new Date(g.startTime)) === ymd);
+    let games = [];
+    try { const d = await w365(`games/?competitions=${cid}&startDate=${dmy}&endDate=${dmy}`, ttl); games = onDay(uniqG(d?.games || [])); } catch (e) {}
+    if (!games.length) games = onDay(await both(ymd === today ? 60000 : 300000));
+    return games.map(ev365).filter(Boolean);
+  }
+  const evs = (await both()).map(ev365).filter(Boolean);
+  const past = evs.filter(e => e.state !== 'pre').sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
+  const next = evs.filter(e => e.state === 'pre').sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 8);
+  return [...past, ...next];
+}
+
 /* ---------- endpoint-uri ---------- */
 const ymdOf = d => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
 async function scoreboard(slug, ymd) {
+  if (RO_CID[slug]) return scoreboard365(slug, ymd);
   const today = ymdOf(new Date());
   const ttl = !ymd || ymd === today ? 60000 : ymd < today ? 6 * 3600e3 : 20 * 60e3;
   const q = ymd ? `?dates=${ymd}` : '';
@@ -601,9 +772,15 @@ async function scoreboard(slug, ymd) {
   });
   const L = d.leagues?.[0];
   if (L) { if (L.name) learnName(L.name, slug); setCompLogo(slug, L.logos?.[0]?.href); }
-  return d.events.map(e => evOf(e, slug)).filter(Boolean);
+  // meciurile terminate vin cu cornere, faulturi și cartonașe: le păstrăm, ca să nu mai cer rezumatul fiecăruia
+  return d.events.map(e => {
+    const ev = evOf(e, slug);
+    if (ev?.done && !STATS[ev.id]) { const st = sbStats(e); if (st?.ok) { STATS[ev.id] = [Date.now(), st]; statsDirty = true; } }
+    return ev;
+  }).filter(Boolean);
 }
 async function standings(slug) {
+  if (RO_CID[slug]) return standings365(slug);
   const d = await espn(`/apis/v2/sports/soccer/${slug}/standings`, { ttl: 30 * 60e3, ok: d => d && (Array.isArray(d.children) || d.standings) });
   const groups = [];
   (function walk(n) {
@@ -624,10 +801,12 @@ function stRow(e, slug) {
 const sortRows = rows => rows.every(r => fin(r.rank)) ? rows.sort((a, b) => a.rank - b.rank) : rows.sort((a, b) => (b.pts ?? 0) - (a.pts ?? 0) || (b.gd ?? 0) - (a.gd ?? 0));
 async function compTeams(slug) {
   try { const g = await standings(slug); const ts = g.flatMap(x => x.rows.map(r => r.team)); if (ts.length) return ts; } catch (e) {}
+  if (RO_CID[slug]) return [];
   const d = await espn(`/apis/site/v2/sports/soccer/${slug}/teams`, { ttl: 864e5, ok: d => Array.isArray(d?.sports?.[0]?.leagues?.[0]?.teams) });
   return d.sports[0].leagues[0].teams.map(x => remember(teamOf(x.team), slug)).filter(Boolean);
 }
 async function schedule(id, opts = {}) {
+  if (is365(id)) return schedule365(id, opts);
   try { return await scheduleFor('all', id, opts); }
   catch (e) {
     // dacă vederea „toate competițiile” nu răspunde, măcar campionatul echipei
@@ -683,12 +862,12 @@ async function summary(id, hints = []) {
 
 /* ---------- statistici pe meci (cache local, compact) ---------- */
 const STATS = store.get('stats', {});
-let statsDirty = false;
+let statsDirty = false, statsHold = false;
 function flushStats() {
   if (!statsDirty) return;
   statsDirty = false;
   const ks = Object.keys(STATS);
-  if (ks.length > 600) ks.sort((a, b) => STATS[a][0] - STATS[b][0]).slice(0, ks.length - 450).forEach(k => delete STATS[k]);
+  if (!statsHold && ks.length > 1500) ks.sort((a, b) => STATS[a][0] - STATS[b][0]).slice(0, ks.length - 1100).forEach(k => delete STATS[k]);
   store.cache('stats', STATS);
 }
 setInterval(flushStats, 4000);
@@ -719,8 +898,9 @@ async function matchStats(ev) {
   const c = STATS[ev.id];
   if (c) return c[1];
   try {
-    const { d } = await summary(ev.id, [ev.slug, TEAMS.get(ev.home.id)?.lg, TEAMS.get(ev.away.id)?.lg]);
-    const s = statsFromSummary(d);
+    let s;
+    if (is365(ev.id)) s = await stats365(ev);
+    else { const { d } = await summary(ev.id, [ev.slug, TEAMS.get(ev.home.id)?.lg, TEAMS.get(ev.away.id)?.lg]); s = statsFromSummary(d); }
     if (ev.done) { STATS[ev.id] = [Date.now(), s]; statsDirty = true; }
     return s;
   } catch (e) { return null; }
@@ -733,7 +913,7 @@ function pois(l, max) { const p = [Math.exp(-l)]; for (let i = 1; i <= max; i++)
 function block(la, lb, max, rho = 0) {
   const pa = pois(la, max), pb = pois(lb, max);
   const M = pa.map(x => pb.map(y => x * y));
-  if (rho) { M[0][0] *= 1 - la * lb * rho; M[0][1] *= 1 + la * rho; M[1][0] *= 1 + lb * rho; M[1][1] *= 1 - rho; }
+  if (rho) { M[0][0] *= Math.max(0, 1 - la * lb * rho); M[0][1] *= Math.max(0, 1 + la * rho); M[1][0] *= Math.max(0, 1 + lb * rho); M[1][1] *= Math.max(0, 1 - rho); }
   let s = 0; M.forEach(r => r.forEach(v => { s += v; }));
   let a = 0, dr = 0, b = 0, btts = 0;
   const T = new Array(2 * max + 1).fill(0);
@@ -771,23 +951,19 @@ function sample(teamId, list, stats) {
   ['gf', 'ga', 'cf', 'ca', 'kf', 'ka', 'sh', 'sha', 'st', 'sta', 'f', 'p'].forEach(k => { S[k] = av(k); });
   return S;
 }
-function predict(SA, SB, neutral) {
-  const H = neutral ? { g: [1, 1], c: [1, 1], k: [1, 1] } : { g: [1.1, 0.9], c: [1.06, 0.94], k: [0.95, 1.05] };
-  const la = (shrink(SA.gf, PRIOR.g) + shrink(SB.ga, PRIOR.g)) / 2 * H.g[0];
-  const lb = (shrink(SB.gf, PRIOR.g) + shrink(SA.ga, PRIOR.g)) / 2 * H.g[1];
-  const goals = block(la, lb, 10, -0.1);
+// prm: parametrii modelului; cei inițiali (DEF) sau cei învățați din meciurile terminate (vezi „învățare”)
+function predict(SA, SB, neutral, prm = params()) {
+  const lam = (q, prior, xf, ya, yf, xa) => {
+    const mid = (q.hH + q.hA) / 2;
+    return [(q.w * shrink(xf, prior, q.k) + (1 - q.w) * shrink(ya, prior, q.k)) * (neutral ? mid : q.hH),
+      (q.w * shrink(yf, prior, q.k) + (1 - q.w) * shrink(xa, prior, q.k)) * (neutral ? mid : q.hA)];
+  };
+  const [la, lb] = lam(prm.g, PRIOR.g, SA.gf, SB.ga, SB.gf, SA.ga);
+  const goals = block(la, lb, 10, prm.g.rho);
   goals.top = topScores(goals.M, 5);
   let corners = null, cards = null;
-  if (SA.cf.n && SB.cf.n) {
-    const ca = (shrink(SA.cf, PRIOR.c) + shrink(SB.ca, PRIOR.c)) / 2 * H.c[0];
-    const cb = (shrink(SB.cf, PRIOR.c) + shrink(SA.ca, PRIOR.c)) / 2 * H.c[1];
-    corners = block(ca, cb, 30); corners.lines = linesAround(ca + cb);
-  }
-  if (SA.kf.n && SB.kf.n) {
-    const ka = (shrink(SA.kf, PRIOR.k) + shrink(SB.ka, PRIOR.k)) / 2 * H.k[0];
-    const kb = (shrink(SB.kf, PRIOR.k) + shrink(SA.ka, PRIOR.k)) / 2 * H.k[1];
-    cards = block(ka, kb, 16); cards.lines = linesAround(ka + kb);
-  }
+  if (SA.cf.n && SB.cf.n) { const [ca, cb] = lam(prm.c, PRIOR.c, SA.cf, SB.ca, SB.cf, SA.ca); corners = block(ca, cb, 30); corners.lines = linesAround(ca + cb); }
+  if (SA.kf.n && SB.kf.n) { const [ka, kb] = lam(prm.k, PRIOR.k, SA.kf, SB.ka, SB.kf, SA.ka); cards = block(ka, kb, 16); cards.lines = linesAround(ka + kb); }
   return { goals, corners, cards };
 }
 function pctRound(ps) {
@@ -796,6 +972,281 @@ function pctRound(ps) {
   raw.map((v, i) => [v - fl[i], i]).sort((a, b) => b[0] - a[0]).slice(0, rem).forEach(([, i]) => { fl[i]++; });
   return fl;
 }
+
+/* ---------- învățare: modelul se calibrează pe meciurile terminate ---------- */
+// Fiecare pronostic se salvează împreună cu datele din care a fost calculat. După fluier aplicația
+// citește rezultatul, iar parametrii modelului se re-estimează prin verosimilitate maximă (Poisson,
+// Dixon–Coles pentru goluri). Cât timp sunt puține meciuri, valorile învățate sunt trase spre cele implicite.
+const DEF = {
+  g: { k: 2, w: 0.5, hH: 1.1, hA: 0.9, rho: -0.1 },
+  c: { k: 2, w: 0.5, hH: 1.06, hA: 0.94, rho: 0 },
+  k: { k: 2, w: 0.5, hH: 0.95, hA: 1.05, rho: 0 }
+};
+const MIN_FIT = 20, N0 = 40, SLUG_MIN = 60;
+const LEARN = Object.assign({ v: 1, on: true, s: {}, fit: null }, store.get('learn', {}));
+let learnDirty = false;
+function saveLearn() {
+  learnDirty = false;
+  const ks = Object.keys(LEARN.s);
+  if (ks.length > 900) {
+    ks.sort((a, b) => (LEARN.s[a].src === 'live') - (LEARN.s[b].src === 'live') || new Date(LEARN.s[a].d) - new Date(LEARN.s[b].d))
+      .slice(0, ks.length - 800).forEach(k => delete LEARN.s[k]);
+  }
+  store.cache('learn', LEARN);
+}
+setInterval(() => { if (learnDirty) saveLearn(); }, 5000);
+addEventListener('pagehide', () => { if (learnDirty) saveLearn(); });
+// o competiție cu destule meciuri învățate primește parametrii ei, trași spre cei generali
+const params = slug => LEARN.on && LEARN.fit?.p ? (slug && LEARN.fit.s?.[slug]) || LEARN.fit.p : DEF;
+const calibrated = () => !!(LEARN.on && LEARN.fit?.p && LEARN.fit.p.g.n >= MIN_FIT);
+const r2 = v => fin(v) ? Math.round(v * 100) / 100 : null;
+const SK = ['gf', 'ga', 'cf', 'ca', 'kf', 'ka'];
+const packS = S => SK.flatMap(k => [r2(S[k].m), S[k].n]);
+const unpackS = a => { const o = {}; SK.forEach((k, i) => { o[k] = { m: a[2 * i], n: a[2 * i + 1] || 0 }; }); o.n = o.gf.n; return o; };
+function actualOf(ev, st) {
+  if (!ev?.done || !fin(ev.home.score) || !fin(ev.away.score)) return null;
+  const a = st?.ok ? st.t[ev.home.id] : null, b = st?.ok ? st.t[ev.away.id] : null;
+  const c = o => o && fin(o.c) ? o.c : null;
+  const k = o => o && fin(o.y) ? o.y + (fin(o.r) ? o.r : 0) : null;
+  return [ev.home.score, ev.away.score, c(a), c(b), k(a), k(b)];
+}
+function record(ev, SA, SB, P, R, src) {
+  if (!ev?.id || /^vs/.test(ev.id) || !SA?.n || !SB?.n) return;
+  const cur = LEARN.s[ev.id];
+  if (cur && cur.src === 'live' && src !== 'live') { if (R && !cur.R) { cur.R = R; learnDirty = true; scheduleFit(); } return; }
+  if (cur?.R && !R) return;
+  LEARN.s[ev.id] = {
+    d: ev.date, sl: ev.slug || '', hn: ev.home.short || ev.home.name, an: ev.away.short || ev.away.name, neu: ev.neutral ? 1 : 0, src,
+    A: packS(SA), B: packS(SB),
+    P: P ? [...P.goals.p, ...(P.corners ? P.corners.p : [null, null, null]), ...(P.cards ? P.cards.p : [null, null, null])].map(v => fin(v) ? Math.round(v * 1000) / 1000 : null) : null,
+    R: R || null, t: Date.now()
+  };
+  learnDirty = true;
+  if (R) scheduleFit();
+}
+async function finalResult(id, slugHint) {
+  if (is365(id)) {
+    const ev = ev365(await game365(id));
+    return ev?.done ? { ev, st: await matchStats(ev) } : { ev };
+  }
+  const { d, slug } = await summary(id, [slugHint]);
+  const ev = evFromSummary(d, slug);
+  let st = null;
+  if (ev?.done) { st = statsFromSummary(d); if (!STATS[ev.id]) { STATS[ev.id] = [Date.now(), st]; statsDirty = true; } }
+  return { ev, st };
+}
+let resolving = null;
+function resolvePending(limit = 25, onProg) {
+  if (resolving) return resolving;
+  resolving = (async () => {
+    const now = Date.now();
+    const pend = Object.entries(LEARN.s).filter(([, s]) => !s.R && !s.x && new Date(s.d).getTime() < now - 2.5 * 3600e3)
+      .sort((a, b) => new Date(b[1].d) - new Date(a[1].d)).slice(0, limit);
+    let n = 0, got = 0;
+    await Promise.all(pend.map(([id, s]) => lim(async () => {
+      const age = now - new Date(s.d).getTime();
+      try {
+        const { ev, st } = await finalResult(id, s.sl);
+        if (ev?.done) { s.R = actualOf(ev, st); if (s.R) got++; else s.x = 1; }
+        else if (ev && /POSTPONED|CANCEL/.test(ev.status)) s.x = 1;
+        else if (age > 20 * 864e5) s.x = 1;
+      } catch (e) { if (e.status && age > 10 * 864e5) s.x = 1; }
+      onProg?.(++n, pend.length);
+    })));
+    if (n) learnDirty = true;
+    if (got) refit();
+    return got;
+  })();
+  resolving.finally(() => { resolving = null; }).catch(() => {});
+  return resolving;
+}
+
+/* potrivirea parametrilor */
+const KG = [0.5, 1, 2, 3, 5, 8], WG = [0.35, 0.45, 0.5, 0.55, 0.65], RG = [-0.2, -0.15, -0.1, -0.05, 0, 0.05];
+const PARTS = { g: { f: 'gf', a: 'ga', ri: 0, prior: PRIOR.g }, c: { f: 'cf', a: 'ca', ri: 2, prior: PRIOR.c }, k: { f: 'kf', a: 'ka', ri: 4, prior: PRIOR.k } };
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const tau = (x, y, l, m, r) => x === 0 && y === 0 ? 1 - l * m * r : x === 0 && y === 1 ? 1 + l * r : x === 1 && y === 0 ? 1 + m * r : x === 1 && y === 1 ? 1 - r : 1;
+function rowsOf(S, part) {
+  const P = PARTS[part];
+  return S.map(s => {
+    const yH = s.R[P.ri], yA = s.R[P.ri + 1];
+    if (!fin(yH) || !fin(yA)) return null;
+    const A = unpackS(s.A), B = unpackS(s.B);
+    if (part !== 'g' && (!A[P.f].n || !B[P.f].n)) return null;
+    return { Af: A[P.f], Aa: A[P.a], Bf: B[P.f], Ba: B[P.a], neu: s.neu, yH, yA };
+  }).filter(Boolean);
+}
+function fitPart(rows, part, d = DEF[part]) {
+  const prior = PARTS[part].prior;
+  if (rows.length < MIN_FIT) return { ...d, n: rows.length };
+  let best = null;
+  for (const k of KG) for (const w of WG) {
+    const bH = [], bA = [];
+    let sy = 0, sb = 0, ty = 0, tb = 0;
+    rows.forEach((r, i) => {
+      bH[i] = w * shrink(r.Af, prior, k) + (1 - w) * shrink(r.Ba, prior, k);
+      bA[i] = w * shrink(r.Bf, prior, k) + (1 - w) * shrink(r.Aa, prior, k);
+      if (!r.neu) { sy += r.yH; sb += bH[i]; ty += r.yA; tb += bA[i]; }
+    });
+    // pentru Poisson, factorul de scară optim are formă închisă: suma observată / suma așteptată
+    const hH = sb > 0 ? clamp(sy / sb, 0.6, 1.6) : d.hH, hA = tb > 0 ? clamp(ty / tb, 0.5, 1.5) : d.hA;
+    for (const rho of part === 'g' ? RG : [0]) {
+      let nll = 0;
+      rows.forEach((r, i) => {
+        const f = r.neu ? (hH + hA) / 2 : null;
+        const m1 = Math.max(0.05, bH[i] * (f ?? hH)), m2 = Math.max(0.05, bA[i] * (f ?? hA));
+        nll += m1 - r.yH * Math.log(m1) + m2 - r.yA * Math.log(m2);
+        if (rho) nll -= Math.log(Math.max(1e-6, tau(r.yH, r.yA, m1, m2, rho)));
+      });
+      if (!best || nll < best.nll) best = { nll, k, w, hH, hA, rho };
+    }
+  }
+  const a = rows.length / (rows.length + N0);
+  const mix = key => d[key] + (best[key] - d[key]) * a;
+  return { k: mix('k'), w: mix('w'), hH: mix('hH'), hA: mix('hA'), rho: part === 'g' ? mix('rho') : 0, n: rows.length };
+}
+const fitAll = (S, base = DEF) => ({ g: fitPart(rowsOf(S, 'g'), 'g', base.g), c: fitPart(rowsOf(S, 'c'), 'c', base.c), k: fitPart(rowsOf(S, 'k'), 'k', base.k) });
+function fitModel(S) {
+  const p = fitAll(S), s = {}, by = new Map();
+  S.forEach(x => { if (x.sl) { if (!by.has(x.sl)) by.set(x.sl, []); by.get(x.sl).push(x); } });
+  for (const [sl, L] of by) if (L.length >= SLUG_MIN) s[sl] = fitAll(L, p);
+  return { p, s };
+}
+
+/* evaluare cinstită: validare încrucișată în 5 părți */
+const argmax = p => p.indexOf(Math.max(...p));
+const outc = (h, a) => h > a ? 0 : h === a ? 1 : 2;
+const newAcc = () => ({ g: { n: 0, ll: 0, br: 0, hit: 0, ae: 0 }, c: { n: 0, ll: 0, hit: 0, ae: 0 }, k: { n: 0, ll: 0, hit: 0, ae: 0 } });
+function scoreInto(acc, R, pr) {
+  const o = outc(R[0], R[1]), p = pr.goals.p, g = acc.g;
+  g.n++; g.ll -= Math.log(Math.max(1e-6, p[o])); g.br += p.reduce((t, v, i) => t + (v - (i === o ? 1 : 0)) ** 2, 0);
+  g.hit += argmax(p) === o ? 1 : 0; g.ae += Math.abs(pr.goals.la + pr.goals.lb - R[0] - R[1]);
+  [['c', pr.corners, 2], ['k', pr.cards, 4]].forEach(([key, b, i]) => {
+    if (!b || !fin(R[i]) || !fin(R[i + 1])) return;
+    const x = acc[key], oo = outc(R[i], R[i + 1]);
+    x.n++; x.ll -= Math.log(Math.max(1e-6, b.p[oo])); x.hit += argmax(b.p) === oo ? 1 : 0; x.ae += Math.abs(b.la + b.lb - R[i] - R[i + 1]);
+  });
+}
+const accOut = a => ({
+  g: a.g.n ? { n: a.g.n, ll: a.g.ll / a.g.n, br: a.g.br / a.g.n, acc: a.g.hit / a.g.n, mae: a.g.ae / a.g.n } : null,
+  c: a.c.n ? { n: a.c.n, ll: a.c.ll / a.c.n, acc: a.c.hit / a.c.n, mae: a.c.ae / a.c.n } : null,
+  k: a.k.n ? { n: a.k.n, ll: a.k.ll / a.k.n, acc: a.k.hit / a.k.n, mae: a.k.ae / a.k.n } : null
+});
+const REL_EDGES = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1.0001];
+function evaluateCV(S) {
+  const K = 5, def = newAcc(), cal = newAcc(), bins = REL_EDGES.slice(1).map((hi, j) => ({ lo: REL_EDGES[j], hi: Math.min(1, hi), p: 0, o: 0, n: 0 }));
+  for (let f = 0; f < K; f++) {
+    const test = S.filter((_, i) => i % K === f);
+    if (!test.length) continue;
+    const mc = fitModel(S.filter((_, i) => i % K !== f));
+    for (const s of test) {
+      const A = unpackS(s.A), B = unpackS(s.B);
+      scoreInto(def, s.R, predict(A, B, !!s.neu, DEF));
+      const pr = predict(A, B, !!s.neu, mc.s[s.sl] || mc.p);
+      scoreInto(cal, s.R, pr);
+      const o = outc(s.R[0], s.R[1]);
+      pr.goals.p.forEach((p, i) => { const j = REL_EDGES.findIndex((e, x) => p >= e && p < REL_EDGES[x + 1]); if (j >= 0) { bins[j].p += p; bins[j].o += i === o ? 1 : 0; bins[j].n++; } });
+    }
+  }
+  return { def: accOut(def), cal: accOut(cal), rel: bins.filter(b => b.n).map(b => ({ lo: b.lo, hi: b.hi, p: b.p / b.n, o: b.o / b.n, n: b.n })) };
+}
+function liveRecord() {
+  const L = Object.values(LEARN.s).filter(s => s.src === 'live' && s.P && s.R && !s.x);
+  if (!L.length) return null;
+  let hit = 0;
+  L.forEach(s => { if (argmax(s.P.slice(0, 3)) === outc(s.R[0], s.R[1])) hit++; });
+  return { n: L.length, acc: hit / L.length };
+}
+const learned = () => Object.values(LEARN.s).filter(s => s.R && !s.x && Array.isArray(s.A) && Array.isArray(s.B)).sort((a, b) => new Date(a.d) - new Date(b.d));
+let fitTimer = 0;
+function scheduleFit() { clearTimeout(fitTimer); fitTimer = setTimeout(refit, 1200); }
+function refit() {
+  const S = learned(), old = LEARN.fit;
+  // scorurile din validarea încrucișată se recalculează doar când se deschide fila Model
+  const M = fitModel(S);
+  LEARN.fit = { p: M.p, s: M.s, n: S.length, at: Date.now(), m: old?.m || null, mn: old?.mn || 0 };
+  learnDirty = true;
+  return LEARN.fit;
+}
+
+/* antrenament pe meciuri deja jucate: pronosticul se reface doar cu ce se știa înainte de meci */
+const etDay = iso => new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }).replace(/-/g, '');
+function sbStats(e) {
+  const c = e?.competitions?.[0];
+  if (!c) return null;
+  const out = { ok: false, t: {} }, det = Array.isArray(c.details);
+  for (const cp of c.competitors || []) {
+    const id = String(cp.team?.id ?? cp.id ?? '');
+    if (!id) continue;
+    const m = {};
+    for (const s of cp.statistics || []) { const v = parseFloat(String(s.displayValue ?? s.value ?? '').replace('%', '')); m[s.name] = fin(v) ? v : null; }
+    let p = m.possessionPct ?? null;
+    if (fin(p) && p > 0 && p <= 1) p *= 100;
+    out.t[id] = { c: m.wonCorners ?? null, y: det ? 0 : null, r: det ? 0 : null, sh: m.totalShots ?? null, st: m.shotsOnTarget ?? null, f: m.foulsCommitted ?? null, p };
+  }
+  for (const d of c.details || []) { const o = out.t[String(d.team?.id ?? '')]; if (!o) continue; if (d.redCard) o.r++; else if (d.yellowCard) o.y++; }
+  const ids = Object.keys(out.t);
+  out.ok = ids.length === 2 && ids.every(i => fin(out.t[i].c)) && ids.some(i => [out.t[i].c, out.t[i].sh, out.t[i].p].some(v => fin(v) && v > 0));
+  return out;
+}
+const roErr = m => Object.assign(new Error(m), { ro: true });
+async function trainOn(slug, withStats, prog) {
+  statsHold = true;
+  try { return await trainRun(slug, withStats, prog); } finally { statsHold = false; }
+}
+async function trainRun(slug, withStats, prog) {
+  const N = settings.n;
+  prog(0.02, 'Iau lista de echipe…');
+  let teams = [];
+  try { teams = await compTeams(slug); } catch (e) {}
+  if (!teams.length) throw roErr(`Nu am găsit echipele din ${compLabel(slug)}. Încearcă din nou mai târziu.`);
+  const hist = new Map();
+  let i = 0;
+  await Promise.all(teams.map(t => lim(async () => {
+    try { const s = await schedule(t.id); hist.set(t.id, s.events.filter(e => e.done && fin(e.home.score) && fin(e.away.score))); } catch (e) {}
+    prog(0.05 + 0.35 * (++i / teams.length), `Citesc rezultatele echipelor (${i} din ${teams.length})…`);
+  })));
+  const all = new Map();
+  hist.forEach(l => l.forEach(e => all.set(e.id, e)));
+  const before = (id, t) => (hist.get(id) || []).filter(e => new Date(e.date) < t).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, N);
+  const targets = [...all.values()]
+    .filter(e => e.slug === slug && hist.has(e.home.id) && hist.has(e.away.id))
+    .filter(m => { const t = new Date(m.date); return before(m.home.id, t).length >= 3 && before(m.away.id, t).length >= 3; })
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  if (!targets.length) throw roErr('Nu sunt încă destule meciuri jucate în această competiție.');
+  if (withStats) {
+    const need = new Set();
+    targets.forEach(m => { const t = new Date(m.date); need.add(m.id); before(m.home.id, t).forEach(e => need.add(e.id)); before(m.away.id, t).forEach(e => need.add(e.id)); });
+    const miss = [...need].filter(id => !STATS[id]).map(id => all.get(id)).filter(Boolean);
+    const m365 = miss.filter(e => is365(e.id)), mEspn = miss.filter(e => !is365(e.id));
+    let k = 0;
+    const total = m365.length + new Set(mEspn.map(e => `${e.slug}|${etDay(e.date)}`)).size;
+    const tick = () => prog(0.4 + 0.5 * (++k / Math.max(1, total)), `Citesc statisticile meciurilor (${k} din ${total})…`);
+    // 365Scores: o cerere pe meci; ESPN: o cerere pe zi și competiție aduce toate meciurile zilei
+    const days = new Map();
+    mEspn.forEach(e => { if (e.slug) days.set(`${e.slug}|${etDay(e.date)}`, [e.slug, etDay(e.date)]); });
+    await Promise.all([
+      ...m365.map(e => lim365(async () => { await matchStats(e); tick(); })),
+      ...[...days.values()].map(([sl, day]) => limSb(async () => { try { await scoreboard(sl, day); } catch (e) {} tick(); }))
+    ]);
+    flushStats();
+  }
+  prog(0.93, 'Compar pronosticurile cu rezultatele…');
+  let made = 0;
+  for (const m of targets) {
+    const t = new Date(m.date), none = new Map();
+    const SA = sample(m.home.id, before(m.home.id, t), none), SB = sample(m.away.id, before(m.away.id, t), none);
+    const R = actualOf(m, STATS[m.id]?.[1]);
+    if (!R) continue;
+    record(m, SA, SB, null, R, 'bt');
+    made++;
+  }
+  refit();
+  saveLearn();
+  prog(1, '');
+  return made;
+}
+if (!LEARN.fit && learned().length) refit();
 
 /* ---------- formatare ---------- */
 const fTime = new Intl.DateTimeFormat('ro-RO', { hour: '2-digit', minute: '2-digit' });
@@ -827,7 +1278,7 @@ function small(url, px) {
 function crest(t, cls = '') {
   if (!t) return '';
   const px = cls === 'xl' ? 128 : cls === 'lg' ? 80 : 48;
-  const src = t.logo || (t.id && !String(t.id).startsWith('vs') ? `https://a.espncdn.com/i/teamlogos/soccer/500/${t.id}.png` : '');
+  const src = t.logo || (is365(t.id) ? img365({ id: String(t.id).slice(1) }) : t.id && !String(t.id).startsWith('vs') ? `https://a.espncdn.com/i/teamlogos/soccer/500/${t.id}.png` : '');
   const fb = esc(mono(t.short || t.name));
   return src ? `<img class="cr ${cls}" src="${esc(small(src, px))}" alt="" loading="lazy" decoding="async" data-fb="${fb}" data-fbc="cr ${cls} mono">` : `<span class="cr ${cls} mono" aria-hidden="true">${fb}</span>`;
 }
@@ -842,6 +1293,7 @@ document.addEventListener('error', e => {
 const RES = { W: 'V', D: 'E', L: 'Î' };
 const RESL = { W: 'victorie', D: 'egal', L: 'înfrângere' };
 const fcChip = r => `<span class="fc ${r}" title="${RESL[r]}">${RES[r]}</span>`;
+const srcOf = id => is365(id) ? '365Scores' : 'ESPN';
 const formChips = S => { const rs = S.rows.slice().reverse(); return `<span class="fcs" title="De la cel mai vechi la cel mai recent meci" aria-label="Forma, de la cel mai vechi la cel mai recent: ${rs.map(r => RESL[r.res]).join(', ')}">${rs.map(r => fcChip(r.res)).join('')}</span>`; };
 
 const ICON = {
@@ -858,7 +1310,7 @@ let TOKEN = 0, NAVS = 0, curHash = location.hash, lastTab = 'meciuri';
 const SCROLL = new Map(), TIMERS = new Set();
 let restoreY = null;
 const later = (f, ms) => { const t = setTimeout(() => { TIMERS.delete(t); f(); }, ms); TIMERS.add(t); };
-function restoreScroll() { if (restoreY != null) { const y = restoreY; restoreY = null; requestAnimationFrame(() => window.scrollTo(0, y)); } }
+function restoreScroll() { if (restoreY != null) { const y = restoreY; restoreY = null; setTimeout(() => window.scrollTo(0, y), 0); } }
 function route(opt = {}) {
   needsRender = false;
   closeSheet();
@@ -871,6 +1323,7 @@ function route(opt = {}) {
   if (!p.length || p[0] === 'zi') { tab = 'meciuri'; viewHome(+(p[1] || 0) || 0, live); }
   else if (p[0] === 'ligi') { tab = 'ligi'; viewLeagues(live); }
   else if (p[0] === 'fav') { tab = 'fav'; viewFav(live); }
+  else if (p[0] === 'model') { tab = 'model'; viewModel(live); }
   else if (p[0] === 'c' && p[1]) { tab = 'ligi'; viewComp(p[1], p[2] === 'meciuri' ? 'meciuri' : 'clasament', live); }
   else if (p[0] === 't' && p[1]) viewTeam(p[1], p[2], live);
   else if (p[0] === 'm' && p[2]) viewMatch(p[1], p[2], live);
@@ -881,14 +1334,14 @@ function route(opt = {}) {
   if (!opt.keep) window.scrollTo(0, 0);
 }
 addEventListener('hashchange', () => { SCROLL.set(curHash, window.scrollY); curHash = location.hash; NAVS++; route(); });
-function goBack() { if (NAVS > 0) history.back(); else location.hash = lastTab === 'ligi' ? '#/ligi' : lastTab === 'fav' ? '#/fav' : '#/'; }
+function goBack() { if (NAVS > 0) history.back(); else location.hash = lastTab === 'ligi' ? '#/ligi' : lastTab === 'fav' ? '#/fav' : lastTab === 'model' ? '#/model' : '#/'; }
 const topBar = (title, right = '') => `<div class="bar"><button class="back" type="button" data-act="back">${ICON.back}<span>Înapoi</span></button><span class="ttl">${esc(title)}</span><span class="rt">${right}</span></div>`;
 const hero = (title, right = '') => `<header class="hero"><h1>${esc(title)}</h1>${right}</header>`;
 const gearBtn = () => `<button class="ico" type="button" data-act="settings" aria-label="Setări">${ICON.gear}</button>`;
 const nSeg = () => `<div class="seg sm" role="group" aria-label="Câte meciuri analizez">${[5, 10].map(n => `<button type="button" data-n="${n}" aria-pressed="${settings.n === n}">${n} meciuri</button>`).join('')}</div>`;
 function errBox(msg) {
   const blocked = netState === 'blocat' || location.protocol === 'about:' || /claude|anthropic/.test(location.hostname);
-  return `<div class="err" role="alert"><p>${esc(msg)}</p><button class="btn" type="button" data-act="retry">Reîncearcă</button>${blocked ? `<p class="note">Browserul nu poate ajunge la ESPN. Dacă ai deschis aplicația în previzualizarea din Claude, deschide-o din Safari sau Chrome (de exemplu de pe GitHub Pages): previzualizarea blochează cererile externe.</p>` : ''}</div>`;
+  return `<div class="err" role="alert"><p>${esc(msg)}</p><button class="btn" type="button" data-act="retry">Reîncearcă</button>${blocked ? `<p class="note">Browserul nu poate ajunge la serverele de date (ESPN, 365Scores). Dacă ai deschis aplicația în previzualizarea din Claude, deschide-o din Safari sau Chrome (de exemplu de pe GitHub Pages): previzualizarea blochează cererile externe.</p>` : ''}</div>`;
 }
 function favs() { return store.get('favs', []); }
 const isFav = id => favs().some(f => f.id === String(id));
@@ -944,14 +1397,14 @@ function viewHome(off, live) {
     const groups = HOME_SLUGS.filter(s => res.get(s)?.length);
     let html = groups.map(s => `<section><a class="ch" href="#/c/${s}/meciuri">${compIcon(s)}<span>${esc(compLabel(s))}</span></a><div class="grp">${res.get(s).slice().sort((a, b) => new Date(a.date) - new Date(b.date)).map(matchRow).join('')}</div></section>`).join('');
     const finished = done === HOME_SLUGS.length;
-    if (!html && finished) html = failed === HOME_SLUGS.length ? errBox('Nu am putut încărca meciurile de la ESPN.') : `<p class="empty">Nicio partidă în ziua asta în competițiile din aplicație. Alege altă zi din bara de sus.</p>`;
+    if (!html && finished) html = failed === HOME_SLUGS.length ? errBox('Nu am putut încărca meciurile.') : `<p class="empty">Nicio partidă în ziua asta în competițiile din aplicație. Alege altă zi din bara de sus.</p>`;
     else if (!html) html = `<p class="note">Caut meciurile zilei…</p>`;
     $('#list').innerHTML = html;
     const pg = $('#pg');
     if (pg) { pg.style.width = finished ? '0' : (done / HOME_SLUGS.length * 100) + '%'; }
     if (finished && !restored) { restored = true; restoreScroll(); }
   };
-  const tick = () => { if (!raf) raf = requestAnimationFrame(draw); };
+  const tick = () => { if (!raf) raf = setTimeout(draw, 16); };
   tick();
   HOME_SLUGS.forEach(s => limSb(() => scoreboard(s, ymd))
     .then(evs => { res.set(s, evs); }, () => { failed++; res.set(s, null); })
@@ -962,7 +1415,7 @@ function viewHome(off, live) {
 }
 
 /* ---------- ecran: Ligi + căutare ---------- */
-const IDX_V = 5;
+const IDX_V = 6;
 let IDXP = null;
 function teamIndex(onProg) {
   if (IDXP) return IDXP;
@@ -972,7 +1425,7 @@ function teamIndex(onProg) {
     if (cached?.v === IDX_V && Date.now() - cached.t < 3 * 864e5 && Array.isArray(cached.items)) {
       items = cached.items.map(([id, name, en, short, abbr, logo, lg, nat]) => ({ id, name, en: en || name, short: short || name, abbr, logo: logo || `https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png`, lg, nat: !!nat, sub: nat ? 'Echipă națională' : compLabel(lg) }));
     } else {
-      const map = new Map(), prio = { top: 4, other: 4, nat: 4, eu: 2, cup: 1 };
+      const map = new Map(), prio = { ro: 4, top: 4, other: 4, nat: 4, eu: 2, cup: 1 };
       let n = 0;
       await Promise.all(INDEX_SLUGS.map(slug => lim(async () => {
         try {
@@ -991,6 +1444,9 @@ function teamIndex(onProg) {
     }
     const seen = new Set(items.map(t => t.id));
     for (const t of TEAMS.values()) if (!seen.has(t.id) && t.name) items.push({ id: t.id, name: t.name, en: t.en, short: t.short, abbr: t.abbr, logo: t.logo, lg: t.lg || '', nat: !!t.nat, sub: t.nat ? 'Echipă națională' : compLabel(t.lg) });
+    // cluburile românești apar și la ESPN (din cupele europene); păstrăm varianta 365Scores, care are și campionatul
+    const ro = new Set(items.filter(t => is365(t.id)).map(t => norm(t.name)));
+    items = items.filter(t => is365(t.id) || !ro.has(norm(t.name)));
     items.forEach(t => { t.k = norm(`${t.name} ${t.short} ${t.abbr} ${t.en && t.en !== t.name ? t.en : ''}`); });
     return new Fuse(items, { keys: ['k'], threshold: 0.32, ignoreLocation: true, minMatchCharLength: 2 });
   })();
@@ -1033,7 +1489,7 @@ async function viewComp(slug, tab, live) {
     try {
       const evs = (await scoreboard(slug)).sort((a, b) => new Date(a.date) - new Date(b.date));
       if (!live()) return;
-      if (!evs.length) { cb().innerHTML = `<p class="empty">ESPN nu are meciuri programate în etapa curentă pentru această competiție.</p>`; return; }
+      if (!evs.length) { cb().innerHTML = `<p class="empty">${RO_CID[slug] ? '365Scores' : 'ESPN'} nu are meciuri programate în etapa curentă pentru această competiție.</p>`; return; }
       const byDay = new Map();
       evs.forEach(e => { const k = sod(new Date(e.date)); if (!byDay.has(k)) byDay.set(k, []); byDay.get(k).push(e); });
       cb().innerHTML = [...byDay.entries()].map(([k, l]) => `<div class="gname">${esc(cap(nodot(fDayLong.format(new Date(k)))))}</div><div class="grp">${l.map(matchRow).join('')}</div>`).join('');
@@ -1057,9 +1513,9 @@ async function viewComp(slug, tab, live) {
       const ts = await compTeams(slug);
       if (!live()) return;
       if (!ts.length) throw e;
-      cb().innerHTML = `<p class="note">Competiția nu are clasament la ESPN. Echipele participante:</p><div class="grp">${ts.slice().sort((a, b) => a.name.localeCompare(b.name, 'ro')).map(t => `<a class="row" href="#/t/${t.id}">${crest(t)}<span class="grow">${esc(t.name)}</span></a>`).join('')}</div>`;
+      cb().innerHTML = `<p class="note">Competiția nu are clasament la ${RO_CID[slug] ? '365Scores' : 'ESPN'}. Echipele participante:</p><div class="grp">${ts.slice().sort((a, b) => a.name.localeCompare(b.name, 'ro')).map(t => `<a class="row" href="#/t/${t.id}">${crest(t)}<span class="grow">${esc(t.name)}</span></a>`).join('')}</div>`;
     } catch (e2) {
-      if (live()) cb().innerHTML = e2.status ? `<p class="empty">ESPN nu are clasament pentru această competiție. Încearcă fila „Meciuri”.</p>` : errBox('Clasamentul nu s-a încărcat.');
+      if (live()) cb().innerHTML = e2.status || RO_CID[slug] ? `<p class="empty">${RO_CID[slug] ? '365Scores' : 'ESPN'} nu are clasament pentru această competiție. Încearcă fila „Meciuri”.</p>` : errBox('Clasamentul nu s-a încărcat.');
     }
   }
 }
@@ -1079,13 +1535,14 @@ function fixtureRow(ev, id) {
     <span class="o">${crest(op)}<span>${esc(op.name)}</span></span>
     <small>${home ? 'acasă' : 'în deplasare'}, ${esc(compShort(ev))}</small></a>`;
 }
-const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+// în română, de la 20 în sus (și la sute rotunde) se spune „de”: 20 de meciuri, 101 meciuri, 200 de meciuri
+const plural = (n, one, many) => `${n} ${n === 1 ? one : n % 100 >= 20 || (n > 0 && n % 100 === 0) ? 'de ' + many : many}`;
 const pair = (a, b) => `${fin(a) ? a : '–'}–${fin(b) ? b : '–'}`;
 function lastRows(S) {
   return S.rows.map(r => `<a class="lrow" href="#/m/${esc(r.ev.slug || 'x')}/${r.ev.id}">${fcChip(r.res)}
     <span class="l1">${crest(r.opp)}<b>${esc(r.opp.name)}</b><span class="sc">${r.gf}–${r.ga}</span></span>
     <span class="l2">${esc(cap(nodot(fDay.format(new Date(r.ev.date)))))}, ${r.home ? 'acasă' : 'în deplasare'}, ${esc(compShort(r.ev))}</span>
-    ${r.ok ? `<span class="ms"><span><small>Cornere</small>${pair(r.cf, r.ca)}</span><span><small>Cartonașe</small>${pair(r.kf, r.ka)}</span><span><small>Șuturi</small>${pair(r.sh, r.sha)}</span><span><small>Posesie</small>${fin(r.p) ? Math.round(r.p) + '%' : '–'}</span></span>` : `<span class="l3 lo">ESPN nu are statistici detaliate pentru acest meci</span>`}</a>`).join('');
+    ${r.ok ? `<span class="ms"><span><small>Cornere</small>${pair(r.cf, r.ca)}</span><span><small>Cartonașe</small>${pair(r.kf, r.ka)}</span><span><small>Șuturi</small>${pair(r.sh, r.sha)}</span><span><small>Posesie</small>${fin(r.p) ? Math.round(r.p) + '%' : '–'}</span></span>` : `<span class="l3 lo">${srcOf(r.ev.id)} nu are statistici detaliate pentru acest meci</span>`}</a>`).join('');
 }
 function standingRo(s) {
   const m = /^(\d+)(?:st|nd|rd|th) in (.+)$/i.exec(s || '');
@@ -1110,12 +1567,14 @@ async function viewTeam(id, lg, live) {
   upcoming(id).then(u => {
     if (!live()) return;
     setHead(u.team || TEAMS.get(id));
-    $('#up').innerHTML = u.list.length ? `<div class="grp">${u.list.slice(0, 8).map(e => fixtureRow(e, id)).join('')}</div>` : `<p class="empty">ESPN nu are meciuri programate pentru această echipă.</p>`;
+    $('#up').innerHTML = u.list.length ? `<div class="grp">${u.list.slice(0, 8).map(e => fixtureRow(e, id)).join('')}</div>` : `<p class="empty">${srcOf(id)} nu are meciuri programate pentru această echipă.</p>`;
   }).catch(() => { if (live()) $('#up').innerHTML = errBox('Programul nu s-a încărcat.'); });
   let r;
   try { r = await recent(id, settings.n); } catch (e) { if (live()) $('#last').innerHTML = errBox('Rezultatele nu s-au încărcat.'); return; }
   if (!live()) return;
   setHead(r.team || TEAMS.get(id), r.standing);
+  const tl = (TEAMS.get(id) || {}).lg || lg;
+  if (is365(id) && RO_CID[tl]) standings(tl).then(g => { const row = g.flatMap(x => x.rows).find(x => x.team.id === id); if (row?.rank) setHead(TEAMS.get(id), `Locul ${row.rank} în ${compLabel(tl)}`); }).catch(() => {});
   if (!r.list.length) { $('#last').innerHTML = `<p class="empty">Nu am găsit meciuri jucate recent.</p>`; return; }
   $('#last').innerHTML = `<p class="note" id="lp">Citesc statisticile pentru ${r.list.length} meciuri…</p>`;
   const stats = new Map();
@@ -1127,7 +1586,7 @@ async function viewTeam(id, lg, live) {
   const cnt = k => S.rows.filter(x => x.res === k).length;
   $('#last').innerHTML = `<div class="formline" style="padding-top:0">${formChips(S)}<span class="aside" style="font-size:13px;color:var(--muted)">${plural(cnt('W'), 'victorie', 'victorii')}, ${plural(cnt('D'), 'egal', 'egaluri')}, ${plural(cnt('L'), 'înfrângere', 'înfrângeri')}</span></div>
     <div class="tiles" style="margin-top:8px">${tile('Goluri marcate', f1(S.gf.m))}${tile('Goluri primite', f1(S.ga.m))}${tile('Cornere obținute', f1(S.cf.m))}${tile('Cornere cedate', f1(S.ca.m))}${tile('Cartonașe primite', f1(S.kf.m))}${tile('Cartonașe adversari', f1(S.ka.m))}${tile('Șuturi', f1(S.sh.m))}${tile('Șuturi pe poartă', f1(S.st.m))}${tile('Posesie', fin(S.p.m) ? Math.round(S.p.m) + '%' : '–')}${tile('Faulturi', f1(S.f.m))}${tile('Peste 2,5 goluri', share(x => x.gf + x.ga > 2.5))}${tile('Ambele marchează', share(x => x.gf > 0 && x.ga > 0))}</div>
-    <p class="note">Medii pe meci. ESPN are statistici detaliate pentru ${S.ns} din ${S.n} meciuri; golurile vin din toate.</p>
+    <p class="note">Medii pe meci. ${srcOf(id)} are statistici detaliate pentru ${S.ns} din ${S.n} meciuri; golurile vin din toate.</p>
     <div class="grp">${lastRows(S)}</div>`;
   restoreScroll();
 }
@@ -1147,27 +1606,31 @@ function headHTML(ev, opt = {}) {
 }
 async function viewMatch(slug, id, live) {
   let ev = EV.get(id);
+  const ro = is365(id);
   V.innerHTML = `${topBar(ev ? `${ev.home.short || ev.home.name} – ${ev.away.short || ev.away.name}` : 'Meci')}<div id="mh">${ev ? headHTML(ev) : '<p class="note">Se încarcă meciul…</p>'}</div><div id="mb"></div>`;
-  let sum = null;
-  try {
-    const r = await summary(id, [slug !== 'x' ? slug : null]);
-    sum = r.d;
-    ev = evFromSummary(sum, r.slug) || ev;
-  } catch (e) {
-    if (!ev) { if (live()) $('#mh').innerHTML = errBox(e?.status ? 'ESPN nu are detalii pentru acest meci.' : 'Meciul nu s-a încărcat.'); return; }
+  let sum = null, st = null;
+  const fresh = async () => { if (ro) return ev365(await game365(id)); const r = await summary(id, [slug !== 'x' ? slug : null, ev?.slug]); sum = r.d; return evFromSummary(r.d, r.slug); };
+  try { ev = await fresh() || ev; }
+  catch (e) {
+    if (!ev) { if (live()) $('#mh').innerHTML = errBox(e?.status ? `${srcOf(id)} nu are detalii pentru acest meci.` : 'Meciul nu s-a încărcat.'); return; }
   }
   if (!live()) return;
+  if (ev.state !== 'pre') {
+    try { st = ro ? await stats365(ev) : sum ? statsFromSummary(sum) : null; } catch (e) {}
+    if (ev.done && st && !STATS[ev.id]) { STATS[ev.id] = [Date.now(), st]; statsDirty = true; }
+    if (!live()) return;
+  }
   $('#mh').innerHTML = headHTML(ev);
   $('.bar .ttl').textContent = `${ev.home.short || ev.home.name} – ${ev.away.short || ev.away.name}`;
   if (ev.state === 'in') {
     const tick = () => later(async () => {
       if (!live()) return;
-      try { const r = await summary(id, [ev.slug]); const e2 = evFromSummary(r.d, r.slug); if (e2 && live()) { $('#mh').innerHTML = headHTML(e2); if (e2.state === 'in') tick(); } }
+      try { const e2 = await fresh(); if (e2 && live()) { $('#mh').innerHTML = headHTML(e2); if (e2.state === 'in') tick(); } }
       catch (e) { tick(); }
     }, 95000);
     tick();
   }
-  await analysis(ev, sum, live);
+  await analysis(ev, sum, live, { st });
 }
 async function viewVs(a, b, neutral, live) {
   const ta = TEAMS.get(a) || { id: a, name: 'Echipa 1' }, tb = TEAMS.get(b) || { id: b, name: 'Echipa 2' };
@@ -1181,7 +1644,7 @@ function legend(A, B, draw = true) {
   return `<div class="lg" aria-hidden="true"><span><i style="background:var(--ca)"></i><b>${esc(A.short || A.name)}</b></span><span>${draw ? '<i class="d"></i>egal' : ''}</span><span><b>${esc(B.short || B.name)}</b><i style="background:var(--cb)"></i></span></div>`;
 }
 function triRow(label, blk, A, B) {
-  if (!blk) return `<div class="pr"><div class="lab">${esc(label)}</div><p class="nad">ESPN nu are destule statistici din meciurile recente ale echipelor.</p></div>`;
+  if (!blk) return `<div class="pr"><div class="lab">${esc(label)}</div><p class="nad">Nu sunt destule statistici din meciurile recente ale echipelor.</p></div>`;
   const [a, d, b] = pctRound(blk.p);
   return `<div class="pr" role="group" aria-label="${esc(`${label}: ${A.name} ${a}%, egal ${d}%, ${B.name} ${b}%`)}">
     <div class="top"><span class="num${a >= b ? '' : ' lo'}">${a}%</span><span class="lab">${esc(label)}<small>egal ${d}%</small></span><span class="num r${b >= a ? '' : ' lo'}">${b}%</span></div>
@@ -1206,9 +1669,8 @@ function h2hBlock(sum, A, B) {
   const rows = evs.slice(0, 6).map(e => `<div class="hrow"><span>${esc(nm(e.homeTeamId))}</span><b>${esc(e.homeTeamScore ?? '')}–${esc(e.awayTeamScore ?? '')}</b><span>${esc(nm(e.awayTeamId))}</span><small>${e.gameDate ? esc(fFull.format(new Date(e.gameDate))) : ''}${e.leagueName ? ', ' + esc(compLabel(slugFromName(e.leagueName), e.leagueName)) : ''}</small></div>`).join('');
   return `<div class="sec"><h2>Întâlniri directe</h2><span class="aside">sursa: ESPN</span></div><div class="grp">${rows}</div>`;
 }
-function actualBlock(sum, ev) {
-  const s = statsFromSummary(sum);
-  if (!s.ok) return '';
+function actualBlock(s, ev) {
+  if (!s?.ok) return '';
   const a = s.t[ev.home.id], b = s.t[ev.away.id];
   if (!a || !b) return '';
   const k = o => fin(o.y) ? o.y + (fin(o.r) ? o.r : 0) : null;
@@ -1245,14 +1707,14 @@ function wirePick(ev) {
     e.target.value = v; save({ score: v });
   });
 }
-function grow(root) { requestAnimationFrame(() => requestAnimationFrame(() => $$('.z', root).forEach(x => x.classList.remove('z')))); }
+function grow(root) { setTimeout(() => { void root.offsetWidth; $$('.z', root).forEach(x => x.classList.remove('z')); }, 30); }
 async function analysis(ev, sum, live, opt = {}) {
   const N = settings.n, A0 = ev.home, B0 = ev.away;
   const before = ev.state === 'pre' ? Date.now() : new Date(ev.date).getTime() - 60000;
   const mb = $('#mb');
   const paint = (x, y) => { const [ca, cb] = teamColors(x, y); mb.style.setProperty('--ca', ca); mb.style.setProperty('--cb', cb); };
   paint(A0, B0);
-  mb.innerHTML = `${ev.state !== 'pre' && sum ? actualBlock(sum, ev) : ''}
+  mb.innerHTML = `${ev.state !== 'pre' && opt.st ? actualBlock(opt.st, ev) : ''}
     <div class="sec"><h2>${ev.done ? 'Ce estima modelul' : ev.state === 'in' ? 'Estimarea de dinainte' : 'Cine câștigă'}</h2>${nSeg()}</div>
     <div class="panel" id="who"><p class="note" id="ap">Citesc ultimele ${N} meciuri ale fiecărei echipe…</p><div class="prog" style="margin-bottom:14px"><i id="pg"></i></div></div><div id="rest"></div>`;
   grow(mb);
@@ -1274,10 +1736,14 @@ async function analysis(ev, sum, live, opt = {}) {
   if (!live()) return;
   const SA = sample(A.id, ha.list, stats), SB = sample(B.id, hb.list, stats);
   if (!SA.n || !SB.n) { $('#who').innerHTML = `<p class="empty">Nu există destule meciuri jucate recent pentru ${esc(!SA.n ? A.name : B.name)}.</p>`; return; }
-  const P = predict(SA, SB, ev.neutral);
+  const P = predict(SA, SB, ev.neutral, params(ev.slug));
+  // învățare: estimarea se salvează cu datele ei; după meci se compară cu rezultatul
+  const pre = ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status);
+  if (!opt.vs && (pre || ev.state !== 'pre')) record({ ...ev, home: A, away: B }, SA, SB, pre ? P : null, ev.done ? actualOf(ev, opt.st || STATS[ev.id]?.[1]) : null, pre ? 'live' : 'bt');
   paint(A, B);
   const who = $('#who');
-  who.innerHTML = `${legend(A, B)}${triRow('Rezultat (goluri)', P.goals, A, B)}${triRow('Mai multe cornere', P.corners, A, B)}${triRow('Mai multe cartonașe', P.cards, A, B)}`;
+  who.innerHTML = `${legend(A, B)}${triRow('Rezultat (goluri)', P.goals, A, B)}${triRow('Mai multe cornere', P.corners, A, B)}${triRow('Mai multe cartonașe', P.cards, A, B)}
+    <p class="note">${pre ? 'Salvez estimarea și o compar cu rezultatul după fluier. ' : ''}${esc(calLine(ev.slug))} <a href="#/model">Vezi ce a învățat</a></p>`;
   const rest = $('#rest');
   rest.innerHTML = `
     <div class="sec"><h2>Cifre așteptate</h2><span class="aside">pe echipă</span></div><div class="panel">${legend(A, B, false)}
@@ -1289,12 +1755,12 @@ async function analysis(ev, sum, live, opt = {}) {
       <div class="formline">${formChips(SA)}${formChips(SB)}</div>
       ${splitRow('Goluri marcate', SA.gf.m, SB.gf.m)}${splitRow('Goluri primite', SA.ga.m, SB.ga.m)}${splitRow('Cornere obținute', SA.cf.m, SB.cf.m)}${splitRow('Cornere cedate', SA.ca.m, SB.ca.m)}
       ${splitRow('Cartonașe primite', SA.kf.m, SB.kf.m)}${splitRow('Șuturi', SA.sh.m, SB.sh.m)}${splitRow('Șuturi pe poartă', SA.st.m, SB.st.m)}${splitRow('Posesie', SA.p.m, SB.p.m, v => Math.round(v) + '%')}${splitRow('Faulturi', SA.f.m, SB.f.m)}
-      <p class="note">Statistici detaliate la ESPN: ${esc(A.short || A.name)} ${SA.ns} din ${SA.n} meciuri, ${esc(B.short || B.name)} ${SB.ns} din ${SB.n}.</p></div>
+      <p class="note">Statistici detaliate (${srcOf(A.id) === srcOf(B.id) ? srcOf(A.id) : 'ESPN și 365Scores'}): ${esc(A.short || A.name)} ${SA.ns} din ${SA.n} meciuri, ${esc(B.short || B.name)} ${SB.ns} din ${SB.n}.</p></div>
     <div class="sec"><h2>${esc(A.name)}</h2><span class="aside">ultimele ${SA.n}</span></div><div class="grp">${lastRows(SA)}</div>
     <div class="sec"><h2>${esc(B.name)}</h2><span class="aside">ultimele ${SB.n}</span></div><div class="grp">${lastRows(SB)}</div>
     ${opt.vs ? '' : h2hBlock(sum, A, B)}
     ${!opt.vs && ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status) ? pickBlock({ ...ev, home: A, away: B }) : ''}
-    <p class="method"><b>Cum calculez.</b> Iau ultimele ${N} meciuri jucate de fiecare echipă, din toate competițiile. Golurile așteptate combină atacul unei echipe cu apărarea celeilalte, cu un avantaj de teren de 10% pentru gazde, iar când sunt puține meciuri valorile sunt trase ușor spre media obișnuită (1,35 goluri de echipă). Șansele vin dintr-un model Poisson cu corecția Dixon–Coles pentru scorurile mici. Cornerele (obținute față de cedate) și cartonașele (primite față de provocate) folosesc aceeași logică. Sunt estimări statistice, nu certitudini. Date: ESPN.</p>`;
+    <p class="method"><b>Cum calculez.</b> Iau ultimele ${N} meciuri jucate de fiecare echipă, din toate competițiile. Golurile așteptate combină atacul unei echipe cu apărarea celeilalte și avantajul de teren, iar când sunt puține meciuri valorile sunt trase spre media obișnuită (1,35 goluri de echipă). Șansele vin dintr-un model Poisson cu corecția Dixon–Coles pentru scorurile mici. Cornerele (obținute față de cedate) și cartonașele (primite față de provocate) folosesc aceeași logică. Ponderile acestea ${calibrated() ? `sunt ajustate automat pe ${plural(LEARN.fit.p.g.n, 'meci terminat', 'meciuri terminate')}` : 'se ajustează automat după ce aplicația vede destule meciuri terminate'} (fila Model). Sunt estimări statistice, nu certitudini. Date: ${srcOf(A.id) === srcOf(B.id) ? srcOf(A.id) : 'ESPN și 365Scores'}.</p>`;
   grow(who); grow(rest);
   if (!opt.vs && ev.state === 'pre') wirePick({ ...ev, home: A, away: B });
   restoreScroll();
@@ -1310,7 +1776,7 @@ function viewFav(live) {
   F.forEach(f => lim(() => upcoming(f.id)).then(u => {
     if (!live()) return;
     const n = u.list[0], el = $(`#fl [data-id="${CSS.escape(f.id)}"] .nx`);
-    if (el) el.textContent = n ? `${cap(whenShort(n.date))}: ${n.home.id === f.id ? n.away.name + ', acasă' : 'la ' + n.home.name}` : 'Niciun meci programat la ESPN';
+    if (el) el.textContent = n ? `${cap(whenShort(n.date))}: ${n.home.id === f.id ? n.away.name + ', acasă' : 'la ' + n.home.name}` : 'Niciun meci programat';
   }).catch(() => { const el = $(`#fl [data-id="${CSS.escape(f.id)}"] .nx`); if (el && live()) el.textContent = 'Programul nu s-a încărcat'; }));
   renderPicks(live);
   restoreScroll();
@@ -1341,9 +1807,211 @@ async function renderPicks(live) {
   };
   draw();
   await Promise.all(ids.filter(id => new Date(P[id].date).getTime() < Date.now() - 105 * 60e3).map(id => lim(async () => {
-    try { const { d, slug } = await summary(id, [P[id].slug]); const e = evFromSummary(d, slug); if (e?.done) out.set(id, { h: e.home.score, a: e.away.score }); } catch (e) {}
+    try { const { ev: e } = await finalResult(id, P[id].slug); if (e?.done) out.set(id, { h: e.home.score, a: e.away.score }); } catch (e) {}
   })));
   draw();
+}
+
+/* ---------- ecran: Model (ce a învățat aplicația) ---------- */
+const TRAIN_SLUGS = ['rou.1', 'eng.1', 'ita.1', 'esp.1', 'ger.1', 'fra.1', 'por.1', 'ned.1', 'bel.1', 'tur.1', 'gre.1', 'uefa.champions', 'uefa.europa'];
+const nf2 = new Intl.NumberFormat('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const nf3 = new Intl.NumberFormat('ro-RO', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+const sgnPct = v => { const r = Math.round(v * 100); return r === 0 ? '0%' : (r > 0 ? '+' : '−') + Math.abs(r) + '%'; };
+let TRAIN = null, trainSel = 'rou.1', trainStats = true, flash = { t: '', c: '' };
+function calLine(slug) {
+  const n = learned().length, own = slug && LEARN.on && LEARN.fit?.s?.[slug];
+  return calibrated() ? `Modelul e calibrat pe ${plural(LEARN.fit.p.g.n, 'meci terminat', 'meciuri terminate')}${own ? `, cu ajustări proprii pentru ${compLabel(slug)}` : ''}.`
+    : !LEARN.on ? 'Calibrarea e oprită, folosesc valorile inițiale.'
+    : `Modelul se calibrează după ${MIN_FIT} de meciuri terminate (acum ${n}).`;
+}
+function perfHTML(m, n) {
+  if (!m) return `<div class="sec"><h2>Cât de bine prezice</h2></div><p class="note">Scorurile apar după 30 de meciuri învățate${n ? ` (acum ${n})` : ''}. Le obții repede cu antrenamentul de mai jos.</p>`;
+  const row = (label, d, c, fmt, hi) => {
+    const ok = fin(d) && fin(c) && Math.abs(d - c) > 1e-9;
+    const bd = ok && (hi ? d > c : d < c), bc = ok && !bd;
+    return `<div class="mrw"><span>${label}</span><span class="v${bd ? ' b' : ''}">${fin(d) ? fmt(d) : '–'}</span><span class="v${bc ? ' b' : ''}">${fin(c) ? fmt(c) : '–'}</span></div>`;
+  };
+  const { def: D, cal: C } = m;
+  const rows = [
+    row('Rezultat ghicit', D.g.acc, C.g.acc, pct, true),
+    row('Log loss', D.g.ll, C.g.ll, v => nf3.format(v)),
+    row('Scor Brier', D.g.br, C.g.br, v => nf3.format(v)),
+    row('Eroare medie la goluri', D.g.mae, C.g.mae, v => nf2.format(v))
+  ];
+  if (D.c && C.c) rows.push(row('Cornere: cine are mai multe', D.c.acc, C.c.acc, pct, true), row('Eroare medie la cornere', D.c.mae, C.c.mae, v => nf2.format(v)));
+  if (D.k && C.k) rows.push(row('Cartonașe: cine are mai multe', D.k.acc, C.k.acc, pct, true), row('Eroare medie la cartonașe', D.k.mae, C.k.mae, v => nf2.format(v)));
+  return `<div class="sec"><h2>Cât de bine prezice</h2><span class="aside">${plural(C.g.n, 'meci', 'meciuri')}</span></div>
+    <div class="grp mt"><div class="mrw hd"><span></span><span class="v">Inițial</span><span class="v">Calibrat</span></div>${rows.join('')}</div>
+    <p class="note">Fiecare meci e prezis de un model ajustat fără el (validare încrucișată în 5 părți), ca scorul să fie cinstit. La log loss, Brier și erori, mai mic e mai bine. Varianta mai bună e scrisă îngroșat.</p>
+    ${m.rel?.filter(b => b.n >= REL_MIN).length >= 2 ? relHTML(m.rel) : ''}`;
+}
+const REL_MIN = 10;
+function relHTML(all) {
+  // punctele sprijinite de prea puține estimări sar în toate părțile; le arăt doar în tabel
+  const rel = all.filter(b => b.n >= REL_MIN);
+  const W = 320, H = 252, x0 = 50, x1 = 308, y0 = 12, y1 = 206;
+  const X = p => +(x0 + p * (x1 - x0)).toFixed(1), Y = p => +(y1 - p * (y1 - y0)).toFixed(1);
+  const T = [0, 0.25, 0.5, 0.75, 1];
+  const pts = rel.map(b => [X(b.p), Y(b.o)]);
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Probabilitățile estimate comparate cu cât de des s-au întâmplat rezultatele; tabelul de sub grafic are cifrele.">
+    ${T.map(t => `<line class="gl" x1="${x0}" x2="${x1}" y1="${Y(t)}" y2="${Y(t)}"/><text x="${x0 - 8}" y="${Y(t) + 4}" text-anchor="end">${t * 100}%</text><text x="${X(t)}" y="${y1 + 18}" text-anchor="middle">${t * 100}%</text>`).join('')}
+    <line class="dg" x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(1)}"/>
+    <polyline class="ln" points="${pts.map(p => p.join(',')).join(' ')}"/>
+    ${pts.map(([x, y], i) => `<circle class="dt" cx="${x}" cy="${y}" r="5"/><circle class="hit" cx="${x}" cy="${y}" r="17" data-i="${i}" tabindex="0"/>`).join('')}
+    <text class="at" x="${(x0 + x1) / 2}" y="${H - 4}" text-anchor="middle">Probabilitatea estimată</text>
+    <text class="at" text-anchor="middle" transform="translate(11 ${(y0 + y1) / 2}) rotate(-90)">Cât de des s-a întâmplat</text></svg>`;
+  return `<div class="sec"><h2>Procente față de realitate</h2></div>
+    <div class="panel"><p class="note">Dacă modelul spune 40%, rezultatul ar trebui să iasă în cam 40% din cazuri. Cu cât punctele stau mai aproape de linia punctată, cu atât procentele sunt mai cinstite.</p>
+    <div class="rel" id="rel">${svg}<div class="tip" id="tip" hidden></div></div>
+    <details><summary>Vezi cifrele</summary><div class="grp plain" style="margin:0 0 12px">${all.map(b => `<div class="row"><span class="grow">Între ${Math.round(b.lo * 100)}% și ${Math.round(b.hi * 100)}%<small>${plural(b.n, 'estimare', 'estimări')}</small></span><span class="pp" style="text-align:right">estimat ${pct(b.p)}<small>s-a întâmplat ${pct(b.o)}</small></span></div>`).join('')}</div></details></div>`;
+}
+function wireRel(all) {
+  const rel = all.filter(b => b.n >= REL_MIN);
+  const box = $('#rel'), tip = $('#tip');
+  if (!box || !tip) return;
+  const svg = $('svg', box);
+  const show = el => {
+    const b = rel[+el.dataset.i]; if (!b) return;
+    const r = svg.getBoundingClientRect(), c = box.getBoundingClientRect();
+    tip.textContent = `Estimat ${pct(b.p)}, s-a întâmplat ${pct(b.o)} (${plural(b.n, 'estimare', 'estimări')})`;
+    tip.style.left = (r.left - c.left + +el.getAttribute('cx') * r.width / 320) + 'px';
+    tip.style.top = (r.top - c.top + +el.getAttribute('cy') * r.height / 252) + 'px';
+    tip.hidden = false;
+  };
+  $$('.hit', box).forEach(el => {
+    el.addEventListener('pointerenter', () => show(el));
+    el.addEventListener('focus', () => show(el));
+    el.addEventListener('click', () => show(el));
+    el.addEventListener('pointerleave', () => { tip.hidden = true; });
+    el.addEventListener('blur', () => { tip.hidden = true; });
+  });
+}
+function parsHTML(f) {
+  if (!f?.p) return '';
+  const P = f.p, parts = ['g', 'c', 'k'];
+  const cell = (part, val, ini) => P[part].n < MIN_FIT ? `<span class="v lo">${val}<small>puține date</small></span>` : `<span class="v">${val}${ini != null ? `<small>inițial ${ini}</small>` : ''}</span>`;
+  const row = (label, fn, ini) => `<div class="mrw q"><span>${label}</span>${parts.map(p => cell(p, fn(P[p]), ini ? ini(DEF[p]) : null)).join('')}</div>`;
+  const ratio = q => `${Math.round(q.w * 100)}/${100 - Math.round(q.w * 100)}`;
+  return `<div class="sec"><h2>Ce a învățat</h2><span class="aside">${plural(f.n, 'meci', 'meciuri')}</span></div>
+    <div class="grp mt"><div class="mrw q hd"><span></span><span class="v">Goluri</span><span class="v">Cornere</span><span class="v">Cartonașe</span></div>
+      ${row('Gazde', q => sgnPct(q.hH - 1), q => sgnPct(q.hH - 1))}
+      ${row('Oaspeți', q => sgnPct(q.hA - 1), q => sgnPct(q.hA - 1))}
+      ${row('Atac față de apărare', ratio, ratio)}
+      ${row('Tragere spre medie', q => f1(q.k), q => f1(q.k))}
+      ${row('Meciuri folosite', q => String(q.n))}</div>
+    <p class="note">Gazde și oaspeți: cât adaugă sau scade terenul față de forma echipei. Atac față de apărare: cât contează ce produce o echipă față de ce cedează adversarul. Tragerea spre medie spune câte meciuri „obișnuite” se adaugă la forma recentă; mai mult înseamnă că forma contează mai puțin. Corecția pentru scorurile mici (Dixon–Coles): ${minus(nf2.format(P.g.rho))}, inițial ${minus(nf2.format(DEF.g.rho))}.</p>
+    ${slugsHTML(f)}`;
+}
+const minus = s => s.replace('-', '−');
+function slugsHTML(f) {
+  const own = Object.entries(f.s || {});
+  const cnt = new Map();
+  learned().forEach(x => { if (x.sl) cnt.set(x.sl, (cnt.get(x.sl) || 0) + 1); });
+  const rest = [...cnt].filter(([sl]) => !f.s?.[sl]).sort((a, b) => b[1] - a[1]);
+  if (!own.length && !rest.length) return '';
+  return `<div class="sec"><h2>Pe competiții</h2><span class="aside">avantajul de teren la goluri</span></div>
+    ${own.length ? `<div class="grp plain">${own.sort((a, b) => b[1].g.n - a[1].g.n).map(([sl, q]) => `<div class="row"><span class="grow"><b>${esc(compLabel(sl))}</b><small>${plural(q.g.n, 'meci', 'meciuri')}</small></span><span class="pp" style="text-align:right">gazde ${sgnPct(q.g.hH - 1)}<small>oaspeți ${sgnPct(q.g.hA - 1)}</small></span></div>`).join('')}</div>` : ''}
+    <p class="note">O competiție primește calibrare proprie de la ${SLUG_MIN} de meciuri învățate, trasă spre cea generală cât timp are puține meciuri.${rest.length ? ` Încă pe calibrarea generală: ${rest.slice(0, 6).map(([sl, n]) => `${esc(compLabel(sl))} (${n})`).join(', ')}.` : ''}</p>`;
+}
+function histHTML() {
+  const L = Object.entries(LEARN.s).filter(([, s]) => s.src === 'live' && s.P).sort((a, b) => new Date(b[1].d) - new Date(a[1].d)).slice(0, 15);
+  const head = `<div class="sec"><h2>Pronosticurile aplicației</h2><span class="aside">salvate înainte de meci</span></div>`;
+  if (!L.length) return `${head}<p class="note">Deschide un meci care urmează să se joace: estimarea se salvează aici și o verific după fluier.</p>`;
+  return `${head}<div class="grp plain">${L.map(([id, s]) => {
+    const [a, d, b] = pctRound(s.P.slice(0, 3));
+    let res;
+    if (s.R) { const hit = argmax(s.P.slice(0, 3)) === outc(s.R[0], s.R[1]); res = `<span class="res ${hit ? 'ok' : 'no'}">${s.R[0]}–${s.R[1]}: ${hit ? 'nimerit' : 'ratat'}</span>`; }
+    else res = `<span class="res">${s.x ? 'fără rezultat' : new Date(s.d) > Date.now() ? esc(whenShort(s.d)) : 'aștept rezultatul'}</span>`;
+    return `<a class="row" href="#/m/${esc(s.sl || 'x')}/${esc(id)}"><span class="grow"><b>${esc(s.hn)} – ${esc(s.an)}</b><small>${esc(s.hn)} ${a}%, egal ${d}%, ${esc(s.an)} ${b}%</small></span>${res}</a>`;
+  }).join('')}</div>`;
+}
+function trainPanel() {
+  const busy = !!TRAIN;
+  return `<div class="sec"><h2>Antrenează pe meciuri jucate</h2></div>
+    <div class="panel">
+      <p class="note">Refac pronosticul fiecărui meci deja jucat dintr-o competiție, doar cu ce se știa înainte de meci, și îl compar cu rezultatul. Așa modelul învață din sute de meciuri dintr-odată.</p>
+      <label class="field"><span>Competiția</span><select id="tsl"${busy ? ' disabled' : ''}>${TRAIN_SLUGS.map(s => `<option value="${s}"${s === (busy ? TRAIN.slug : trainSel) ? ' selected' : ''}>${esc(compLabel(s))}</option>`).join('')}</select></label>
+      <label class="field"><span>Cu cornere și cartonașe<small>mai lent: citesc statisticile fiecărui meci</small></span><input type="checkbox" id="tst"${trainStats ? ' checked' : ''}${busy ? ' disabled' : ''}></label>
+      <div class="acts" style="padding:2px 16px 0"><button class="btn pri" type="button" id="tgo"${busy ? ' disabled' : ''}>${busy ? 'Se antrenează…' : 'Antrenează'}</button></div>
+      <div class="prog" style="margin:14px 16px 0"><i id="tpg" style="width:${busy ? Math.round(TRAIN.p * 100) : 0}%"></i></div>
+      <p class="note" id="tmsg" role="status" style="margin:8px 16px 14px">${esc(busy ? TRAIN.msg : flash.c === 'train' ? flash.t : '')}</p>
+    </div>`;
+}
+function viewModel(live) {
+  const ents = Object.entries(LEARN.s);
+  const S = learned();
+  if (S.length && (!LEARN.fit || LEARN.fit.n !== S.length)) refit();
+  const f = LEARN.fit;
+  const liveN = ents.filter(([, s]) => s.src === 'live').length;
+  const pend = ents.filter(([, s]) => !s.R && !s.x).length;
+  const lr = liveRecord();
+  const tile = (l, v, sub = '') => `<div class="tile"><span>${l}</span><b>${v}${sub ? `<small>${sub}</small>` : ''}</b></div>`;
+  const state = !LEARN.on ? 'Oprită: pronosticurile folosesc valorile inițiale.'
+    : calibrated() ? `Pornită: pronosticurile folosesc ce a învățat din ${plural(f.p.g.n, 'meci', 'meciuri')}.`
+    : `Pornește de la ${MIN_FIT} de meciuri cu rezultat (acum ${S.length}). Până atunci folosesc valorile inițiale.`;
+  const msg = flash.c === 'chk' ? flash.t : '';
+  V.innerHTML = `${hero('Model', gearBtn())}
+    <p class="lead">Fiecare pronostic se salvează pe telefon, împreună cu datele din care a fost calculat. După fluier aplicația citește rezultatul, îl compară cu estimarea și își reajustează calculele.</p>
+    <div class="tiles">${tile('Meciuri învățate', S.length)}${tile('Salvate înainte de meci', liveN)}${tile('Așteaptă rezultatul', pend)}${tile('Nimerite înainte de meci', lr ? pct(lr.acc) : '–', lr ? `din ${lr.n}` : '')}</div>
+    <div class="panel" style="margin-top:12px">
+      <label class="field"><span>Folosește calibrarea<small>${esc(state)}</small></span><input type="checkbox" id="lon"${LEARN.on ? ' checked' : ''}></label>
+      <div class="field" style="padding-top:0"><button class="btn" type="button" id="chk"${pend ? '' : ' disabled'}>Verifică rezultatele</button><span class="note" id="cmsg" role="status" style="margin:0;text-align:right">${esc(msg)}</span></div>
+    </div>
+    <div id="perf">${S.length >= 30 ? '<p class="note">Calculez scorurile…</p>' : perfHTML(null, S.length)}</div>
+    <div id="pars">${parsHTML(f)}</div>
+    ${trainPanel()}
+    <div id="hist">${histHTML()}</div>
+    <div class="acts" style="padding:24px 12px 0"><button class="btn" type="button" id="rst"${ents.length ? '' : ' disabled'}>Șterge ce a învățat</button></div>
+    <p class="method"><b>Ce se ajustează.</b> Avantajul de teren (separat pentru gazde și oaspeți), cât contează atacul unei echipe față de apărarea adversarului, cât de tare trag valorile spre media obișnuită când sunt puține meciuri și corecția pentru scorurile mici. Parametrii se aleg prin verosimilitate maximă pe meciurile terminate; cât timp sunt puține meciuri, rămân aproape de valorile inițiale. Totul se calculează și se păstrează doar pe acest dispozitiv.</p>`;
+  flash = { t: '', c: '' };
+  if (S.length >= 30) later(() => {
+    if (!live()) return;
+    const F = LEARN.fit;
+    if (F && (!F.m || F.mn !== S.length)) { F.m = evaluateCV(S); F.mn = S.length; learnDirty = true; }
+    $('#perf').innerHTML = perfHTML(F?.m, S.length);
+    if (F?.m?.rel) wireRel(F.m.rel);
+  }, 40);
+  $('#lon').addEventListener('change', e => { LEARN.on = e.target.checked; saveLearn(); route({ keep: true }); });
+  $('#chk').addEventListener('click', async e => {
+    e.currentTarget.disabled = true;
+    const got = await resolvePending(80, (n, t) => { const m = $('#cmsg'); if (m && live()) m.textContent = `Verific ${n} din ${t}…`; });
+    flash = { c: 'chk', t: got ? `Am găsit ${plural(got, 'rezultat nou', 'rezultate noi')}.` : 'Niciun rezultat nou încă.' };
+    if (live()) route({ keep: true });
+  });
+  $('#tsl').addEventListener('change', e => { trainSel = e.target.value; });
+  $('#tst').addEventListener('change', e => { trainStats = e.target.checked; });
+  $('#tgo').addEventListener('click', async () => {
+    if (TRAIN) return;
+    TRAIN = { slug: trainSel, p: 0.01, msg: 'Pornesc…' };
+    const upd = () => {
+      if (!TRAIN || location.hash !== '#/model') return;
+      const pg = $('#tpg'), m = $('#tmsg'), b = $('#tgo');
+      if (pg) pg.style.width = Math.round(TRAIN.p * 100) + '%';
+      if (m) m.textContent = TRAIN.msg;
+      if (b) { b.disabled = true; b.textContent = 'Se antrenează…'; }
+      ['#tsl', '#tst'].forEach(s => { const x = $(s); if (x) x.disabled = true; });
+    };
+    upd();
+    let out;
+    try {
+      const n = await trainOn(TRAIN.slug, trainStats, (p, m) => { TRAIN.p = p; if (m) TRAIN.msg = m; upd(); });
+      out = `Gata: am învățat din ${plural(n, 'meci', 'meciuri')} din ${compLabel(TRAIN.slug)}.`;
+    } catch (e) { out = e?.ro ? e.message : 'Antrenamentul s-a oprit: datele nu s-au încărcat. Încearcă din nou.'; }
+    TRAIN = null;
+    flash = { c: 'train', t: out };
+    if (location.hash === '#/model') route({ keep: true });
+  });
+  let armed = false;
+  $('#rst').addEventListener('click', e => {
+    const b = e.currentTarget;
+    if (!armed) {
+      armed = true; b.textContent = 'Apasă din nou ca să ștergi';
+      later(() => { armed = false; if (b.isConnected) b.textContent = 'Șterge ce a învățat'; }, 4000);
+      return;
+    }
+    LEARN.s = {}; LEARN.fit = null; saveLearn(); route({ keep: true });
+  });
+  restoreScroll();
 }
 
 /* ---------- foi: setări și comparație ---------- */
@@ -1363,7 +2031,7 @@ function openSettings() {
     <label class="field col"><span>Proxy pentru cereri (opțional)</span><input type="url" id="px" value="${esc(settings.proxy)}" placeholder="https://proxy-ul-tău/?url=" autocomplete="off" autocapitalize="off"><span class="note" style="margin:0">Lasă gol. Completează doar dacă rețeaua ta blochează ESPN și ai un proxy propriu; URL-ul cererii se adaugă la final.</span></label>
     <div class="acts"><button class="btn" type="button" id="clr">Golește datele din cache</button></div>
     <details><summary>Jurnal tehnic (${LOG.length})</summary><div class="log">${LOG.length ? LOG.map(esc).join('\n') : 'Nicio eroare de rețea.'}</div></details>
-    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele și pronosticurile rămân doar pe acest dispozitiv.</p>`);
+    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub; Liga 1, Liga 2 și Cupa României vin de la 365Scores. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele, pronosticurile și ce învață modelul rămân doar pe acest dispozitiv.</p>`);
   $('#shin').setAttribute('aria-labelledby', 'sht');
   $('#px').addEventListener('change', e => { settings.proxy = e.target.value.trim(); saveSettings(); MEM.clear(); });
   $('#clr').addEventListener('click', e => { store.clearCache(); MEM.clear(); IDXP = null; for (const k of Object.keys(STATS)) delete STATS[k]; e.target.textContent = 'Cache golit'; });
@@ -1385,6 +2053,7 @@ addEventListener('visibilitychange', () => {
 });
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (settings.theme === 'auto') route({ keep: true }); });
 route();
+setTimeout(() => { resolvePending(15).then(n => { if (n && location.hash === '#/model') route({ keep: true }); }, () => {}); }, 5000);
 </script>
 </body>
 </html>
