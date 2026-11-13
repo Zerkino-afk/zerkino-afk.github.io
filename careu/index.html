@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EEF1F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B111A" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Careu">
+<meta name="description" content="Analiză de meciuri de fotbal cu date live: forma ultimelor meciuri, program și probabilități pentru goluri, cornere și cartonașe.">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAM1ElEQVR42u2de7BVVR3H12s/ztlnn3PuvaBlkIQOAxcQS8JUkCwtaxpMncxRERub7I+sqcYxrWik0horK/yjnJxEoRyUazJNL52aAiwJDBQvRHnFpOeFy73nvR9r/fpjx+lI6txr55x77znfz58cYK299mev/VuP316895TTGQAvh0ATAMgBIAeAHAByAMgBIAeAHAByAMgBIAcAkANADgA5AOQAkANADgA5AOQAkANADgAgB4AcAHIAyAEgB4AcAHIAyAEgB+ga1Pj/qpSSc44mm9YQkda6yXJwzsfGxqIohh7T2QxmWcr3fSJqmhyc8zCMVl9z1dy5c4JayAUEmYZmGHJce2jo0OaHBmzbGo8f45cjXH3NVSvPOSskJuHGNEQTszn79W93b9z0oOPYTZOj/loph/HYWElKibaefnJonctlxsbGxh84TiAg5f9BvML/zhkjIV7yKxEZY5Kfmnql7SxratZqwmUlN25CQwo1/ljG89JpS7KsL9XLFUCMcVathnGskwoQMcdxHFsSMdbcN1E7y5pIrThnQaiDIKzXSimVStmsBS0w0bJ0TGmLe16aqKlyEJFSYvdTexijcrkqhHg5k7nWetGi/p6efBxrxphlyaHnnz906AXLsoioqU9N+8qaUM8aRdGcOafOOXV2FGnGmFLy2LFj27YNSimpqT3HayjLGON5qd1P7VVKNHO0QkSO49y27sta61d6BIQQlVLp0a1bLn7XBaOjJSLqzaU3P7Tl9i+sy8ycGUdxE5umnWVNoBO2VGl4+Nbb1n5x7c3DI0XOeTqd/s32wUsuuTydyRhjpkBZJKV0HKeZciSkUu6rdI5Jd6KkrJdLjNm2rTKZjOfFcZPlaFtZE7hhStWqVdu2qeFdrKRMZzKZjNdkOV57WWQMNT8gNYZePaoyxpygZBIiJTT3TrSzrPFXqW21ak9ZWFsBkANADgA5AOQAkANADgA5AOQAkANADgAgB4AcAHIANjWSmqa65kIopZSatCtKSn/ZbXKQYzLhjFUqlbAwfITxOI4mSQ4rLAxXKhUOOaZUn1EN4pXnr2Br16XT6cna7COEqFQqK89fUQ1iIcRkbWWFHP8jRy08f8Xyi9+5wkx2BFcJqVqtCiHGn5IKOVgrcoLrDyfnvFKplEpmKphaDzuI2LTuP9T0NUMpxTmLY805T+7BVPgIQJLGzjlPcmqUUtPXj2kpB+ecMdq46YfvvGB5X1+OiE213P+kSoKzjZt+yBhN009XqGma9un7/uaHBhjjq6++IorNVGt9IrKUeGDT5s0PDeRy2Wkaf0zX14oxJpfLPrxl4OEtA0KIqdZzc86SQVMul52s0VNXB6TGmGzWn8ovdM6Z1oYhIJ2k94thAGsrAHIAyAEgB4AcAHIAyAEA5ACQA0AOADkA5ACQA0AOADkAQ8Zbx8E5r59AkHzqtQOyTiBHc5IJtNaFQjHWMWNMSZXJeFLK6bu9D3I0BylluVx23dRll67q71/AGBsc3P/Y47+qVCqe53VAYhLkeO1mHDs2evayt67/1p39/fOVYIyx2LDBwQM3fuKmJ3f+vqcn381+iG5+m5RK5bOXLd384IYFC+aPjhaPjBSPjBRHR4sLFszf/OCGs5ctLZXKnZQ1DznGG4FqrVOp1Ppvf6Ovt3d0tKAaGB0t9PX2rv/2N1KpVJK+Bjm6rtu46MJ3LFwwb3SsaFlW46+WZY2OFRcumHfRhe/o5s6jm3uOuL9/vuSvOGSVnPr752sdo+cAAHIwxhgjIinV4OABTfyVT+nlg4MHpFRdOyHWpXIYYzIZ77HHf/ns/oP5nB9FL/lSVBRF+Zz/7P6Djz3+y6YfzwY5pkXPIavV6o0f/9TRkZF8Phs3kM9nj46M3PjxT1WrVSkleo4u7Tye3LnriivX7N9/IJ/3Z/T6M3r9fN7fv//AFVeueXLnrm7uNliXz5BqrXt68n/Ys+fCd6+66MILGqfPa7Vql0+PYm2Faa3T6bTWeuCRrZsfHqgvvCV/yLDw1uUYY4QQ+XyucckeS7KQ4yVfeUM7ICAFkANADgA5AOQAkANADtbO/RlTZNdFJ23+UO25bS1tMs55HMec80lfJEt2HyZZMC2tSXseBtXqyUcdRVEUxXHcug1/tSDI53JEVCwWLcuaLD8451EUZzJeFEXlctm27dbVhIh0FLV6Gle1dNoxlUr19PX19vbEsW7d96NPcp377r3njwf/dMtn16ZTKTNJcgjOK5XqHbevy+ezN3/m87UgkLJVH2VXSibN29InQbXuNLxCKViz+uoPfuByzgVjLboGboxJpVL5fHbx4oUXvH3l8c3i7feDJ3tE+vp6LUsse+uy5Lym1l04kXFdt1AKlFItmvtXTe8tTug5PM9r5S2hxI9yucIYy+WykxsPElG1Wq1UKJVyPS+dVK+lb+3GN0vTe5Emy+E4TmMWsta6PQtaSfZA6yKbidakbRfeuJLsOM4UlSPZ7L9t+46LVp5TUUpr085nmIjqafIn1KpFKfOvMiRp53J/ctCdUiqlxLbtO5qbSKGae3rSXd+8O5vNXnv1lX42257TtYiYECyOdaVSk/LEaZsoiv2Mpyze3MdYShZHVCyVlZL/e8pHOu0qJY1p0+VzzoqFwtfWP3DXN+/2fb+JPRbvPeX0Jj5MRFQqlU47be5pc+dqozlrefNwzqIovuUzN604d+nw0aJlqfoj5Tj29h1PrL/7O4VCMZfLSiWN1v9PJ8I5E1LqWI+NFbJZ/8aPfXT5eecGQVh/WKMontnnb3ti1x1fudOyVBuGTcRICvnc0NBzzw1lMpn6WYhTTo7jT5Wo1YIgCBjnbRg0CMHDMHr961/3wH3fW7F82cixUuP7RUqxd+/T37nn3oFHtoaFgspkbNsiImOIGI2repxxxoXgnPMwjOJSyc5mL7t01Uc/cv2SJWfUTwNK3vq9PZlt23euvu7Df//7P2zbMobacRY3keM4rus0/Wii5stRfx+3OlZvjDZqtZox9NU71t3w4WsLxVoUx1LK5FfPSzuK7dl34Lv33PuTn/58ePgI5zyVSlmWVQ8aiIiIEqOI/jv/mIQsURRVq1Uimjlzxnvf8+4bPnL9mYvmBzErlyvJX9NaW0plffe737v/5lvWCsFd1zWmPccS/me81pK4qhVyTMoYwRhTKBavu/aa27/0Bd/3x8aKUsp6QOp5nmXxoaG/bNvxxM9+9ovdT+3517+Gg6AmpeKc27ZVn3pPpsDDMCIirWPHcU86aeZZbznz4ovfteK8c+fOfWMUUblcrgekWutczi8Wi7d+7rb77t+Y9f2kMh3Qqh0iR727Onr06NKlZ339ztvftuwt5XJYC4JGRVzXTadUrNnf/vbPwcH9e5955umn9xWLxRdfPFwoFqSQjDFtdNbPzp49y/f9M85YtGTx4v7+BaeccrKSrFKNa7Vaoxau43ie/budT336plt37drd19fXSd8T6xw56jOzpVJJKfWhNdd88hMfm/WGk0uVqFarJaeIJ5EB59y2bdexLMlCzRixoyPHgiDgXDDGiIzjOH29PYwzW7JIs1oQhWFYHy0nU0+u62bS1uG//vOub939/Q0b4zjOZDJTYaIFcrxqRCyENmasUJg9a9aaa69es/qqU2e9rhpSpVIxROL4c28MEZlkzkop1TDVzY0xyW02xhz/ziA3xiT/PJ1Op2z+wuF/bHjgBxvu3/Ti4cO5bDYptMNasgPlqH/vKwjCYrH4pjfNufyySy59/6olixfZtqgFplaraWP4OBa+k0CVGJNCuK7rOiIMzd5n9j3yo61bBh59/vlDvu87jt2paQ0dK0cShUgpa7VaqVTOZv3l551zyar3nblk8bx587yUZRjTmgVBREQnZNkzxizL4pw7jiUlE4yVq9HBgwf37H3m0a0/3r7jt4VCMZPxXNfVWndwmnUny9GoSBzH5XI5jnU+n1u0qP/NS85YuLD/1DfOnjNnjm07M2b0CcEb5r/pyJGjYRgcOnTohb+8+Oyzg3/Y+/S+fYOjo2NKSc/zkoXQjs++73w5GmfnGONxHFertTAMhRS2bc/o7bVs+/TT5iql6kPZOI7//NxQFIZHRkbCMDTa2LadSrlKKcaoe47B7iI5GidFhOBEjIyJ4piIgiBo7AU4Z47jcM4tpbgQnDNjqAuzZ1V3Zk7Xb7RSijFm23ZjZHo8DGWGiHVxDq1CCjVrwTYZpCYAyAEgBwCQA0AOADkA5ACQA0AOADkA5ACQA0AOACAHgBwAcgDIASAHgBwAcgDIASAHgBwAcqAJAOQAkANADgA5AOQAkANADgA5AOQAkAMAyAEgB4AcAHIAyAEgB4AcAHIAyAEgBwCQA0AOADkA5ACQA0AOADkA5ACdxr8B5KjO9Bz8IGkAAAAASUVORK5CYII=">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAFF0lEQVR42u1aW2wUVRj+/3PObDs7F9pBhcB6gUgTxZpYiTcS0UIiCBogSIgvPpl4eSIkGPXB+KBGSIMx8ZL4xIsxSMQLCCYVkRcBS400aAJJ8VKSYpZp9zK7dOdcfBjcrNPd2QG6pdU5T7O73+z83/+f/3oGnQW3w2xeBGb5SggkBBICCYGEwDUtFvqMiDNcYqVUFAHOeQgxoxYiUkobEkBE27YQMaBACEFEKYQCaGQXFQ8WugUBCKVKKSklxoMBACIopUqlcq2KWVV03/cdx+n/Zr/jOL7vI2K5XBZCGkY6el/FhIW2geeVKCW6rseEKaU0TXNdd9Vj61zX1TQtoMFq1S+E+PnUkG3bgnMhZXf3XZ22PTAwyAVvJJwQIg4sJBajbNmynkKx+OPAydCWaAgjhDKWz+eFELVPwdpqVClVLpeVUoTScr5w4OCXy+7tWdrdMzY+rmmpyb5BCCkXmsNCu9T3K50dHaeHBgdODq5d86RuWcEOaQKzLSkEIuq6Xksg7AOmaQaSgQJKafANF6JqshABgOawSZL5pmkG7qhblmWZDQj8G2ZehoXA4ShU/bn2Ilh1JYsJq5UsgIXuujrYfzGRXUuEDtaUwK4DAc657/uTM2Xdzc05n0EEgkRj25YCxZgG0YkckXPftq2m3jKtFpjnWIf7DwUpOSbheY41IyxAKd3Z9w6ABCAIGLOWUKAA5M6+dxtlsWkiIKXU9fZjx0+s37ilWkHF83hQSlHGdL29bnCcPgsopdKR9UxTFVx/H7h2IZKWspX9R6tbvBYSIIQIIYQQQc03ywggYrHopdPpdDpdLHqtswNpke49r9Tbu+JI/8Ej/Qd7e1d4XqlFdiCt0D3n3HE6d/XtWJjJLMxkdvXtcJxOznkr7JBEobq9LGOuO7Z12/bzIyPnR0a2btvuumOMsVYMbFgrtCKlNIz04cPfP7JqDQC47phhpFuU7xi0bH5mmkapVAIA0zRal61ZnJBCKaWUXvkGUJqmBRcNqs6Go7CgJ44TuFi0FpVShUIhl8tFz0tiPiz050gQVNT0hSAGMlwNgWCegQjLlz/keV6UCyJmFi4YvXABFAgplIxsKQkSQighuq6Pj+eQkLodXBCLDcNAvDy2uTICgQWz2eyNHeYXe3bH0WhxQhJC0lpzZMkHKaXZFtdi2WxWStmIA9Y9J0bESsWfP/+mp7dslkqBitLoxKWJlSsfXfHwg66b3/PpZ2fOnDWMdLveTvByh6mUkkpeKl/yvFJX15LNT210HPvo0R/6v/2urb0tymIIBPHjT/aMjv6VStUfmWGjg+5gfFAoFJsOSpSSpmm+9cbrLzz7zK9nf3/vgw/3Hzj0x/Aw8AkAETSewNpuWbx43drVLz7/3B1Lbn3/o90vv/pasVhEJAAq0lXAssyIgR9GnNRPHsbXfQQiqVQqnlfatGnDKy9tW9q1mAMM/jR0auiXP0dGAODmTObu7jt77ulmAKfPDL/5dt/evfsMI51KpZSSTWfyQogIP8YpedUgqPtzuZxpWeseX71h/RMP3H/f/Bs68J9gOZodP3b8xL7Pv9r/9aFioTBnzpym4SXuo6fwXQlKKec8ny9oGps7d+6iRbeZhgEARc87d+63ixcv+j63bYsxJoSYstpxal/2qJ6p+L4/MVGRUgAAIbStLaVpWvUgZ+aWEgog0C5jLJC4mhBnXy00PYeFST+QEEgIJAQSAgmBhEBCICGQEEgI/H8J/A0K7tphR9a0VgAAAABJRU5ErkJggg==">
+<title>Careu – analiză meciuri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://site.api.espn.com" crossorigin>
+<link rel="preconnect" href="https://a.espncdn.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;600;700;800&family=Sofia+Sans+Extra+Condensed:wght@600;700;800&display=swap">
+<style>
+:root{
+  --page:#EEF1F4;--surface:#FFFFFF;--surface-2:#F3F5F8;--ink:#121A24;--ink-2:#475262;--muted:#76828F;
+  --line:#DDE3E9;--draw:#C2CAD3;--v:#0F7A2E;--e:#687384;--i:#C0352E;--live:#C8302A;--star:#D99A00;--focus:#2A78D6;
+  --fa:"Sofia Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --fc:"Sofia Sans Extra Condensed","Sofia Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --page:#0B111A;--surface:#141C27;--surface-2:#1C2633;--ink:#E9EEF4;--ink-2:#B3BDCA;--muted:#8592A1;
+  --line:#243041;--draw:#4A576B;--v:#13803A;--e:#5F6B7C;--i:#C23A33;--live:#FF6A5E;--star:#F2B630;--focus:#6AA6F0;color-scheme:dark}}
+:root[data-theme=dark]{
+  --page:#0B111A;--surface:#141C27;--surface-2:#1C2633;--ink:#E9EEF4;--ink-2:#B3BDCA;--muted:#8592A1;
+  --line:#243041;--draw:#4A576B;--v:#13803A;--e:#5F6B7C;--i:#C23A33;--live:#FF6A5E;--star:#F2B630;--focus:#6AA6F0;color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:400 16px/1.42 var(--fa);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+img{display:block}
+h1,h2,h3{font-weight:700}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:8px}
+.app{max-width:640px;margin:0 auto;min-height:100vh;min-height:100dvh;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+
+/* headers */
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:calc(env(safe-area-inset-top) + 20px) 12px 12px 16px}
+.hero h1{margin:0;font:800 42px/.9 var(--fc);letter-spacing:-.3px}
+.ico{display:inline-grid;place-items:center;width:42px;height:42px;border:0;border-radius:12px;background:transparent;color:var(--ink-2);padding:0}
+.ico svg{width:24px;height:24px}
+.ico[aria-pressed=true]{color:var(--star)}
+.bar{position:sticky;top:0;z-index:10;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px;padding:calc(env(safe-area-inset-top) + 4px) 6px 4px;background:var(--page);background:color-mix(in srgb,var(--page) 84%,transparent);-webkit-backdrop-filter:saturate(1.5) blur(18px);backdrop-filter:saturate(1.5) blur(18px)}
+.back{display:inline-flex;align-items:center;border:0;background:none;padding:9px 10px 9px 2px;font-weight:600;font-size:16px;color:var(--ink)}
+.back svg{width:22px;height:22px}
+.bar .ttl{text-align:center;font-weight:700;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .rt{min-width:44px;display:flex;justify-content:flex-end}
+.sec{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:28px 16px 10px}
+.sec h2{margin:0;font:700 26px/1 var(--fc);letter-spacing:-.1px}
+.sec .aside{font-size:13px;color:var(--muted);text-align:right}
+
+/* lists */
+.grp,.panel{background:var(--surface);margin:0 12px;border-radius:16px;overflow:hidden}
+.row{position:relative;display:flex;align-items:center;gap:12px;min-height:50px;padding:10px 14px;text-decoration:none}
+.row+.row::before,.mrow+.mrow::before,.lrow+.lrow::before,.frow+.frow::before,.tr+.tr::before,.hrow+.hrow::before{content:"";position:absolute;top:0;right:0;left:50px;border-top:1px solid var(--line)}
+.grow{flex:1;min-width:0}
+.row b{display:block;font-weight:600}
+.row small{display:block;margin-top:1px;color:var(--muted);font-size:13.5px}
+.chev{color:var(--muted);font-size:22px;line-height:1}
+.note{margin:10px 16px;color:var(--muted);font-size:13.5px}
+.panel .note{margin:12px 16px}
+.empty{margin:30px 20px;color:var(--ink-2);font-size:15px}
+.cr{width:24px;height:24px;object-fit:contain;flex:none}
+.cr.lg{width:40px;height:40px}
+.cr.xl{width:64px;height:64px}
+.mono{display:inline-grid;place-items:center;border-radius:50%;background:var(--surface-2);color:var(--ink-2);font:800 9.5px/1 var(--fa)}
+.cr.xl.mono{font-size:18px}.cr.lg.mono{font-size:13px}
+.ci{width:20px;height:20px;object-fit:contain;flex:none}
+.ci.f{display:inline-grid;place-items:center;font-size:16px;line-height:1}
+.ci.lg{width:36px;height:36px;font-size:28px}
+
+/* day strip */
+.days{display:flex;gap:6px;overflow-x:auto;padding:2px 12px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.days::-webkit-scrollbar{display:none}
+.days a{flex:none;padding:8px 13px;border-radius:999px;background:var(--surface);color:var(--ink-2);font-weight:600;font-size:14.5px;text-decoration:none;white-space:nowrap}
+.days a[aria-current=true]{background:var(--ink);color:var(--surface)}
+.ch{display:flex;align-items:center;gap:9px;padding:20px 16px 8px;font-weight:700;font-size:15px;text-decoration:none}
+
+/* match rows */
+.mrow{position:relative;display:grid;grid-template-columns:54px 1fr auto;grid-template-rows:auto auto;align-items:center;column-gap:10px;row-gap:6px;padding:11px 14px 11px 6px;text-decoration:none}
+.mrow+.mrow::before{left:60px}
+.mrow .t{grid-row:1/3;text-align:center;font-weight:600;font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums;line-height:1.15}
+.mrow .t.live{color:var(--live)}
+.mrow .tm{display:flex;align-items:center;gap:9px;min-width:0;font-size:15.5px}
+.mrow .tm span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrow .sc{font:700 19px/1 var(--fc);text-align:right;font-variant-numeric:tabular-nums;min-width:14px}
+.mrow .cr{width:20px;height:20px}
+.lo{color:var(--muted)}
+
+/* match header */
+.mh{position:relative;display:grid;grid-template-columns:1fr minmax(96px,auto) 1fr;gap:6px 8px;align-items:start;padding:20px 12px 16px;background:var(--surface);overflow:hidden}
+.mh::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,color-mix(in srgb,var(--ca) 24%,transparent),transparent 42%,transparent 58%,color-mix(in srgb,var(--cb) 24%,transparent))}
+.mh .side{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;text-decoration:none;min-width:0}
+.mh .nm{font:700 21px/1.05 var(--fc);overflow-wrap:anywhere}
+.mh .mid{position:relative;text-align:center;padding-top:8px}
+.mh .big{font:800 48px/1 var(--fc);letter-spacing:-.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mh .big .dash{padding:0 5px;color:var(--muted)}
+.mh .vs{font:800 34px/1 var(--fc);color:var(--muted);padding-top:8px}
+.mh .st{margin-top:6px;font-size:13px;color:var(--ink-2)}
+.mh .st.live{color:var(--live);font-weight:700}
+.mh .pen{margin-top:4px;font-size:13px;color:var(--ink-2)}
+.mh .meta{position:relative;grid-column:1/-1;margin:8px 0 0;text-align:center;font-size:13.5px;color:var(--ink-2)}
+
+/* probability rows: the broadcast element */
+.lg{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;padding:14px 16px 2px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.lg span{display:flex;align-items:center;gap:6px;min-width:0}
+.lg span b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg span:last-child{justify-content:flex-end}
+.lg i{width:10px;height:10px;border-radius:3px;flex:none}
+.lg i.d,.tri i.d{background:var(--draw)}
+.pr{padding:14px 16px 16px}
+.pr+.pr{border-top:1px solid var(--line)}
+.pr .top{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:10px}
+.pr .num{font:800 40px/.82 var(--fc);letter-spacing:-.4px}
+.pr .num.r{text-align:right}
+.pr .num.lo{color:var(--ink-2);font-weight:700}
+.pr .lab{text-align:center;font-weight:700;font-size:14.5px;line-height:1.2}
+.pr .lab small{display:block;margin-top:3px;font-weight:500;font-size:13px;color:var(--muted)}
+.pr .nad{margin-top:8px;text-align:center;font-size:13.5px;color:var(--muted)}
+.tri,.two{display:flex;gap:2px;height:10px;margin-top:12px}
+.tri i,.two i{display:block;flex:var(--w) 1 0;min-width:0;border-radius:2px;transition:flex-grow .9s cubic-bezier(.2,.8,.2,1)}
+.tri i:first-child,.two i:first-child{border-radius:5px 2px 2px 5px}
+.tri i:last-child,.two i:last-child{border-radius:2px 5px 5px 2px}
+.z i{flex-grow:.001!important}
+.sb{display:grid;grid-template-columns:54px 1fr 54px;align-items:center;gap:0 8px;padding:11px 16px}
+.sb+.sb{border-top:1px solid var(--line)}
+.sb .v{font:700 20px/1 var(--fc);font-variant-numeric:tabular-nums}
+.sb .v.r{text-align:right}
+.sb .l{text-align:center;font-size:14px;color:var(--ink-2)}
+.sb .two{grid-column:1/-1;height:6px;margin-top:9px}
+.sb.na .v{color:var(--muted)}
+.row.tot{display:grid;grid-template-columns:1fr auto 64px;gap:12px}
+.tot .pp{text-align:right;line-height:1.05}
+.tot .pp b{display:inline;font:700 19px var(--fc)}
+.tot .pp small{display:block;margin:0;font-size:12px}
+.meter{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:3px;background:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 12px}
+.chip{display:inline-flex;align-items:baseline;gap:8px;padding:9px 13px;border-radius:12px;background:var(--surface);font:700 19px/1 var(--fc);font-variant-numeric:tabular-nums}
+.chip small{font:500 13.5px var(--fa);color:var(--ink-2)}
+.fcs{display:flex;gap:4px}
+.fc{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;flex:none;font:800 12.5px/1 var(--fa);color:#fff}
+.fc.W{background:var(--v)}.fc.D{background:var(--e)}.fc.L{background:var(--i)}
+.formline{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px 4px}
+
+/* team page */
+.thead{display:flex;align-items:center;gap:16px;padding:8px 16px 4px}
+.thead h1{margin:0;font:800 36px/.95 var(--fc);letter-spacing:-.2px}
+.thead .sub{margin:5px 0 0;color:var(--ink-2);font-size:14px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;padding:14px 12px 0}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin:0 12px;border-radius:16px;overflow:hidden;background:var(--line)}
+.tile{background:var(--surface);padding:12px 14px}
+.tile span{display:block;font-size:13px;color:var(--muted)}
+.tile b{font:700 27px/1.1 var(--fc)}
+.tile b small{font:600 15px var(--fc);color:var(--ink-2);margin-left:3px}
+@media (min-width:520px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.lrow{position:relative;display:grid;grid-template-columns:22px 1fr;gap:3px 12px;padding:11px 14px;text-decoration:none}
+.lrow+.lrow::before{left:48px}
+.lrow .l1{display:flex;align-items:center;gap:8px;min-width:0}
+.lrow .l1 b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .l1 .sc{margin-left:auto;font:700 19px/1 var(--fc);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lrow .l2,.lrow .l3{grid-column:2;font-size:13px;color:var(--muted)}
+.lrow .l3{color:var(--ink-2)}
+.lrow .cr{width:20px;height:20px}
+.lrow .ms{grid-column:2;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}
+.lrow .ms>span{font:700 17px/1.1 var(--fc);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lrow .ms small{display:block;margin-bottom:1px;font:500 11.5px/1.2 var(--fa);color:var(--muted)}
+.plain .row+.row::before,.plain.row+.row::before{left:14px}
+#sres .grp,#cres .grp{margin-top:8px}
+.frow{position:relative;display:grid;grid-template-columns:58px 1fr;align-items:center;gap:2px 12px;padding:10px 14px 10px 8px;text-decoration:none}
+.frow+.frow::before{left:68px}
+.frow .d{grid-row:1/3;text-align:center;font-size:12.5px;color:var(--ink-2);line-height:1.2}
+.frow .d b{display:block;font:700 18px/1.05 var(--fc);color:var(--ink)}
+.frow .o{display:flex;align-items:center;gap:8px;min-width:0;font-weight:600}
+.frow .o span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.frow small{font-size:13px;color:var(--muted)}
+.frow .cr{width:20px;height:20px}
+
+/* standings */
+.chead{display:flex;align-items:center;gap:14px;padding:8px 16px 14px}
+.chead h1{margin:0;font:800 34px/.95 var(--fc)}
+.chead small{display:block;margin-top:4px;color:var(--muted);font-size:13.5px}
+.segwrap{padding:0 12px 4px}
+.tbl .th,.tbl .tr{display:grid;grid-template-columns:26px 1fr 28px 40px 34px;align-items:center;gap:6px;padding:9px 14px 9px 10px;text-decoration:none;font-variant-numeric:tabular-nums}
+.tbl .th{padding-top:12px;padding-bottom:6px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.tbl .tr{position:relative;font-size:15px}
+.tbl .tr+.tr::before{left:36px}
+.tbl .tr::after{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:var(--nc,transparent)}
+.tbl .pos{text-align:center;color:var(--ink-2)}
+.tbl .tn{display:flex;align-items:center;gap:9px;min-width:0}
+.tbl .tn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbl .num{text-align:right;color:var(--ink-2)}
+.tbl .tr b{text-align:right;font-weight:700}
+.tbl .cr{width:20px;height:20px}
+.gname{margin:22px 16px 8px;font:700 20px/1 var(--fc)}
+.notes{display:flex;flex-direction:column;gap:5px;margin:12px 16px;font-size:13px;color:var(--ink-2)}
+.notes span{display:flex;align-items:center;gap:8px}
+.notes i{width:10px;height:10px;border-radius:3px;flex:none}
+
+/* controls */
+.seg{display:inline-flex;gap:2px;padding:2px;border-radius:10px;background:var(--surface)}
+.panel .seg,.sh-in .seg{background:var(--surface-2)}
+.seg button,.seg a{border:0;background:none;padding:6px 12px;border-radius:8px;font-weight:600;font-size:14px;color:var(--ink-2);text-decoration:none;text-align:center}
+.seg [aria-pressed=true],.seg [aria-selected=true]{background:var(--ink);color:var(--surface)}
+.seg.sm button{padding:5px 11px;font-size:13.5px}
+.seg.wide{display:flex}.seg.wide>*{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border:0;border-radius:12px;background:var(--surface);color:var(--ink);font-weight:600;font-size:15px;text-decoration:none}
+.btn svg{width:18px;height:18px}
+.search{padding:0 12px 4px}
+.search input,.sh-in input[type=search]{width:100%;appearance:none;-webkit-appearance:none;border:0;border-radius:12px;background:var(--surface);color:var(--ink);font:500 16px var(--fa);padding:12px 14px 12px 40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237B8796' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.6-3.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px 50%;background-size:18px}
+.sh-in input[type=search]{background-color:var(--surface)}
+.prog{height:2px;margin:0 16px;overflow:hidden;border-radius:2px}
+.prog i{display:block;width:0;height:100%;background:var(--ink-2);transition:width .25s}
+.err{margin:22px 12px;padding:16px;border-radius:16px;background:var(--surface)}
+.err p{margin:0 0 12px}
+.err .note{margin:12px 0 0}
+.pick{padding:14px 16px}
+.pick .seg{display:flex}
+.pick .seg button{flex:1;padding:10px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-in{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;font-weight:600;font-size:14.5px}
+.sc-in input{width:96px;padding:9px;border:0;border-radius:10px;background:var(--surface-2);color:var(--ink);text-align:center;font:700 18px var(--fc)}
+.hrow{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:10px 14px}
+.hrow+.hrow::before{left:14px}
+.hrow span{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow span:last-of-type{text-align:right}
+.hrow b{font:700 19px/1 var(--fc);text-align:center}
+.hrow small{grid-column:1/-1;margin-top:-4px;text-align:center;font-size:12.5px;color:var(--muted)}
+.method{margin:22px 16px 8px;color:var(--muted);font-size:13px;line-height:1.5}
+.method b{color:var(--ink-2)}
+.toggle{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px}
+.toggle input{width:20px;height:20px;accent-color:var(--ink)}
+.res{margin-left:auto;font-weight:700;font-size:13.5px;white-space:nowrap}
+.res.ok{color:var(--v)}.res.no{color:var(--i)}
+
+/* tabs + sheet */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;padding-bottom:env(safe-area-inset-bottom);border-top:1px solid var(--line);background:var(--surface);background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(20px);backdrop-filter:saturate(1.6) blur(20px)}
+.tabs .in{display:flex;max-width:640px;margin:0 auto}
+.tabs a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 7px;color:var(--muted);text-decoration:none;font-size:11.5px;font-weight:600}
+.tabs a svg{width:25px;height:25px}
+.tabs a[aria-current=page]{color:var(--ink)}
+.sheet{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,10,16,.45)}
+.sheet[hidden]{display:none}
+.sh-in{width:100%;max-width:640px;max-height:88vh;max-height:88dvh;overflow:auto;padding:8px 0 calc(18px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0;background:var(--page)}
+.sh-top{display:flex;align-items:center;justify-content:space-between;padding:10px 8px 6px 16px}
+.sh-top h2{margin:0;font:700 28px/1 var(--fc)}
+.field{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;font-weight:600;font-size:15px}
+.field.col{flex-direction:column;align-items:stretch;gap:8px}
+.field input[type=url],.field input[type=text]{border:0;border-radius:12px;background:var(--surface);color:var(--ink);padding:11px 12px;font:500 15px var(--fa)}
+.sh-in .acts{padding:8px 16px}
+.log{margin:6px 16px;padding:10px;max-height:180px;overflow:auto;border-radius:12px;background:var(--surface);font:12px/1.4 ui-monospace,Menlo,monospace;color:var(--ink-2);white-space:pre-wrap;word-break:break-all}
+details{margin:6px 0}
+summary{padding:10px 16px;font-weight:600;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app"><main id="view" tabindex="-1"></main></div>
+<nav class="tabs" aria-label="Secțiuni"><div class="in">
+  <a href="#/" data-tab="meciuri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m12 8.2 3.1 2.3-1.2 3.6h-3.8l-1.2-3.6z"/><path d="M12 3v5.2M15.1 10.5l5.3-1.6M13.9 14.1l3.3 4.6M10.1 14.1l-3.3 4.6M8.9 10.5 3.6 8.9"/></svg>Meciuri</a>
+  <a href="#/ligi" data-tab="ligi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4.5v1A3.5 3.5 0 0 0 8 10.5M17 6h2.5v1A3.5 3.5 0 0 1 16 10.5M12 13v4M8.5 20h7M9.5 17h5v3h-5z"/></svg>Ligi</a>
+  <a href="#/fav" data-tab="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>Favorite</a>
+</div></nav>
+<div class="sheet" id="sheet" hidden><div class="sh-in" role="dialog" aria-modal="true" id="shin"></div></div>
+<script>
+/*! Fuse.js v7.5.0 | Apache License 2.0 | https://github.com/krisk/Fuse */
+(function(){var module={exports:{}},exports=module.exports;
+function e(e){return Array.isArray?Array.isArray(e):u(e)===`[object Array]`}function t(e){if(typeof e==`string`)return e;if(typeof e==`bigint`)return e.toString();let t=e+``;return t==`0`&&1/e==-1/0?`-0`:t}function n(e){return e==null?``:t(e)}function r(e){return typeof e==`string`}function i(e){return typeof e==`number`}function a(e){return e===!0||e===!1||s(e)&&u(e)==`[object Boolean]`}function o(e){return typeof e==`object`}function s(e){return o(e)&&e!==null}function c(e){return e!=null}function l(e){return!e.trim().length}function u(e){return e==null?e===void 0?`[object Undefined]`:`[object Null]`:Object.prototype.toString.call(e)}const d=`Invalid doc index: must be a non-negative integer within the bounds of the docs array`,f=e=>`Pattern length exceeds max of ${e}.`,p=e=>`Missing ${e} property in key`,m=e=>`Property 'weight' in key '${e}' must be a positive integer`,h=Object.prototype.hasOwnProperty;var g=class{constructor(e){this._keys=[],this._keyMap={};let t=0;e.forEach(e=>{let n=_(e);this._keys.push(n),this._keyMap[n.id]=n,t+=n.weight}),this._keys.forEach(e=>{e.weight/=t})}get(e){return this._keyMap[e]}keys(){return this._keys}toJSON(){return JSON.stringify(this._keys)}};function _(t){let n=null,i=null,a=null,o=1,s=null;if(r(t)||e(t))a=t,n=v(t),i=y(t);else{if(!h.call(t,`name`))throw Error(p(`name`));let e=t.name;if(a=e,h.call(t,`weight`)&&t.weight!==void 0&&(o=t.weight,o<=0))throw Error(m(y(e)));n=v(e),i=y(e),s=t.getFn??null}return{path:n,id:i,weight:o,src:a,getFn:s}}function v(t){return e(t)?t:t.split(`.`)}function y(t){return e(t)?t.join(`.`):t}function b(t,o){let s=[],l=!1,u=(t,o,d,f)=>{if(c(t))if(!o[d])s.push(f===void 0?t:{v:t,i:f});else{let p=t[o[d]];if(!c(p))return;if(d===o.length-1&&(r(p)||i(p)||a(p)||typeof p==`bigint`))s.push(f===void 0?n(p):{v:n(p),i:f});else if(e(p)){l=!0;for(let e=0,t=p.length;e<t;e+=1)u(p[e],o,d+1,e)}else o.length&&u(p,o,d+1,f)}};return u(t,r(o)?o.split(`.`):o,0),l?s:s[0]}const x={includeMatches:!1,findAllMatches:!1,minMatchCharLength:1},S={isCaseSensitive:!1,ignoreDiacritics:!1,includeScore:!1,keys:[],shouldSort:!0,sortFn:(e,t)=>e.score===t.score?e.idx<t.idx?-1:1:e.score<t.score?-1:1},C={location:0,threshold:.6,distance:100},w={useExtendedSearch:!1,useTokenSearch:!1,tokenize:void 0,tokenMatch:`any`,getFn:b,ignoreLocation:!1,ignoreFieldNorm:!1,fieldNormWeight:1},T=Object.freeze({...S,...x,...C,...w});function E(e){return e>=9&&e<=13||e===32||e===160}function D(e=1,t=3){let n=new Map,r=10**t;return{get(t){let i=0,a=!1;for(let e=0;e<t.length;e++)E(t.charCodeAt(e))?a=!1:a||(i++,a=!0);if(i===0&&(i=1),n.has(i))return n.get(i);let o=Math.round(r/i**(.5*e))/r;return n.set(i,o),o},clear(){n.clear()}}}var O=class{constructor({getFn:e=T.getFn,fieldNormWeight:t=T.fieldNormWeight}={}){this.norm=D(t,3),this.getFn=e,this.isCreated=!1,this.docs=[],this.keys=[],this._keysMap={},this.setIndexRecords()}setSources(e=[]){this.docs=e}setIndexRecords(e=[]){this.records=e}setKeys(e=[]){this.keys=e,this._keysMap={},e.forEach((e,t)=>{this._keysMap[e.id]=t})}create(){if(this.isCreated||!this.docs.length)return;this.isCreated=!0;let e=this.docs.length;this.records=Array(e);let t=0;if(r(this.docs[0]))for(let n=0;n<e;n++){let e=this._createStringRecord(this.docs[n],n);e&&(this.records[t++]=e)}else for(let n=0;n<e;n++)this.records[t++]=this._createObjectRecord(this.docs[n],n);this.records.length=t,this.norm.clear()}add(e,t){if(!Number.isInteger(t)||t<0)throw Error(d);if(r(e)){let n=this._createStringRecord(e,t);return n&&this.records.push(n),n}let n=this._createObjectRecord(e,t);return this.records.push(n),n}removeAt(e){if(!Number.isInteger(e)||e<0)throw Error(d);for(let t=0,n=this.records.length;t<n;t+=1)if(this.records[t].i===e){this.records.splice(t,1);break}for(let t=0,n=this.records.length;t<n;t+=1)this.records[t].i>e&&--this.records[t].i}removeAll(e){let t=new Set;for(let n of e)Number.isInteger(n)&&n>=0&&t.add(n);if(t.size===0)return;this.records=this.records.filter(e=>!t.has(e.i));let n=Array.from(t).sort((e,t)=>e-t);for(let e of this.records){let t=0,r=n.length;for(;t<r;){let i=t+r>>>1;n[i]<e.i?t=i+1:r=i}e.i-=t}}getValueForItemAtKeyId(e,t){return e[this._keysMap[t]]}size(){return this.records.length}_createStringRecord(e,t){return!c(e)||l(e)?null:{v:e,i:t,n:this.norm.get(e)}}_createObjectRecord(t,i){let a={i,$:{}};for(let i=0,o=this.keys.length;i<o;i++){let o=this.keys[i],s=o.getFn?o.getFn(t):this.getFn(t,o.path);if(c(s)){if(e(s)){let e=[];for(let t=0,i=s.length;t<i;t+=1){let i=s[t];if(c(i)){if(r(i)){if(!l(i)){let n={v:i,i:t,n:this.norm.get(i)};e.push(n)}}else if(c(i.v)){let t=r(i.v)?i.v:n(i.v);if(!l(t)){let n={v:t,i:i.i,n:this.norm.get(t)};e.push(n)}}}}a.$[i]=e}else if(r(s)&&!l(s)){let e={v:s,n:this.norm.get(s)};a.$[i]=e}}}return a}toJSON(){return{keys:this.keys.map(({getFn:e,...t})=>t),records:this.records}}};function k(e,t,{getFn:n=T.getFn,fieldNormWeight:r=T.fieldNormWeight}={}){let i=new O({getFn:n,fieldNormWeight:r});return i.setKeys(e.map(_)),i.setSources(t),i.create(),i}function A(e,{getFn:t=T.getFn,fieldNormWeight:n=T.fieldNormWeight}={}){let{keys:r,records:i}=e,a=new O({getFn:t,fieldNormWeight:n});return a.setKeys(r),a.setIndexRecords(i),a}function j(e=[],t=T.minMatchCharLength){let n=[],r=-1,i=-1,a=0;for(let o=e.length;a<o;a+=1){let o=e[a];o&&r===-1?r=a:!o&&r!==-1&&(i=a-1,i-r+1>=t&&n.push([r,i]),r=-1)}return e[a-1]&&a-r>=t&&n.push([r,a-1]),n}function M(e,t,n,{location:r=T.location,distance:i=T.distance,threshold:a=T.threshold,findAllMatches:o=T.findAllMatches,minMatchCharLength:s=T.minMatchCharLength,includeMatches:c=T.includeMatches,ignoreLocation:l=T.ignoreLocation}={}){if(t.length>32)throw Error(f(32));let u=t.length,d=e.length,p=Math.max(0,Math.min(r,d)),m=a,h=p,g=(e,t)=>{let n=e/u;if(l)return n;let r=Math.abs(p-t);return i?n+r/i:r?1:n},_=s>1||c,v=_?Array(d):[],y;for(;(y=e.indexOf(t,h))>-1;){let e=g(0,y);if(m=Math.min(e,m),h=y+u,_){let e=0;for(;e<u;)v[y+e]=1,e+=1}}h=-1;let b=[],x=1,S=0,C=u+d,w=1<<u-1;for(let t=0;t<u;t+=1){let r=0,i=C;for(;r<i;)g(t,p+i)<=m?r=i:C=i,i=Math.floor((C-r)/2+r);C=i;let a=Math.max(1,p-i+1),s=o?d:Math.min(p+i,d)+u,c=Array(s+2);c[s+1]=(1<<t)-1;for(let r=s;r>=a;--r){let i=r-1,o=n[e[i]];if(c[r]=(c[r+1]<<1|1)&o,t&&(c[r]|=(b[r+1]|b[r])<<1|1|b[r+1]),c[r]&w&&(x=g(t,i),x<=m)){if(m=x,h=i,S=t,h<=p)break;a=Math.max(1,2*p-h)}}if(g(t+1,p)>m)break;b=c}if(_&&h>=0){let t=Math.min(d-1,h+u-1+S);for(let r=h;r<=t;r+=1)n[e[r]]&&(v[r]=1)}let E={isMatch:h>=0,score:Math.max(.001,x)};if(_){let e=j(v,s);e.length?c&&(E.indices=e):E.isMatch=!1}return E}function N(e){let t={};for(let n=0,r=e.length;n<r;n+=1){let i=e.charAt(n);t[i]=(t[i]||0)|1<<r-n-1}return t}function P(e){if(e.length<=1)return e;e.sort((e,t)=>e[0]-t[0]||e[1]-t[1]);let t=[e[0]];for(let n=1,r=e.length;n<r;n+=1){let r=t[t.length-1],i=e[n];i[0]<=r[1]+1?r[1]=Math.max(r[1],i[1]):t.push(i)}return t}const F={ł:`l`,Ł:`L`,đ:`d`,Đ:`D`,ø:`o`,Ø:`O`,ħ:`h`,Ħ:`H`,ŧ:`t`,Ŧ:`T`,ı:`i`,ß:`ss`},I=RegExp(`[`+Object.keys(F).join(``)+`]`,`g`),L=typeof String.prototype.normalize==`function`?e=>e.normalize(`NFD`).replace(/[\u0300-\u036F\u0483-\u0489\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED\u0711\u0730-\u074A\u07A6-\u07B0\u07EB-\u07F3\u07FD\u0816-\u0819\u081B-\u0823\u0825-\u0827\u0829-\u082D\u0859-\u085B\u08D3-\u08E1\u08E3-\u0903\u093A-\u093C\u093E-\u094F\u0951-\u0957\u0962\u0963\u0981-\u0983\u09BC\u09BE-\u09C4\u09C7\u09C8\u09CB-\u09CD\u09D7\u09E2\u09E3\u09FE\u0A01-\u0A03\u0A3C\u0A3E-\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A70\u0A71\u0A75\u0A81-\u0A83\u0ABC\u0ABE-\u0AC5\u0AC7-\u0AC9\u0ACB-\u0ACD\u0AE2\u0AE3\u0AFA-\u0AFF\u0B01-\u0B03\u0B3C\u0B3E-\u0B44\u0B47\u0B48\u0B4B-\u0B4D\u0B56\u0B57\u0B62\u0B63\u0B82\u0BBE-\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCD\u0BD7\u0C00-\u0C04\u0C3E-\u0C44\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C62\u0C63\u0C81-\u0C83\u0CBC\u0CBE-\u0CC4\u0CC6-\u0CC8\u0CCA-\u0CCD\u0CD5\u0CD6\u0CE2\u0CE3\u0D00-\u0D03\u0D3B\u0D3C\u0D3E-\u0D44\u0D46-\u0D48\u0D4A-\u0D4D\u0D57\u0D62\u0D63\u0D82\u0D83\u0DCA\u0DCF-\u0DD4\u0DD6\u0DD8-\u0DDF\u0DF2\u0DF3\u0E31\u0E34-\u0E3A\u0E47-\u0E4E\u0EB1\u0EB4-\u0EB9\u0EBB\u0EBC\u0EC8-\u0ECD\u0F18\u0F19\u0F35\u0F37\u0F39\u0F3E\u0F3F\u0F71-\u0F84\u0F86\u0F87\u0F8D-\u0F97\u0F99-\u0FBC\u0FC6\u102B-\u103E\u1056-\u1059\u105E-\u1060\u1062-\u1064\u1067-\u106D\u1071-\u1074\u1082-\u108D\u108F\u109A-\u109D\u135D-\u135F\u1712-\u1714\u1732-\u1734\u1752\u1753\u1772\u1773\u17B4-\u17D3\u17DD\u180B-\u180D\u1885\u1886\u18A9\u1920-\u192B\u1930-\u193B\u1A17-\u1A1B\u1A55-\u1A5E\u1A60-\u1A7C\u1A7F\u1AB0-\u1ABE\u1B00-\u1B04\u1B34-\u1B44\u1B6B-\u1B73\u1B80-\u1B82\u1BA1-\u1BAD\u1BE6-\u1BF3\u1C24-\u1C37\u1CD0-\u1CD2\u1CD4-\u1CE8\u1CED\u1CF2-\u1CF4\u1CF7-\u1CF9\u1DC0-\u1DF9\u1DFB-\u1DFF\u20D0-\u20F0\u2CEF-\u2CF1\u2D7F\u2DE0-\u2DFF\u302A-\u302F\u3099\u309A\uA66F-\uA672\uA674-\uA67D\uA69E\uA69F\uA6F0\uA6F1\uA802\uA806\uA80B\uA823-\uA827\uA880\uA881\uA8B4-\uA8C5\uA8E0-\uA8F1\uA8FF\uA926-\uA92D\uA947-\uA953\uA980-\uA983\uA9B3-\uA9C0\uA9E5\uAA29-\uAA36\uAA43\uAA4C\uAA4D\uAA7B-\uAA7D\uAAB0\uAAB2-\uAAB4\uAAB7\uAAB8\uAABE\uAABF\uAAC1\uAAEB-\uAAEF\uAAF5\uAAF6\uABE3-\uABEA\uABEC\uABED\uFB1E\uFE00-\uFE0F\uFE20-\uFE2F]/g,``).replace(I,e=>F[e]):e=>e;var R=class{constructor(e,{location:t=T.location,threshold:n=T.threshold,distance:r=T.distance,includeMatches:i=T.includeMatches,findAllMatches:a=T.findAllMatches,minMatchCharLength:o=T.minMatchCharLength,isCaseSensitive:s=T.isCaseSensitive,ignoreDiacritics:c=T.ignoreDiacritics,ignoreLocation:l=T.ignoreLocation}={}){if(this.options={location:t,threshold:n,distance:r,includeMatches:i,findAllMatches:a,minMatchCharLength:o,isCaseSensitive:s,ignoreDiacritics:c,ignoreLocation:l},e=s?e:e.toLowerCase(),e=c?L(e):e,this.pattern=e,this.chunks=[],!this.pattern.length)return;let u=(e,t)=>{this.chunks.push({pattern:e,alphabet:N(e),startIndex:t})},d=this.pattern.length;if(d>32){let e=0,t=d%32,n=d-t;for(;e<n;)u(this.pattern.substr(e,32),e),e+=32;if(t){let e=d-32;u(this.pattern.substr(e),e)}}else u(this.pattern,0)}searchIn(e){let{isCaseSensitive:t,ignoreDiacritics:n,includeMatches:r}=this.options;if(e=t?e:e.toLowerCase(),e=n?L(e):e,this.pattern===e){if(e.length<this.options.minMatchCharLength)return{isMatch:!1,score:1};let t={isMatch:!0,score:0};return r&&(t.indices=[[0,e.length-1]]),t}let{location:i,distance:a,threshold:o,findAllMatches:s,minMatchCharLength:c,ignoreLocation:l}=this.options,u=[],d=0,f=!1;this.chunks.forEach(({pattern:t,alphabet:n,startIndex:p})=>{let{isMatch:m,score:h,indices:g}=M(e,t,n,{location:i+p,distance:a,threshold:o,findAllMatches:s,minMatchCharLength:c,includeMatches:r,ignoreLocation:l});m&&(f=!0),d+=h,m&&g&&u.push(...g)});let p={isMatch:f,score:f?d/this.chunks.length:1};return f&&r&&(p.indices=P(u)),p}};const z=[];function B(...e){z.push(...e)}function V(e,t){for(let n=0,r=z.length;n<r;n+=1){let r=z[n];if(r.condition(e,t))return new r(e,t)}return new R(e,t)}function H(e,{ignoreFieldNorm:t=T.ignoreFieldNorm}){let n=1;return e.forEach(({key:e,norm:r,score:i})=>{let a=e?e.weight:null;n*=(i===0&&a?2**-52:i)**+((a||1)*(t?1:r))}),n}function U(e,{ignoreFieldNorm:t=T.ignoreFieldNorm}){e.forEach(e=>{e.score=H(e.matches,{ignoreFieldNorm:t})})}var W=class{constructor(e,t){this.limit=e,this.heap=[],this.comparator=t}get size(){return this.heap.length}insert(e){this.size<this.limit?(this.heap.push(e),this._bubbleUp(this.size-1)):this.comparator(e,this.heap[0])<0&&(this.heap[0]=e,this._sinkDown(0))}extractSorted(){return this.heap.sort(this.comparator)}_bubbleUp(e){let t=this.heap;for(;e>0;){let n=e-1>>1;if(this.comparator(t[e],t[n])<=0)break;let r=t[e];t[e]=t[n],t[n]=r,e=n}}_sinkDown(e){let t=this.heap,n=t.length,r=e;do{e=r;let i=2*e+1,a=2*e+2;if(i<n&&this.comparator(t[i],t[r])>0&&(r=i),a<n&&this.comparator(t[a],t[r])>0&&(r=a),r!==e){let n=t[e];t[e]=t[r],t[r]=n}}while(r!==e)}};function G(e){let t=[];return e.matches.forEach(e=>{if(!c(e.indices)||!e.indices.length)return;let n={indices:e.indices,value:e.value};e.key&&(n.key=e.key.id),e.idx>-1&&(n.refIndex=e.idx),t.push(n)}),t}function K(e,t,{includeMatches:n=T.includeMatches,includeScore:r=T.includeScore}={}){return e.map(e=>{let{idx:i}=e,a={item:t[i],refIndex:i};return n&&(a.matches=G(e)),r&&(a.score=e.score),a})}const q=/[\p{L}\p{M}\p{N}_]+/gu;function J(e){return typeof e==`function`?t=>e(t):e instanceof RegExp?(e.global,t=>t.match(e)||[]):e=>e.match(q)||[]}function Y({isCaseSensitive:e=!1,ignoreDiacritics:t=!1,tokenize:n}={}){let r=J(n);return{tokenize(n){return e||(n=n.toLowerCase()),t&&(n=L(n)),r(n)}}}function X(e,t,n,r){let i=r.tokenize(t);if(!i.length)return;e.fieldCount++,e.docFieldCount.set(n,(e.docFieldCount.get(n)||0)+1);let a=new Set(i),o=e.docTermFieldHits.get(n);o||(o=new Map,e.docTermFieldHits.set(n,o));for(let t of a)o.set(t,(o.get(t)||0)+1),e.df.set(t,(e.df.get(t)||0)+1)}function Z(e,t,n,r){let{i,v:a,$:o}=t;if(a!==void 0){X(e,a,i,r);return}if(o)for(let t=0;t<n;t++){let n=o[t];if(n)if(Array.isArray(n))for(let t of n)X(e,t.v,i,r);else X(e,n.v,i,r)}}function ee(e,t,n){let r={fieldCount:0,df:new Map,docFieldCount:new Map,docTermFieldHits:new Map};for(let i of e)Z(r,i,t,n);return r}function te(e,t,n,r){Z(e,t,n,r)}function ne(e,t){let n=e.docFieldCount.get(t);if(n===void 0)return;e.fieldCount-=n,e.docFieldCount.delete(t);let r=e.docTermFieldHits.get(t);if(r){for(let[t,n]of r){let r=(e.df.get(t)||0)-n;r<=0?e.df.delete(t):e.df.set(t,r)}e.docTermFieldHits.delete(t)}}function Q(e,t){if(t.length===0)return;let n=Array.from(new Set(t)).sort((e,t)=>e-t);for(let t of n)ne(e,t);let r=e=>{let t=0,r=n.length;for(;t<r;){let i=t+r>>>1;n[i]<e?t=i+1:r=i}return e-t},i=n[0],a=new Map;for(let[t,n]of e.docFieldCount)a.set(t>i?r(t):t,n);e.docFieldCount=a;let o=new Map;for(let[t,n]of e.docTermFieldHits)o.set(t>i?r(t):t,n);e.docTermFieldHits=o}var $=class{constructor(e,t,n){if(this.options={...T,...t},this.options.useExtendedSearch)throw Error(`Extended search is not available`);if(this.options.useTokenSearch)throw Error(`Token search is not available`);this._keyStore=new g(this.options.keys),this._docs=e,this._myIndex=null,this._invertedIndex=null,this.setCollection(e,n),this._lastQuery=null,this._lastSearcher=null}_getSearcher(e){if(this._lastQuery===e)return this._lastSearcher;let t=V(e,this._invertedIndex?{...this.options,_invertedIndex:this._invertedIndex}:this.options);return this._lastQuery=e,this._lastSearcher=t,t}setCollection(e,t){if(this._docs=e,t&&!(t instanceof O))throw Error(`Incorrect 'index' type`);if(this._myIndex=t||k(this.options.keys,this._docs,{getFn:this.options.getFn,fieldNormWeight:this.options.fieldNormWeight}),this.options.useTokenSearch){let e=Y({isCaseSensitive:this.options.isCaseSensitive,ignoreDiacritics:this.options.ignoreDiacritics,tokenize:this.options.tokenize});this._invertedIndex=ee(this._myIndex.records,this._myIndex.keys.length,e)}this._invalidateSearcherCache()}add(e){if(!c(e))return;this._docs.push(e);let t=this._myIndex.add(e,this._docs.length-1);if(this._invertedIndex&&t){let e=Y({isCaseSensitive:this.options.isCaseSensitive,ignoreDiacritics:this.options.ignoreDiacritics,tokenize:this.options.tokenize});te(this._invertedIndex,t,this._myIndex.keys.length,e)}this._invalidateSearcherCache()}remove(e=()=>!1){let t=[],n=[];for(let r=0,i=this._docs.length;r<i;r+=1)e(this._docs[r],r)&&(t.push(this._docs[r]),n.push(r));if(n.length){this._invertedIndex&&Q(this._invertedIndex,n);let e=new Set(n);this._docs=this._docs.filter((t,n)=>!e.has(n)),this._myIndex.removeAll(n),this._invalidateSearcherCache()}return t}removeAt(e){if(!Number.isInteger(e)||e<0||e>=this._docs.length)throw Error(d);this._invertedIndex&&Q(this._invertedIndex,[e]);let t=this._docs.splice(e,1)[0];return this._myIndex.removeAt(e),this._invalidateSearcherCache(),t}_invalidateSearcherCache(){this._lastQuery=null,this._lastSearcher=null}getIndex(){return this._myIndex}_normalizedKeys(){return this._myIndex.keys.map(e=>this._keyStore.get(e.id)||e)}search(e,t){let{limit:n=-1}=t||{},{includeMatches:a,includeScore:o,shouldSort:s,sortFn:c,ignoreFieldNorm:l}=this.options;if(r(e)&&!e.trim()){let e=this._docs.map((e,t)=>({item:e,refIndex:t}));return i(n)&&n>-1&&(e=e.slice(0,n)),e}let u=s&&i(n)&&n>0&&r(e),d=c,f=(e,t)=>d(e,t)||e.idx-t.idx,p;if(u){let t=new W(n,f);r(this._docs[0])?this._searchStringList(e,{heap:t,ignoreFieldNorm:l}):this._searchObjectList(e,{heap:t,ignoreFieldNorm:l}),p=t.extractSorted()}else p=r(e)?r(this._docs[0])?this._searchStringList(e):this._searchObjectList(e):this._searchLogical(e),U(p,{ignoreFieldNorm:l}),s&&p.sort(r(e)?f:d),i(n)&&n>-1&&(p=p.slice(0,n));return K(p,this._docs,{includeMatches:a,includeScore:o})}_searchStringList(e,{heap:t,ignoreFieldNorm:n}={}){let r=this._getSearcher(e),i=this.options.useTokenSearch&&this.options.tokenMatch===`all`,{records:a}=this._myIndex,o=t?null:[];return a.forEach(({v:e,i:a,n:s})=>{if(!c(e))return;let l=r.searchIn(e);if(l.isMatch){let r={score:l.score,value:e,norm:s,indices:l.indices};i&&(r.matchedMask=l.matchedMask,r.matchedTerms=l.matchedTerms,r.termCount=l.termCount);let c=[r];if(!i||this._coversAllTokens(c)){let r={item:e,idx:a,matches:c};t?(r.score=H(r.matches,{ignoreFieldNorm:n}),t.insert(r)):o.push(r)}}}),o}_searchLogical(e){throw Error(`Logical search is not available`)}_searchObjectList(e,{heap:t,ignoreFieldNorm:n}={}){let r=this._getSearcher(e),i=this.options.useTokenSearch&&this.options.tokenMatch===`all`,{records:a}=this._myIndex,o=this._normalizedKeys(),s=t?null:[];return a.forEach(({$:e,i:a})=>{if(!c(e))return;let l=[],u=!1,d=!1;if(o.forEach((t,n)=>{let i=this._findMatches({key:t,value:e[n],searcher:r});i.length?(l.push(...i),i[0].hasInverse&&(d=!0)):u=!0}),!(d&&u)&&l.length&&(!i||this._coversAllTokens(l))){let r={idx:a,item:e,matches:l};t?(r.score=H(r.matches,{ignoreFieldNorm:n}),t.insert(r)):s.push(r)}}),s}_findMatches({key:t,value:n,searcher:r}){if(!c(n))return[];let i=[];if(e(n))n.forEach(({v:e,i:n,n:a})=>{if(!c(e))return;let o=r.searchIn(e);if(o.isMatch){let r={score:o.score,key:t,value:e,idx:n,norm:a,indices:o.indices,hasInverse:o.hasInverse};o.termCount!==void 0&&(r.matchedMask=o.matchedMask,r.matchedTerms=o.matchedTerms,r.termCount=o.termCount),i.push(r)}});else{let{v:e,n:a}=n,o=r.searchIn(e);if(o.isMatch){let n={score:o.score,key:t,value:e,norm:a,indices:o.indices,hasInverse:o.hasInverse};o.termCount!==void 0&&(n.matchedMask=o.matchedMask,n.matchedTerms=o.matchedTerms,n.termCount=o.termCount),i.push(n)}}return i}_coversAllTokens(e){let t=e.length?e[0].termCount:void 0;if(t===void 0)return!0;if(t<=31){let n=0;for(let t=0;t<e.length;t++)n|=e[t].matchedMask||0;return n===2**t-1}let n=new Set;for(let t=0;t<e.length;t++){let r=e[t].matchedTerms;if(r)for(let e of r)n.add(e)}return n.size===t}};$.version=`7.5.0`,$.createIndex=k,$.parseIndex=A,$.config=T,$.match=function(e,t,n){if(n&&n.useTokenSearch)throw Error(`Fuse.match does not support useTokenSearch: token search requires corpus-level statistics (df, fieldCount) that a one-off string comparison does not have. Use new Fuse(...).search(...) instead.`);return V(e,{...T,...n}).searchIn(t)},$.use=function(...e){e.forEach(e=>B(e))};var re=$;module.exports=re;
+;window.Fuse=module.exports.default||module.exports;})();
+</script>
+<script>
+'use strict';
+/* Careu: analiză meciuri de fotbal cu date live ESPN.
+   Surse open-source: Fuse.js (căutare), i18n-iso-countries (nume de țări în română),
+   documentația comunitară a API-ului public ESPN (github.com/pseudo-r/Public-ESPN-API),
+   modelul Dixon–Coles (1997) pentru scoruri. */
+
+/* ---------- utilitare ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fin = v => typeof v === 'number' && Number.isFinite(v);
+const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+const uniq = a => [...new Set(a.filter(x => x != null && x !== ''))];
+const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  .replace(/&/g, ' and ').replace(/st\./g, 'saint').replace(/[’]/g, "'").replace(/[^a-z0-9]+/g, ' ').trim();
+const debounce = (f, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => f(...a), ms); }; };
+const nf1 = new Intl.NumberFormat('ro-RO', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const f1 = v => fin(v) ? nf1.format(v) : '–';
+const pct = p => fin(p) ? Math.round(p * 100) + '%' : '–';
+const V = document.getElementById('view');
+
+// Stocarea locală e comună tuturor paginilor de pe aceeași adresă (de ex. alte aplicații de pe același site GitHub Pages).
+// Careu folosește doar chei „careu.” și nu mai scrie cache dacă stocarea se apropie de limită.
+function storageChars() { let n = 0; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); n += k.length + (localStorage.getItem(k) || '').length; } } catch (e) {} return n; }
+const store = {
+  get(k, d = null) { try { const v = localStorage.getItem('careu.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('careu.' + k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+  cache(k, v) { const s = JSON.stringify(v), old = (() => { try { return (localStorage.getItem('careu.' + k) || '').length; } catch (e) { return 0; } })(); if (storageChars() - old + s.length > 1500000) return false; try { localStorage.setItem('careu.' + k, s); return true; } catch (e) { return false; } },
+  clearCache() { try { Object.keys(localStorage).filter(k => k.startsWith('careu.') && !/^careu\.(favs|picks|settings)$/.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) {} }
+};
+const settings = Object.assign({ n: 5, theme: 'auto', proxy: '' }, store.get('settings', {}));
+const saveSettings = () => store.set('settings', settings);
+function applyTheme() { const r = document.documentElement; if (settings.theme === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', settings.theme); }
+applyTheme();
+
+/* ---------- competiții ---------- */
+// Top 10 după coeficientul UEFA al țărilor (sezonul 2026/27), apoi cupe și echipe naționale.
+const COMPS = [
+  ['eng.1', 'Premier League', 'English Premier League', 'top', '🏴󠁧󠁢󠁥󠁮󠁧󠁿', ['Premier League']],
+  ['ita.1', 'Serie A', 'Italian Serie A', 'top', '🇮🇹', ['Serie A', 'Serie A TIM', 'Serie A Enilive']],
+  ['esp.1', 'LaLiga', 'Spanish LALIGA', 'top', '🇪🇸', ['LaLiga', 'La Liga', 'Spanish La Liga', 'LALIGA EA SPORTS']],
+  ['ger.1', 'Bundesliga', 'German Bundesliga', 'top', '🇩🇪', ['Bundesliga']],
+  ['fra.1', 'Ligue 1', 'French Ligue 1', 'top', '🇫🇷', ['Ligue 1', 'Ligue 1 McDonalds']],
+  ['por.1', 'Liga Portugal', 'Portuguese Primeira Liga', 'top', '🇵🇹', ['Liga Portugal', 'Primeira Liga', 'Liga Portugal Betclic']],
+  ['bel.1', 'Pro League (Belgia)', 'Belgian Pro League', 'top', '🇧🇪', ['Jupiler Pro League', 'Belgian First Division A']],
+  ['ned.1', 'Eredivisie', 'Dutch Eredivisie', 'top', '🇳🇱', ['Eredivisie']],
+  ['tur.1', 'Süper Lig', 'Turkish Super Lig', 'top', '🇹🇷', ['Super Lig', 'Trendyol Super Lig', 'Turkish Süper Lig']],
+  ['gre.1', 'Super League (Grecia)', 'Greek Super League', 'top', '🇬🇷', ['Super League Greece', 'Stoiximan Super League', 'Greek Super League 1']],
+  ['uefa.champions', 'Liga Campionilor', 'UEFA Champions League', 'eu', '', ['Champions League']],
+  ['uefa.europa', 'Europa League', 'UEFA Europa League', 'eu', '', ['Europa League']],
+  ['uefa.europa.conf', 'Conference League', 'UEFA Conference League', 'eu', '', ['Conference League', 'UEFA Europa Conference League']],
+  ['eng.fa', 'Cupa Angliei', 'English FA Cup', 'cup', '🏴󠁧󠁢󠁥󠁮󠁧󠁿', ['FA Cup', 'Emirates FA Cup']],
+  ['eng.league_cup', 'Cupa Ligii (Anglia)', 'English Carabao Cup', 'cup', '🏴󠁧󠁢󠁥󠁮󠁧󠁿', ['Carabao Cup', 'EFL Cup', 'English League Cup']],
+  ['esp.copa_del_rey', 'Cupa Regelui', 'Spanish Copa del Rey', 'cup', '🇪🇸', ['Copa del Rey']],
+  ['ita.coppa_italia', 'Cupa Italiei', 'Coppa Italia', 'cup', '🇮🇹', ['Italian Coppa Italia']],
+  ['ger.dfb_pokal', 'Cupa Germaniei', 'German Cup', 'cup', '🇩🇪', ['DFB Pokal', 'DFB-Pokal', 'German DFB Pokal']],
+  ['fra.coupe_de_france', 'Cupa Franței', 'Coupe de France', 'cup', '🇫🇷', ['French Coupe de France']],
+  ['ned.cup', 'Cupa Olandei', 'Dutch KNVB Beker', 'cup', '🇳🇱', ['KNVB Beker', 'KNVB Cup']],
+  ['por.taca.portugal', 'Cupa Portugaliei', 'Taca de Portugal', 'cup', '🇵🇹', ['Taça de Portugal', 'Portuguese Cup']],
+  ['uefa.nations', 'Liga Națiunilor UEFA', 'UEFA Nations League', 'nat', '', ['Nations League']],
+  ['fifa.friendly', 'Amicale internaționale', 'International Friendly', 'nat', '', ['Friendly', 'International Friendlies']],
+  ['fifa.world', 'Campionatul Mondial', 'FIFA World Cup', 'nat', '', ['World Cup']],
+  ['fifa.worldq.uefa', 'Preliminarii CM: Europa', 'FIFA World Cup Qualifying - UEFA', 'nat', '', ['World Cup Qualifying - UEFA', 'WC Qualifying - UEFA']],
+  ['fifa.worldq.conmebol', 'Preliminarii CM: America de Sud', 'FIFA World Cup Qualifying - CONMEBOL', 'nat', '', ['World Cup Qualifying - CONMEBOL']],
+  ['fifa.worldq.concacaf', 'Preliminarii CM: CONCACAF', 'FIFA World Cup Qualifying - Concacaf', 'nat', '', ['World Cup Qualifying - Concacaf']],
+  ['fifa.worldq.caf', 'Preliminarii CM: Africa', 'FIFA World Cup Qualifying - CAF', 'nat', '', ['World Cup Qualifying - CAF']],
+  ['fifa.worldq.afc', 'Preliminarii CM: Asia', 'FIFA World Cup Qualifying - AFC', 'nat', '', ['World Cup Qualifying - AFC']],
+  ['fifa.worldq.ofc', 'Preliminarii CM: Oceania', 'FIFA World Cup Qualifying - OFC', 'nat', '', ['World Cup Qualifying - OFC']],
+  ['uefa.euroq', 'Preliminarii Euro', 'UEFA European Championship Qualifying', 'nat', '', ['Euro Qualifying', 'UEFA Euro Qualifying']],
+  ['uefa.euro', 'Campionatul European', 'UEFA European Championship', 'nat', '', ['UEFA Euro', 'European Championship']],
+  ['conmebol.america', 'Copa América', 'Copa America', 'nat', '', ['CONMEBOL Copa America']],
+  ['caf.nations', 'Cupa Africii', 'Africa Cup of Nations', 'nat', '', ['AFCON', 'Africa Cup of Nations (AFCON)']],
+  ['caf.nations_qual', 'Preliminarii Cupa Africii', 'Africa Cup of Nations Qualifying', 'nat', '', []],
+  ['afc.asian.cup', 'Cupa Asiei', 'AFC Asian Cup', 'nat', '', ['Asian Cup']],
+  ['concacaf.gold', 'Gold Cup', 'Concacaf Gold Cup', 'nat', '', ['Gold Cup']],
+  ['concacaf.nations.league', 'Liga Națiunilor CONCACAF', 'Concacaf Nations League', 'nat', '', []],
+  ['rou.1', 'Liga 1 (România)', 'Romanian Liga I', 'other', '🇷🇴', ['Liga I', 'Romanian Liga 1', 'SuperLiga']],
+  ['sco.1', 'Premiership (Scoția)', 'Scottish Premiership', 'other', '🏴󠁧󠁢󠁳󠁣󠁴󠁿', []],
+  ['aut.1', 'Bundesliga (Austria)', 'Austrian Bundesliga', 'other', '🇦🇹', []],
+  ['den.1', 'Superliga (Danemarca)', 'Danish Superliga', 'other', '🇩🇰', []],
+  ['ksa.1', 'Saudi Pro League', 'Saudi Pro League', 'other', '🇸🇦', ['Roshn Saudi League']],
+  ['usa.1', 'MLS', 'MLS', 'other', '🇺🇸', ['Major League Soccer']],
+  ['bra.1', 'Brasileirão', 'Brazilian Serie A', 'other', '🇧🇷', ['Brasileirao']],
+  ['arg.1', 'Liga Profesional (Argentina)', 'Argentine Liga Profesional de Futbol', 'other', '🇦🇷', []]
+].map(([slug, ro, en, g, flag, alias]) => ({ slug, ro, en, g, flag, alias }));
+const COMP = Object.fromEntries(COMPS.map(c => [c.slug, c]));
+const GROUPS = [
+  { id: 'top', title: 'Top 10 ligi', aside: 'după coeficientul UEFA' },
+  { id: 'eu', title: 'Cupe europene' },
+  { id: 'cup', title: 'Cupe naționale' },
+  { id: 'nat', title: 'Echipe naționale' },
+  { id: 'other', title: 'Alte ligi', aside: 'dacă ESPN are date' }
+];
+// alte competiții care apar des în programul unei echipe (nume ESPN -> slug)
+const MORE = {
+  'uefa.super_cup': ['UEFA Super Cup', 'Supercupa Europei'], 'fifa.cwc': ['FIFA Club World Cup', 'Campionatul Mondial al cluburilor'],
+  'fifa.intercontinental_cup': ['FIFA Intercontinental Cup', 'Cupa Intercontinentală'],
+  'uefa.champions_qual': ['UEFA Champions League Qualifying', 'Preliminarii Liga Campionilor'],
+  'uefa.europa_qual': ['UEFA Europa League Qualifying', 'Preliminarii Europa League'],
+  'uefa.europa.conf_qual': ['UEFA Conference League Qualifying', 'Preliminarii Conference League'],
+  'esp.super_cup': ['Spanish Supercopa', 'Supercupa Spaniei'], 'ita.super_cup': ['Italian Supercoppa', 'Supercupa Italiei'],
+  'ger.super_cup': ['German Supercup', 'Supercupa Germaniei'], 'fra.super_cup': ['French Trophee des Champions', 'Supercupa Franței'],
+  'eng.charity': ['English FA Community Shield', 'Supercupa Angliei'], 'ned.supercup': ['Dutch Johan Cruyff Shield', 'Supercupa Olandei'],
+  'club.friendly': ['Club Friendly', 'Amical'], 'eng.2': ['English Championship', 'Championship (Anglia)'],
+  'esp.2': ['Spanish LALIGA 2', 'LaLiga 2'], 'ita.2': ['Italian Serie B', 'Serie B'], 'ger.2': ['German 2. Bundesliga', '2. Bundesliga'],
+  'fra.2': ['French Ligue 2', 'Ligue 2'], 'sco.tennents': ['Scottish Cup', 'Cupa Scoției'], 'sco.cis': ['Scottish League Cup', 'Cupa Ligii (Scoția)'],
+  'conmebol.libertadores': ['CONMEBOL Libertadores', 'Copa Libertadores'], 'conmebol.sudamericana': ['CONMEBOL Sudamericana', 'Copa Sudamericana'],
+  'afc.champions': ['AFC Champions League Elite', 'Liga Campionilor Asiei'], 'concacaf.champions': ['Concacaf Champions Cup', 'Concacaf Champions Cup'],
+  'global.finalissima': ['CONMEBOL-UEFA Cup of Champions', 'Finalissima'], 'fifa.olympics': ["Men's Olympic Soccer Tournament", 'Jocurile Olimpice']
+};
+const HOME_SLUGS = COMPS.filter(c => c.g !== 'other' || c.slug === 'rou.1').map(c => c.slug);
+const INDEX_SLUGS = ['eng.1', 'ita.1', 'esp.1', 'ger.1', 'fra.1', 'por.1', 'bel.1', 'ned.1', 'tur.1', 'gre.1', 'uefa.champions', 'uefa.europa', 'uefa.europa.conf',
+  'uefa.nations', 'fifa.world', 'fifa.worldq.uefa', 'fifa.worldq.conmebol', 'fifa.worldq.concacaf', 'fifa.worldq.caf', 'fifa.worldq.afc', 'fifa.worldq.ofc',
+  'conmebol.america', 'caf.nations', 'afc.asian.cup', 'concacaf.gold', 'rou.1', 'sco.1', 'aut.1', 'den.1', 'ksa.1', 'usa.1', 'bra.1', 'arg.1'];
+const NAT = new Set(COMPS.filter(c => c.g === 'nat').map(c => c.slug));
+
+const normLeague = s => norm(String(s || '').replace(/^\s*\d{4}(\s*[-\/]\s*\d{2,4})?\s+/, ''));
+const NAME2SLUG = new Map();
+const addName = (n, s) => { const k = normLeague(n); if (k && !NAME2SLUG.has(k)) NAME2SLUG.set(k, s); };
+COMPS.forEach(c => { addName(c.en, c.slug); c.alias.forEach(a => addName(a, c.slug)); });
+Object.entries(MORE).forEach(([s, [en]]) => addName(en, s));
+const LEARNED = store.get('names', {});
+Object.entries(LEARNED).forEach(([k, s]) => NAME2SLUG.set(k, s));
+function learnName(name, slug) {
+  const k = normLeague(name);
+  if (!k || !slug || slug === 'all' || NAME2SLUG.get(k) === slug) return;
+  NAME2SLUG.set(k, slug); LEARNED[k] = slug; store.set('names', LEARNED);
+}
+function slugFromName(name) {
+  const k = normLeague(name);
+  if (!k) return null;
+  if (NAME2SLUG.has(k)) return NAME2SLUG.get(k);
+  let best = null, bl = 0;
+  for (const [n, s] of NAME2SLUG) if (n.length >= 5 && n.length > bl && (' ' + k + ' ').includes(' ' + n + ' ')) { best = s; bl = n.length; }
+  return best;
+}
+const compLabel = (slug, fallback) => COMP[slug]?.ro || MORE[slug]?.[1] || fallback || slug || '';
+const CLOGO = store.get('clogo', {});
+function setCompLogo(slug, url) { if (url && CLOGO[slug] !== url) { CLOGO[slug] = url; store.set('clogo', CLOGO); } }
+function compIcon(slug, big) {
+  const c = COMP[slug];
+  const url = CLOGO[slug];
+  const cls = 'ci' + (big ? ' lg' : '');
+  if (url) return `<img class="${cls}" src="${esc(small(url, big ? 72 : 40))}" alt="" loading="lazy" data-fb="${esc(c?.flag || '')}" data-fbc="${cls} f">`;
+  return `<span class="${cls} f" aria-hidden="true">${c?.flag || ''}</span>`;
+}
+
+/* ---------- nume de țări în română (din i18n-iso-countries) ---------- */
+const CTRY = {"afghanistan":"Afganistan","albania":"Albania","algeria":"Algeria","american samoa":"Samoa Americană","andorra":"Andorra","angola":"Angola","anguilla":"Anguilla","antarctica":"Antarctica","antigua and barbuda":"Antigua și Barbuda","argentina":"Argentina","armenia":"Armenia","aruba":"Aruba","australia":"Australia","austria":"Austria","azerbaijan":"Azerbaidjan","bahamas":"Bahamas","bahrain":"Bahrain","bangladesh":"Bangladesh","barbados":"Barbados","belarus":"Belarus","belgium":"Belgia","belize":"Belize","benin":"Benin","bermuda":"Bermuda","bhutan":"Bhutan","bolivia":"Bolivia","bosnia and herzegovina":"Bosnia și Herțegovina","botswana":"Botswana","bouvet island":"Insula Bouvet","brazil":"Brazilia","british indian ocean territory":"Teritoriul Britanic din Oceanul Indian","brunei darussalam":"Brunei","bulgaria":"Bulgaria","burkina faso":"Burkina Faso","burundi":"Burundi","cambodia":"Cambodgia","cameroon":"Camerun","canada":"Canada","cape verde":"Capul Verde","cayman islands":"Insulele Cayman","central african republic":"Republica Centrafricană","chad":"Ciad","chile":"Chile","people s republic of china":"China","china":"China","christmas island":"Insula Christmas","cocos keeling islands":"Insulele Cocos (Keeling)","colombia":"Columbia","comoros":"Comore","republic of the congo":"Congo - Brazzaville","congo":"Congo","democratic republic of the congo":"RD Congo","cook islands":"Insulele Cook","costa rica":"Costa Rica","cote d ivoire":"Coasta de Fildeș","ivory coast":"Coasta de Fildeș","croatia":"Croația","cuba":"Cuba","cyprus":"Cipru","czech republic":"Cehia","czechia":"Cehia","denmark":"Danemarca","djibouti":"Djibouti","dominica":"Dominica","dominican republic":"Republica Dominicană","ecuador":"Ecuador","egypt":"Egipt","el salvador":"El Salvador","equatorial guinea":"Guineea Ecuatorială","eritrea":"Eritreea","estonia":"Estonia","ethiopia":"Etiopia","falkland islands malvinas":"Insulele Falkland","faroe islands":"Insulele Feroe","fiji":"Fiji","finland":"Finlanda","france":"Franța","french guiana":"Guyana Franceză","french polynesia":"Polinezia Franceză","french southern territories":"Teritoriile Australe și Antarctice Franceze","gabon":"Gabon","republic of the gambia":"Gambia","the gambia":"Gambia","gambia":"Gambia","georgia":"Georgia","germany":"Germania","ghana":"Ghana","gibraltar":"Gibraltar","greece":"Grecia","greenland":"Groenlanda","grenada":"Grenada","guadeloupe":"Guadelupa","guam":"Guam","guatemala":"Guatemala","guinea":"Guineea","guinea bissau":"Guineea-Bissau","guyana":"Guyana","haiti":"Haiti","heard island and mcdonald islands":"Insula Heard și Insulele McDonald","holy see vatican city state":"Statul Cetății Vaticanului","honduras":"Honduras","hong kong":"Hong Kong","hungary":"Ungaria","iceland":"Islanda","india":"India","indonesia":"Indonezia","islamic republic of iran":"Iran","iran":"Iran","iraq":"Irak","ireland":"Irlanda","israel":"Israel","italy":"Italia","jamaica":"Jamaica","japan":"Japonia","jordan":"Iordania","kazakhstan":"Kazahstan","kenya":"Kenya","kiribati":"Kiribati","north korea":"Coreea de Nord","south korea":"Coreea de Sud","korea republic of":"Coreea de Sud","republic of korea":"Coreea de Sud","kuwait":"Kuweit","kyrgyzstan":"Kârgâzstan","lao people s democratic republic":"Laos","latvia":"Letonia","lebanon":"Liban","lesotho":"Lesotho","liberia":"Liberia","libya":"Libia","liechtenstein":"Liechtenstein","lithuania":"Lituania","luxembourg":"Luxemburg","macao":"R.A.S. Macao a Chinei","madagascar":"Madagascar","malawi":"Malawi","malaysia":"Malaysia","maldives":"Maldive","mali":"Mali","malta":"Malta","marshall islands":"Insulele Marshall","martinique":"Martinica","mauritania":"Mauritania","mauritius":"Mauritius","mayotte":"Mayotte","mexico":"Mexic","micronesia federated states of":"Micronezia","moldova republic of":"Republica Moldova","monaco":"Monaco","mongolia":"Mongolia","montserrat":"Montserrat","morocco":"Maroc","mozambique":"Mozambic","myanmar":"Myanmar","namibia":"Namibia","nauru":"Nauru","nepal":"Nepal","netherlands":"Olanda","the netherlands":"Țările de Jos","netherlands kingdom of the":"Țările de Jos","new caledonia":"Noua Caledonie","new zealand":"Noua Zeelandă","nicaragua":"Nicaragua","niger":"Niger","nigeria":"Nigeria","niue":"Niue","norfolk island":"Insula Norfolk","the republic of north macedonia":"Macedonia de Nord","north macedonia":"Macedonia de Nord","northern mariana islands":"Insulele Mariane de Nord","norway":"Norvegia","oman":"Oman","pakistan":"Pakistan","palau":"Palau","state of palestine":"Teritoriile Palestiniene","palestine":"Palestina","panama":"Panama","papua new guinea":"Papua-Noua Guinee","paraguay":"Paraguay","peru":"Peru","philippines":"Filipine","pitcairn":"Insulele Pitcairn","pitcairn islands":"Insulele Pitcairn","poland":"Polonia","portugal":"Portugalia","puerto rico":"Puerto Rico","qatar":"Qatar","reunion":"Réunion","romania":"România","russian federation":"Rusia","russia":"Rusia","rwanda":"Rwanda","saint helena":"Sfânta Elena","saint kitts and nevis":"Saint Kitts și Nevis","saint lucia":"Sfânta Lucia","saint pierre and miquelon":"Saint-Pierre și Miquelon","saint vincent and the grenadines":"Saint Vincent și Grenadine","samoa":"Samoa","san marino":"San Marino","sao tome and principe":"São Tomé și Príncipe","saudi arabia":"Arabia Saudită","senegal":"Senegal","seychelles":"Seychelles","sierra leone":"Sierra Leone","singapore":"Singapore","slovakia":"Slovacia","slovenia":"Slovenia","solomon islands":"Insulele Solomon","somalia":"Somalia","south africa":"Africa de Sud","south georgia and the south sandwich islands":"Georgia de Sud și Insulele Sandwich de Sud","spain":"Spania","sri lanka":"Sri Lanka","sudan":"Sudan","suriname":"Suriname","svalbard and jan mayen":"Svalbard și Jan Mayen","eswatini":"Eswatini","sweden":"Suedia","switzerland":"Elveția","syrian arab republic":"Siria","taiwan province of china":"Taiwan","taiwan":"Taiwan","tajikistan":"Tadjikistan","united republic of tanzania":"Tanzania","tanzania":"Tanzania","thailand":"Thailanda","timor leste":"Timorul de Est","togo":"Togo","tokelau":"Tokelau","tonga":"Tonga","trinidad and tobago":"Trinidad și Tobago","tunisia":"Tunisia","turkiye":"Turcia","turkey":"Turcia","turkmenistan":"Turkmenistan","turks and caicos islands":"Insulele Turks și Caicos","tuvalu":"Tuvalu","uganda":"Uganda","ukraine":"Ucraina","united arab emirates":"Emiratele Arabe Unite","uae":"Emiratele Arabe Unite","united kingdom":"Regatul Unit","uk":"Regatul Unit","great britain":"Regatul Unit","united states of america":"SUA","united states":"SUA","usa":"SUA","u s a":"Statele Unite ale Americii","us":"Statele Unite ale Americii","u s":"Statele Unite ale Americii","united states minor outlying islands":"Insulele Îndepărtate ale S.U.A.","uruguay":"Uruguay","uzbekistan":"Uzbekistan","vanuatu":"Vanuatu","venezuela":"Venezuela","vietnam":"Vietnam","virgin islands british":"Insulele Virgine Britanice","virgin islands u s":"Insulele Virgine Americane","wallis and futuna":"Wallis și Futuna","western sahara":"Sahara Occidentală","yemen":"Yemen","zambia":"Zambia","zimbabwe":"Zimbabwe","aland islands":"Insulele Åland","bonaire sint eustatius and saba":"Insulele Caraibe Olandeze","curacao":"Curaçao","guernsey":"Guernsey","isle of man":"Insula Man","jersey":"Jersey","montenegro":"Muntenegru","saint barthelemy":"Sfântul Bartolomeu","saint martin french part":"Sfântul Martin","serbia":"Serbia","sint maarten dutch part":"Sint-Maarten","south sudan":"Sudanul de Sud","kosovo":"Kosovo","england":"Anglia","scotland":"Scoția","wales":"Țara Galilor","northern ireland":"Irlanda de Nord","republic of ireland":"Irlanda","holland":"Olanda","moldova":"Moldova","congo dr":"RD Congo","dr congo":"RD Congo","bosnia herzegovina":"Bosnia și Herțegovina","korea republic":"Coreea de Sud","korea dpr":"Coreea de Nord","china pr":"China","chinese taipei":"Taipei Chinez","cape verde islands":"Capul Verde","cabo verde":"Capul Verde","macau":"Macao","swaziland":"Eswatini","kyrgyz republic":"Kârgâzstan","macedonia":"Macedonia de Nord","fyr macedonia":"Macedonia de Nord","us virgin islands":"Insulele Virgine Americane","british virgin islands":"Insulele Virgine Britanice","tahiti":"Tahiti","east timor":"Timor-Leste","syria":"Siria","laos":"Laos"};
+const roName = n => CTRY[norm(n)] || n;
+
+/* ---------- culori: aceleași calcule ca validatorul de palete (OKLab + Machado 2009) ---------- */
+const s2l = c => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+const rgbLin = h => [0, 2, 4].map(i => s2l(parseInt(h.slice(i, i + 2), 16) / 255));
+const lum = h => { const [r, g, b] = rgbLin(h); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+const MACH = {
+  p: [[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]],
+  d: [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047413], [-0.011820, 0.042940, 0.968881]]
+};
+function oklab([r, g, b]) {
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s, 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s];
+}
+const simCVD = (rgb, M) => M.map(r => Math.min(1, Math.max(0, r[0] * rgb[0] + r[1] * rgb[1] + r[2] * rgb[2])));
+const dE = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) * 100;
+function apart(h1, h2) {
+  const a = rgbLin(h1), b = rgbLin(h2);
+  if (dE(oklab(a), oklab(b)) < 15) return false;
+  return Math.min(dE(oklab(simCVD(a, MACH.p)), oklab(simCVD(b, MACH.p))), dE(oklab(simCVD(a, MACH.d)), oklab(simCVD(b, MACH.d)))) >= 8;
+}
+const isDark = () => { const t = document.documentElement.dataset.theme; return t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches); };
+function teamColors(A, B) {
+  const dark = isDark();
+  const surf = dark ? '141c27' : 'ffffff';
+  const pal = dark ? ['3987e5', 'd95926'] : ['2a78d6', 'eb6834'];
+  const usable = h => !!h && contrast(h, surf) >= 2;
+  const ca = [A?.color, A?.alt].find(usable) || pal[0];
+  const cb = [B?.color, B?.alt].find(h => usable(h) && apart(h, ca)) || [pal[1], pal[0]].find(h => apart(h, ca)) || pal[1];
+  return ['#' + ca, '#' + cb];
+}
+
+/* ---------- rețea ---------- */
+const HOSTS = ['https://site.api.espn.com', 'https://site.web.api.espn.com'];
+let hostPref = store.get('host', 0) === 1 ? 1 : 0;
+const MEM = new Map(), INFLIGHT = new Map(), LOG = [];
+let netState = 'necunoscut';
+function logErr(url, e) {
+  LOG.unshift(`${new Date().toLocaleTimeString('ro-RO')}  ${e?.status ? 'HTTP ' + e.status : e?.name === 'AbortError' ? 'timeout' : (e?.message || e)}  ${url.replace(/^https:\/\//, '')}`);
+  LOG.length = Math.min(LOG.length, 40);
+}
+async function getJSON(url, timeout = 15000) {
+  const target = settings.proxy ? settings.proxy + encodeURIComponent(url) : url;
+  const ctrl = new AbortController();
+  const tm = setTimeout(() => ctrl.abort(), timeout);
+  try {
+    const r = await fetch(target, { signal: ctrl.signal });
+    if (!r.ok) { const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+    return await r.json();
+  } finally { clearTimeout(tm); }
+}
+async function espn(path, { ttl = 300000, ok = d => d && typeof d === 'object', alt = null } = {}) {
+  const hit = MEM.get(path);
+  if (hit && Date.now() - hit.t < ttl) return hit.d;
+  if (INFLIGHT.has(path)) return INFLIGHT.get(path);
+  const job = (async () => {
+    let err = null;
+    const tries = (hostPref ? [1, 0] : [0, 1]).map(i => [i, HOSTS[i] + path]);
+    if (alt) tries.push([-1, alt]);
+    for (const [i, url] of tries) {
+      try {
+        let d = await getJSON(url);
+        if (i === -1 && d?.content?.sbData) d = d.content.sbData;
+        if (!ok(d)) { const e = new Error('răspuns fără date'); e.status = 'gol'; throw e; }
+        if (i >= 0 && i !== hostPref) { hostPref = i; store.set('host', i); }
+        netState = 'ok';
+        MEM.set(path, { t: Date.now(), d });
+        return d;
+      } catch (e) {
+        err = e; logErr(url, e);
+        if (e.status === 404 || e.status === 400 || e.status === 'gol') break;
+      }
+    }
+    if (hit) return hit.d;
+    if (err && !err.status && netState !== 'ok') netState = 'blocat';
+    throw err;
+  })();
+  INFLIGHT.set(path, job);
+  try { return await job; } finally { INFLIGHT.delete(path); }
+}
+function limiter(n) {
+  let a = 0; const q = [];
+  const next = () => { while (a < n && q.length) { a++; const { f, res, rej } = q.shift(); Promise.resolve().then(f).then(res, rej).finally(() => { a--; next(); }); } };
+  return f => new Promise((res, rej) => { q.push({ f, res, rej }); next(); });
+}
+const lim = limiter(6), limSb = limiter(8);
+
+/* ---------- normalizare ESPN ---------- */
+const hex6 = h => { const s = String(h || '').replace('#', '').trim(); return /^[0-9a-f]{6}$/i.test(s) ? s.toLowerCase() : ''; };
+const TEAMS = new Map();
+function teamOf(t) {
+  if (!t || t.id == null) return null;
+  const en = t.displayName || t.name || t.shortDisplayName || t.location || '';
+  return {
+    id: String(t.id),
+    name: roName(en), en,
+    short: roName(t.shortDisplayName || t.displayName || t.name || ''),
+    abbr: t.abbreviation || '',
+    logo: t.logo || t.logos?.[0]?.href || '',
+    color: hex6(t.color), alt: hex6(t.alternateColor)
+  };
+}
+function remember(t, lg) {
+  if (!t) return t;
+  const p = TEAMS.get(t.id) || {};
+  const m = { ...p };
+  for (const [k, v] of Object.entries(t)) if (v) m[k] = v;
+  if (lg && !NAT.has(lg) && (!m.lg || COMP[m.lg]?.g === 'eu' || COMP[m.lg]?.g === 'cup')) m.lg = lg;
+  if (lg && NAT.has(lg)) m.nat = true;
+  TEAMS.set(t.id, m);
+  return m;
+}
+// În programul „all” al unei echipe competiția apare doar ca nume (de obicei în season), nu ca slug.
+function leagueOf(e, c) {
+  const cands = [e.league?.name, c.league?.name, e.season?.name, e.season?.displayName, e.seasonType?.name, e.season?.slug, e.league?.abbreviation].filter(s => typeof s === 'string' && s.trim());
+  for (const s of cands) { const sl = slugFromName(s); if (sl) return { name: s, slug: sl }; }
+  const name = cands.find(s => normLeague(s).replace(/\d+/g, '').trim().length > 3 && !/^(regular|pre|post)\s*season$/i.test(s.trim())) || '';
+  return { name, slug: null };
+}
+const scoreOf = s => { if (s == null || s === '') return null; if (typeof s === 'object') { const v = s.value ?? s.displayValue; return v == null || v === '' || !fin(+v) ? null : +v; } return fin(+s) ? +s : null; };
+const EV = new Map();
+function evOf(e, slugHint) {
+  if (!e) return null;
+  const c = e.competitions?.[0] || {};
+  const st = c.status || e.status || {};
+  const ty = st.type || {};
+  const cs = c.competitors || [];
+  const hc = cs.find(x => x.homeAway === 'home') || cs[0], ac = cs.find(x => x.homeAway === 'away') || cs[1];
+  const home = teamOf(hc?.team), away = teamOf(ac?.team);
+  if (!home || !away) return null;
+  const lgi = leagueOf(e, c);
+  const league = lgi.name;
+  let slug = e.league?.slug || c.league?.slug || (slugHint && slugHint !== 'all' ? slugHint : null) || lgi.slug;
+  const state = ty.state || (ty.completed ? 'post' : 'pre');
+  const prev = EV.get(String(e.id));
+  const lgCtx = slug && !NAT.has(slug) && COMP[slug] ? slug : null;
+  const ev = {
+    id: String(e.id), date: e.date || c.date, slug: slug || prev?.slug || null, league: league || prev?.league || '',
+    neutral: !!c.neutralSite, state, done: !!ty.completed && state === 'post', status: ty.name || '', clock: st.displayClock || '',
+    home: { ...remember(home, lgCtx), score: scoreOf(hc.score), pen: scoreOf(hc.shootoutScore) },
+    away: { ...remember(away, lgCtx), score: scoreOf(ac.score), pen: scoreOf(ac.shootoutScore) },
+    venue: c.venue?.fullName || prev?.venue || ''
+  };
+  if (slug && NAT.has(slug)) { remember(home, slug); remember(away, slug); }
+  EV.set(ev.id, ev);
+  return ev;
+}
+function evFromSummary(d, slugUsed) {
+  const h = d?.header, c = h?.competitions?.[0];
+  if (!c) return null;
+  const venue = d.gameInfo?.venue || c.venue;
+  const ev = evOf({ id: h.id || c.id, date: c.date, competitions: [{ ...c, venue }], league: h.league ? { name: h.league.name, slug: h.league.slug || (slugUsed !== 'all' ? slugUsed : null) } : null }, slugUsed);
+  if (ev && h.league?.name && slugUsed && slugUsed !== 'all') learnName(h.league.name, slugUsed);
+  // culorile echipelor apar de obicei în boxscore
+  for (const bt of d.boxscore?.teams || []) { const t = teamOf(bt.team); if (t) remember(t); }
+  if (ev) { ev.home = { ...ev.home, ...pickC(TEAMS.get(ev.home.id)) }; ev.away = { ...ev.away, ...pickC(TEAMS.get(ev.away.id)) }; }
+  return ev;
+}
+const pickC = t => t ? { color: t.color || '', alt: t.alt || '', logo: t.logo || '' } : {};
+
+/* ---------- endpoint-uri ---------- */
+const ymdOf = d => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+async function scoreboard(slug, ymd) {
+  const today = ymdOf(new Date());
+  const ttl = !ymd || ymd === today ? 60000 : ymd < today ? 6 * 3600e3 : 20 * 60e3;
+  const q = ymd ? `?dates=${ymd}` : '';
+  const d = await espn(`/apis/site/v2/sports/soccer/${slug}/scoreboard${q}`, {
+    ttl, ok: d => Array.isArray(d?.events),
+    alt: `https://cdn.espn.com/core/soccer/scoreboard?xhr=1&league=${slug}${ymd ? '&date=' + ymd : ''}`
+  });
+  const L = d.leagues?.[0];
+  if (L) { if (L.name) learnName(L.name, slug); setCompLogo(slug, L.logos?.[0]?.href); }
+  return d.events.map(e => evOf(e, slug)).filter(Boolean);
+}
+async function standings(slug) {
+  const d = await espn(`/apis/v2/sports/soccer/${slug}/standings`, { ttl: 30 * 60e3, ok: d => d && (Array.isArray(d.children) || d.standings) });
+  const groups = [];
+  (function walk(n) {
+    if (!n) return;
+    const en = n.standings?.entries;
+    if (Array.isArray(en) && en.length) groups.push({ name: n.name || n.abbreviation || '', rows: sortRows(en.map(r => stRow(r, slug)).filter(r => r.team)) });
+    (n.children || []).forEach(walk);
+  })(d);
+  if (d.name) learnName(d.name, slug);
+  if (d.logos?.[0]?.href) setCompLogo(slug, d.logos[0].href);
+  return groups;
+}
+function stRow(e, slug) {
+  const s = {};
+  for (const x of e.stats || []) { const k = x.name || x.type; if (k) s[k] = fin(x.value) ? x.value : parseFloat(x.displayValue); }
+  return { team: remember(teamOf(e.team), slug), rank: fin(s.rank) ? s.rank : null, gp: s.gamesPlayed, gd: s.pointDifferential, pts: s.points, note: e.note?.description || '', nc: hex6(e.note?.color) };
+}
+const sortRows = rows => rows.every(r => fin(r.rank)) ? rows.sort((a, b) => a.rank - b.rank) : rows.sort((a, b) => (b.pts ?? 0) - (a.pts ?? 0) || (b.gd ?? 0) - (a.gd ?? 0));
+async function compTeams(slug) {
+  try { const g = await standings(slug); const ts = g.flatMap(x => x.rows.map(r => r.team)); if (ts.length) return ts; } catch (e) {}
+  const d = await espn(`/apis/site/v2/sports/soccer/${slug}/teams`, { ttl: 864e5, ok: d => Array.isArray(d?.sports?.[0]?.leagues?.[0]?.teams) });
+  return d.sports[0].leagues[0].teams.map(x => remember(teamOf(x.team), slug)).filter(Boolean);
+}
+async function schedule(id, opts = {}) {
+  try { return await scheduleFor('all', id, opts); }
+  catch (e) {
+    // dacă vederea „toate competițiile” nu răspunde, măcar campionatul echipei
+    const lg = TEAMS.get(String(id))?.lg;
+    if (lg && e.status) return scheduleFor(lg, id, opts);
+    throw e;
+  }
+}
+async function scheduleFor(slug, id, { fixtures = false, season = null } = {}) {
+  const q = new URLSearchParams();
+  if (fixtures) q.set('fixture', 'true');
+  if (season) q.set('season', season);
+  const qs = q.toString();
+  const d = await espn(`/apis/site/v2/sports/soccer/${slug}/teams/${id}/schedule${qs ? '?' + qs : ''}`, { ttl: 10 * 60e3, ok: d => Array.isArray(d?.events) });
+  const team = d.team ? remember(teamOf(d.team)) : TEAMS.get(String(id)) || null;
+  return { team, events: d.events.map(e => evOf(e, slug)).filter(Boolean), season: d.season?.year ?? d.requestedSeason?.year ?? null, standing: d.team?.standingSummary || '' };
+}
+async function recent(id, n, before = Date.now()) {
+  const s = await schedule(id);
+  const okEv = e => e.done && fin(e.home.score) && fin(e.away.score) && new Date(e.date).getTime() < before;
+  let list = s.events.filter(okEv);
+  if (list.length < n && s.season) { try { const p = await schedule(id, { season: s.season - 1 }); list = list.concat(p.events.filter(okEv)); } catch (e) {} }
+  const seen = new Set();
+  list = list.filter(e => !seen.has(e.id) && seen.add(e.id)).sort((a, b) => new Date(b.date) - new Date(a.date));
+  return { team: s.team, list: list.slice(0, n), standing: s.standing };
+}
+async function upcoming(id) {
+  const s = await schedule(id, { fixtures: true });
+  const from = Date.now() - 3 * 3600e3;
+  const bad = /POSTPONED|CANCEL/;
+  return { team: s.team, list: s.events.filter(e => !e.done && !bad.test(e.status) && new Date(e.date).getTime() > from).sort((a, b) => new Date(a.date) - new Date(b.date)) };
+}
+async function summary(id, hints = []) {
+  id = String(id);
+  const ev = EV.get(id);
+  const tries = uniq([...hints, ev?.slug, slugFromName(ev?.league), 'all'].filter(s => s && s !== 'x'));
+  let last = null;
+  for (const slug of tries) {
+    try {
+      const d = await espn(`/apis/site/v2/sports/soccer/${slug}/summary?event=${id}`, {
+        ttl: ev?.done ? 864e5 : 90e3,
+        ok: d => String(d?.header?.id ?? d?.header?.competitions?.[0]?.id ?? '') === id
+      });
+      if (slug !== 'all' && ev) { ev.slug = slug; if (ev.league) learnName(ev.league, slug); }
+      return { d, slug };
+    } catch (e) {
+      last = e;
+      if (!e.status && e.name !== 'AbortError') throw e;
+    }
+  }
+  throw last || new Error('meci negăsit');
+}
+
+/* ---------- statistici pe meci (cache local, compact) ---------- */
+const STATS = store.get('stats', {});
+let statsDirty = false;
+function flushStats() {
+  if (!statsDirty) return;
+  statsDirty = false;
+  const ks = Object.keys(STATS);
+  if (ks.length > 600) ks.sort((a, b) => STATS[a][0] - STATS[b][0]).slice(0, ks.length - 450).forEach(k => delete STATS[k]);
+  store.cache('stats', STATS);
+}
+setInterval(flushStats, 4000);
+addEventListener('pagehide', flushStats);
+function statsFromSummary(d) {
+  const out = { ok: false, t: {} };
+  let nz = false;
+  for (const bt of d?.boxscore?.teams || []) {
+    const id = String(bt.team?.id ?? '');
+    if (!id) continue;
+    const m = {};
+    for (const s of bt.statistics || []) {
+      if (!s?.name) continue;
+      let v = parseFloat(String(s.displayValue ?? '').replace(',', '.').replace('%', ''));
+      if (!fin(v) && fin(s.value)) v = s.value;
+      m[s.name] = fin(v) ? v : null;
+    }
+    let p = m.possessionPct ?? null;
+    if (fin(p) && p > 0 && p <= 1) p *= 100;
+    const o = { c: m.wonCorners ?? null, y: m.yellowCards ?? null, r: m.redCards ?? null, sh: m.totalShots ?? null, st: m.shotsOnTarget ?? null, f: m.foulsCommitted ?? null, p };
+    if ([o.c, o.y, o.sh, o.st, o.f, o.p].some(v => fin(v) && v > 0)) nz = true;
+    out.t[id] = o;
+  }
+  out.ok = Object.keys(out.t).length === 2 && nz;
+  return out;
+}
+async function matchStats(ev) {
+  const c = STATS[ev.id];
+  if (c) return c[1];
+  try {
+    const { d } = await summary(ev.id, [ev.slug, TEAMS.get(ev.home.id)?.lg, TEAMS.get(ev.away.id)?.lg]);
+    const s = statsFromSummary(d);
+    if (ev.done) { STATS[ev.id] = [Date.now(), s]; statsDirty = true; }
+    return s;
+  } catch (e) { return null; }
+}
+
+/* ---------- model ---------- */
+const PRIOR = { g: 1.35, c: 4.9, k: 2.0 };
+const shrink = (a, prior, k = 2) => a && a.n ? (a.m * a.n + prior * k) / (a.n + k) : prior;
+function pois(l, max) { const p = [Math.exp(-l)]; for (let i = 1; i <= max; i++) p[i] = p[i - 1] * l / i; return p; }
+function block(la, lb, max, rho = 0) {
+  const pa = pois(la, max), pb = pois(lb, max);
+  const M = pa.map(x => pb.map(y => x * y));
+  if (rho) { M[0][0] *= 1 - la * lb * rho; M[0][1] *= 1 + la * rho; M[1][0] *= 1 + lb * rho; M[1][1] *= 1 - rho; }
+  let s = 0; M.forEach(r => r.forEach(v => { s += v; }));
+  let a = 0, dr = 0, b = 0, btts = 0;
+  const T = new Array(2 * max + 1).fill(0);
+  M.forEach((r, i) => r.forEach((v, j) => {
+    v /= s; r[j] = v;
+    if (i > j) a += v; else if (i === j) dr += v; else b += v;
+    if (i > 0 && j > 0) btts += v;
+    T[i + j] += v;
+  }));
+  return { la, lb, M, p: [a, dr, b], btts, over: L => T.reduce((acc, v, k) => acc + (k > L ? v : 0), 0) };
+}
+const linesAround = t => { const c = Math.max(0.5, Math.round(t) - 0.5); return [c - 1, c, c + 1].filter(x => x > 0); };
+function topScores(M, k) {
+  const all = [];
+  M.forEach((r, i) => r.forEach((v, j) => all.push([i, j, v])));
+  return all.sort((x, y) => y[2] - x[2]).slice(0, k);
+}
+function sample(teamId, list, stats) {
+  const rows = list.map(ev => {
+    const home = ev.home.id === teamId;
+    const me = home ? ev.home : ev.away, op = home ? ev.away : ev.home;
+    const s = stats.get(ev.id) || STATS[ev.id]?.[1];
+    const ok = !!(s?.ok && s.t[me.id] && s.t[op.id]);
+    const a = ok ? s.t[me.id] : {}, b = ok ? s.t[op.id] : {};
+    const k = o => fin(o.y) ? o.y + (fin(o.r) ? o.r : 0) : null;
+    return {
+      ev, home, opp: op, gf: me.score, ga: op.score, ok,
+      res: me.score > op.score ? 'W' : me.score < op.score ? 'L' : 'D',
+      cf: ok ? a.c : null, ca: ok ? b.c : null, kf: ok ? k(a) : null, ka: ok ? k(b) : null,
+      sh: ok ? a.sh : null, sha: ok ? b.sh : null, st: ok ? a.st : null, sta: ok ? b.st : null, f: ok ? a.f : null, p: ok ? a.p : null
+    };
+  });
+  const av = key => { const v = rows.map(r => r[key]).filter(fin); return { m: v.length ? mean(v) : null, n: v.length }; };
+  const S = { rows, n: rows.length, ns: rows.filter(r => r.ok).length };
+  ['gf', 'ga', 'cf', 'ca', 'kf', 'ka', 'sh', 'sha', 'st', 'sta', 'f', 'p'].forEach(k => { S[k] = av(k); });
+  return S;
+}
+function predict(SA, SB, neutral) {
+  const H = neutral ? { g: [1, 1], c: [1, 1], k: [1, 1] } : { g: [1.1, 0.9], c: [1.06, 0.94], k: [0.95, 1.05] };
+  const la = (shrink(SA.gf, PRIOR.g) + shrink(SB.ga, PRIOR.g)) / 2 * H.g[0];
+  const lb = (shrink(SB.gf, PRIOR.g) + shrink(SA.ga, PRIOR.g)) / 2 * H.g[1];
+  const goals = block(la, lb, 10, -0.1);
+  goals.top = topScores(goals.M, 5);
+  let corners = null, cards = null;
+  if (SA.cf.n && SB.cf.n) {
+    const ca = (shrink(SA.cf, PRIOR.c) + shrink(SB.ca, PRIOR.c)) / 2 * H.c[0];
+    const cb = (shrink(SB.cf, PRIOR.c) + shrink(SA.ca, PRIOR.c)) / 2 * H.c[1];
+    corners = block(ca, cb, 30); corners.lines = linesAround(ca + cb);
+  }
+  if (SA.kf.n && SB.kf.n) {
+    const ka = (shrink(SA.kf, PRIOR.k) + shrink(SB.ka, PRIOR.k)) / 2 * H.k[0];
+    const kb = (shrink(SB.kf, PRIOR.k) + shrink(SA.ka, PRIOR.k)) / 2 * H.k[1];
+    cards = block(ka, kb, 16); cards.lines = linesAround(ka + kb);
+  }
+  return { goals, corners, cards };
+}
+function pctRound(ps) {
+  const raw = ps.map(p => p * 100), fl = raw.map(Math.floor);
+  const rem = 100 - fl.reduce((a, b) => a + b, 0);
+  raw.map((v, i) => [v - fl[i], i]).sort((a, b) => b[0] - a[0]).slice(0, rem).forEach(([, i]) => { fl[i]++; });
+  return fl;
+}
+
+/* ---------- formatare ---------- */
+const fTime = new Intl.DateTimeFormat('ro-RO', { hour: '2-digit', minute: '2-digit' });
+const fDay = new Intl.DateTimeFormat('ro-RO', { weekday: 'short', day: 'numeric', month: 'short' });
+const fDayLong = new Intl.DateTimeFormat('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' });
+const fDM = new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short' });
+const fWk = new Intl.DateTimeFormat('ro-RO', { weekday: 'short' });
+const fFull = new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' });
+const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+const nodot = s => s.replace(/\./g, '');
+const sod = d => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x.getTime(); };
+const dayDiff = iso => Math.round((sod(new Date(iso)) - sod(new Date())) / 864e5);
+function relDay(iso) { const k = dayDiff(iso); return k === 0 ? 'azi' : k === 1 ? 'mâine' : k === -1 ? 'ieri' : nodot(fDay.format(new Date(iso))); }
+const whenShort = iso => `${relDay(iso)}, ${fTime.format(new Date(iso))}`;
+function statusText(ev) {
+  const s = ev.status || '';
+  if (ev.state === 'in') return s === 'STATUS_HALFTIME' ? 'Pauză' : (ev.clock || 'Live');
+  if (/POSTPONED/.test(s)) return 'Amânat';
+  if (/CANCEL/.test(s)) return 'Anulat';
+  if (/ABANDON/.test(s)) return 'Abandonat';
+  if (ev.done) return /PEN/.test(s) || fin(ev.home.pen) ? 'Final (pen.)' : /AET|EXTRA/.test(s) ? 'Final (prel.)' : 'Final';
+  return fTime.format(new Date(ev.date));
+}
+const mono = s => (String(s || '?').replace(/[^\p{L}\p{N} ]/gu, '').split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 3) || '?').toUpperCase();
+function small(url, px) {
+  const m = /^https?:\/\/a\d?\.espncdn\.com(\/i\/[^?]+)$/.exec(url || '');
+  return m ? `https://a.espncdn.com/combiner/i?img=${encodeURIComponent(m[1])}&w=${px}&h=${px}&scale=crop&cquality=80&location=origin` : url;
+}
+function crest(t, cls = '') {
+  if (!t) return '';
+  const px = cls === 'xl' ? 128 : cls === 'lg' ? 80 : 48;
+  const src = t.logo || (t.id && !String(t.id).startsWith('vs') ? `https://a.espncdn.com/i/teamlogos/soccer/500/${t.id}.png` : '');
+  const fb = esc(mono(t.short || t.name));
+  return src ? `<img class="cr ${cls}" src="${esc(small(src, px))}" alt="" loading="lazy" decoding="async" data-fb="${fb}" data-fbc="cr ${cls} mono">` : `<span class="cr ${cls} mono" aria-hidden="true">${fb}</span>`;
+}
+document.addEventListener('error', e => {
+  const t = e.target;
+  if (t instanceof HTMLImageElement && t.dataset.fbc) {
+    const s = document.createElement('span');
+    s.className = t.dataset.fbc; s.textContent = t.dataset.fb || ''; s.setAttribute('aria-hidden', 'true');
+    t.replaceWith(s);
+  }
+}, true);
+const RES = { W: 'V', D: 'E', L: 'Î' };
+const RESL = { W: 'victorie', D: 'egal', L: 'înfrângere' };
+const fcChip = r => `<span class="fc ${r}" title="${RESL[r]}">${RES[r]}</span>`;
+const formChips = S => { const rs = S.rows.slice().reverse(); return `<span class="fcs" title="De la cel mai vechi la cel mai recent meci" aria-label="Forma, de la cel mai vechi la cel mai recent: ${rs.map(r => RESL[r.res]).join(', ')}">${rs.map(r => fcChip(r.res)).join('')}</span>`; };
+
+const ICON = {
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>',
+  starOn: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  vs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+};
+
+/* ---------- navigare ---------- */
+let TOKEN = 0, NAVS = 0, curHash = location.hash, lastTab = 'meciuri';
+const SCROLL = new Map(), TIMERS = new Set();
+let restoreY = null;
+const later = (f, ms) => { const t = setTimeout(() => { TIMERS.delete(t); f(); }, ms); TIMERS.add(t); };
+function restoreScroll() { if (restoreY != null) { const y = restoreY; restoreY = null; requestAnimationFrame(() => window.scrollTo(0, y)); } }
+function route(opt = {}) {
+  needsRender = false;
+  closeSheet();
+  const p = decodeURIComponent(location.hash.replace(/^#\/?/, '')).split('/').filter(Boolean);
+  const tok = ++TOKEN;
+  const live = () => tok === TOKEN;
+  TIMERS.forEach(clearTimeout); TIMERS.clear();
+  restoreY = opt.keep ? null : (SCROLL.get(location.hash) ?? null);
+  let tab = lastTab;
+  if (!p.length || p[0] === 'zi') { tab = 'meciuri'; viewHome(+(p[1] || 0) || 0, live); }
+  else if (p[0] === 'ligi') { tab = 'ligi'; viewLeagues(live); }
+  else if (p[0] === 'fav') { tab = 'fav'; viewFav(live); }
+  else if (p[0] === 'c' && p[1]) { tab = 'ligi'; viewComp(p[1], p[2] === 'meciuri' ? 'meciuri' : 'clasament', live); }
+  else if (p[0] === 't' && p[1]) viewTeam(p[1], p[2], live);
+  else if (p[0] === 'm' && p[2]) viewMatch(p[1], p[2], live);
+  else if (p[0] === 'vs' && p[2]) viewVs(p[1], p[2], p[3] === 'n', live);
+  else { location.replace('#/'); return; }
+  lastTab = tab;
+  $$('.tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
+  if (!opt.keep) window.scrollTo(0, 0);
+}
+addEventListener('hashchange', () => { SCROLL.set(curHash, window.scrollY); curHash = location.hash; NAVS++; route(); });
+function goBack() { if (NAVS > 0) history.back(); else location.hash = lastTab === 'ligi' ? '#/ligi' : lastTab === 'fav' ? '#/fav' : '#/'; }
+const topBar = (title, right = '') => `<div class="bar"><button class="back" type="button" data-act="back">${ICON.back}<span>Înapoi</span></button><span class="ttl">${esc(title)}</span><span class="rt">${right}</span></div>`;
+const hero = (title, right = '') => `<header class="hero"><h1>${esc(title)}</h1>${right}</header>`;
+const gearBtn = () => `<button class="ico" type="button" data-act="settings" aria-label="Setări">${ICON.gear}</button>`;
+const nSeg = () => `<div class="seg sm" role="group" aria-label="Câte meciuri analizez">${[5, 10].map(n => `<button type="button" data-n="${n}" aria-pressed="${settings.n === n}">${n} meciuri</button>`).join('')}</div>`;
+function errBox(msg) {
+  const blocked = netState === 'blocat' || location.protocol === 'about:' || /claude|anthropic/.test(location.hostname);
+  return `<div class="err" role="alert"><p>${esc(msg)}</p><button class="btn" type="button" data-act="retry">Reîncearcă</button>${blocked ? `<p class="note">Browserul nu poate ajunge la ESPN. Dacă ai deschis aplicația în previzualizarea din Claude, deschide-o din Safari sau Chrome (de exemplu de pe GitHub Pages): previzualizarea blochează cererile externe.</p>` : ''}</div>`;
+}
+function favs() { return store.get('favs', []); }
+const isFav = id => favs().some(f => f.id === String(id));
+function favBtn(id) { const on = isFav(id); return `<button class="ico" type="button" data-fav="${esc(id)}" aria-pressed="${on}" aria-label="${on ? 'Scoate de la favorite' : 'Adaugă la favorite'}">${on ? ICON.starOn : ICON.star}</button>`; }
+function toggleFav(id, btn) {
+  let F = favs();
+  if (F.some(f => f.id === id)) F = F.filter(f => f.id !== id);
+  else { const t = TEAMS.get(id) || { id }; F.push({ id, name: t.name || 'Echipă', short: t.short || '', logo: t.logo || '', lg: t.lg || '' }); }
+  store.set('favs', F);
+  if (btn) btn.outerHTML = favBtn(id);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act],[data-n],[data-fav],[data-th]');
+  if (!t) { if (e.target.id === 'sheet') closeSheet(); return; }
+  if (t.dataset.fav) return toggleFav(t.dataset.fav, t);
+  if (t.dataset.n) { settings.n = +t.dataset.n; saveSettings(); if ($('#sheet').hidden) route({ keep: true }); else { needsRender = true; openSettings(); } return; }
+  if (t.dataset.th) { settings.theme = t.dataset.th; saveSettings(); applyTheme(); needsRender = true; openSettings(); return; }
+  const a = t.dataset.act;
+  if (a === 'back') goBack();
+  else if (a === 'settings') openSettings();
+  else if (a === 'retry') route({ keep: true });
+  else if (a === 'compare') openCompare(t.dataset.id);
+  else if (a === 'close') closeSheet();
+});
+addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+/* ---------- ecran: Meciuri ---------- */
+function dayLabel(i, d) { return i === -1 ? 'Ieri' : i === 0 ? 'Azi' : i === 1 ? 'Mâine' : `${cap(nodot(fWk.format(d)))} ${d.getDate()}`; }
+function matchRow(ev) {
+  const showScore = ev.state !== 'pre' && fin(ev.home.score) && fin(ev.away.score);
+  const hw = ev.done && ev.home.score > ev.away.score, aw = ev.done && ev.away.score > ev.home.score;
+  const label = `${ev.home.name} – ${ev.away.name}, ${showScore ? `${ev.home.score}-${ev.away.score}, ` : ''}${statusText(ev)}`;
+  return `<a class="mrow" href="#/m/${esc(ev.slug || 'x')}/${esc(ev.id)}" aria-label="${esc(label)}">
+    <span class="t${ev.state === 'in' ? ' live' : ''}">${esc(statusText(ev))}</span>
+    <span class="tm${aw ? ' lo' : ''}">${crest(ev.home)}<span>${esc(ev.home.name)}</span></span>
+    <span class="sc${aw ? ' lo' : ''}">${showScore ? ev.home.score : ''}</span>
+    <span class="tm${hw ? ' lo' : ''}">${crest(ev.away)}<span>${esc(ev.away.name)}</span></span>
+    <span class="sc${hw ? ' lo' : ''}">${showScore ? ev.away.score : ''}</span></a>`;
+}
+function viewHome(off, live) {
+  const base = new Date(); base.setHours(12, 0, 0, 0);
+  const day = new Date(base.getTime() + off * 864e5);
+  const ymd = ymdOf(day);
+  const strip = [];
+  for (let i = -3; i <= 7; i++) { const d = new Date(base.getTime() + i * 864e5); strip.push(`<a href="#/zi/${i}"${i === off ? ' aria-current="true"' : ''}>${dayLabel(i, d)}</a>`); }
+  V.innerHTML = `${hero('Meciuri', gearBtn())}<nav class="days" aria-label="Alege ziua">${strip.join('')}</nav><div class="prog"><i id="pg"></i></div><div id="list"></div>`;
+  $('.days [aria-current]')?.scrollIntoView({ inline: 'center', block: 'nearest' });
+  const res = new Map();
+  let done = 0, failed = 0, raf = 0, restored = false;
+  const draw = () => {
+    raf = 0;
+    if (!live()) return;
+    const groups = HOME_SLUGS.filter(s => res.get(s)?.length);
+    let html = groups.map(s => `<section><a class="ch" href="#/c/${s}/meciuri">${compIcon(s)}<span>${esc(compLabel(s))}</span></a><div class="grp">${res.get(s).slice().sort((a, b) => new Date(a.date) - new Date(b.date)).map(matchRow).join('')}</div></section>`).join('');
+    const finished = done === HOME_SLUGS.length;
+    if (!html && finished) html = failed === HOME_SLUGS.length ? errBox('Nu am putut încărca meciurile de la ESPN.') : `<p class="empty">Nicio partidă în ziua asta în competițiile din aplicație. Alege altă zi din bara de sus.</p>`;
+    else if (!html) html = `<p class="note">Caut meciurile zilei…</p>`;
+    $('#list').innerHTML = html;
+    const pg = $('#pg');
+    if (pg) { pg.style.width = finished ? '0' : (done / HOME_SLUGS.length * 100) + '%'; }
+    if (finished && !restored) { restored = true; restoreScroll(); }
+  };
+  const tick = () => { if (!raf) raf = requestAnimationFrame(draw); };
+  tick();
+  HOME_SLUGS.forEach(s => limSb(() => scoreboard(s, ymd))
+    .then(evs => { res.set(s, evs); }, () => { failed++; res.set(s, null); })
+    .finally(() => {
+      done++; tick();
+      if (done === HOME_SLUGS.length && off === 0 && [...res.values()].some(l => l?.some(e => e.state === 'in'))) later(() => { if (live()) route({ keep: true }); }, 60000);
+    }));
+}
+
+/* ---------- ecran: Ligi + căutare ---------- */
+const IDX_V = 5;
+let IDXP = null;
+function teamIndex(onProg) {
+  if (IDXP) return IDXP;
+  IDXP = (async () => {
+    const cached = store.get('idx');
+    let items;
+    if (cached?.v === IDX_V && Date.now() - cached.t < 3 * 864e5 && Array.isArray(cached.items)) {
+      items = cached.items.map(([id, name, en, short, abbr, logo, lg, nat]) => ({ id, name, en: en || name, short: short || name, abbr, logo: logo || `https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png`, lg, nat: !!nat, sub: nat ? 'Echipă națională' : compLabel(lg) }));
+    } else {
+      const map = new Map(), prio = { top: 4, other: 4, nat: 4, eu: 2, cup: 1 };
+      let n = 0;
+      await Promise.all(INDEX_SLUGS.map(slug => lim(async () => {
+        try {
+          const nat = NAT.has(slug), pr = prio[COMP[slug]?.g] || 1;
+          for (const t of await compTeams(slug)) {
+            const prev = map.get(t.id);
+            if (!prev || pr > prev.pr) map.set(t.id, { id: t.id, name: t.name, en: t.en, short: t.short, abbr: t.abbr, logo: t.logo, lg: nat ? '' : slug, nat, sub: nat ? 'Echipă națională' : compLabel(slug), pr });
+          }
+        } catch (e) {}
+        onProg?.(++n, INDEX_SLUGS.length);
+      })));
+      items = [...map.values()].map(({ pr, ...t }) => t);
+      // în cache doar ce nu se poate reface: sigla standard ESPN și numele duplicate nu se salvează
+      const std = id => `https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png`;
+      if (items.length > 100) store.cache('idx', { v: IDX_V, t: Date.now(), items: items.map(t => [t.id, t.name, t.en !== t.name ? t.en : 0, t.short !== t.name ? t.short : 0, t.abbr, t.logo !== std(t.id) ? t.logo : 0, t.lg, t.nat ? 1 : 0]) });
+    }
+    const seen = new Set(items.map(t => t.id));
+    for (const t of TEAMS.values()) if (!seen.has(t.id) && t.name) items.push({ id: t.id, name: t.name, en: t.en, short: t.short, abbr: t.abbr, logo: t.logo, lg: t.lg || '', nat: !!t.nat, sub: t.nat ? 'Echipă națională' : compLabel(t.lg) });
+    items.forEach(t => { t.k = norm(`${t.name} ${t.short} ${t.abbr} ${t.en && t.en !== t.name ? t.en : ''}`); });
+    return new Fuse(items, { keys: ['k'], threshold: 0.32, ignoreLocation: true, minMatchCharLength: 2 });
+  })();
+  IDXP.catch(() => { IDXP = null; });
+  return IDXP;
+}
+function wireSearch(inp, out, href) {
+  const run = debounce(async () => {
+    const q = norm(inp.value);
+    if (!q) { out.innerHTML = ''; return; }
+    if (!out.innerHTML) out.innerHTML = `<p class="note" id="iprog">Încarc lista de echipe…</p>`;
+    let fuse;
+    try { fuse = await teamIndex((d, n) => { const el = $('#iprog'); if (el) el.textContent = `Încarc lista de echipe (${d} din ${n} competiții)…`; }); }
+    catch (e) { out.innerHTML = errBox('Lista de echipe nu s-a încărcat.'); return; }
+    if (norm(inp.value) !== q) return;
+    const res = fuse.search(q, { limit: 30 }).map(r => r.item);
+    out.innerHTML = res.length ? `<div class="grp">${res.map(t => `<a class="row" href="${href(t)}">${crest(t)}<span class="grow"><b>${esc(t.name)}</b><small>${esc(t.sub || '')}</small></span></a>`).join('')}</div>`
+      : `<p class="note">Nicio echipă pentru „${esc(inp.value.trim())}”. Încearcă numele în engleză (de exemplu Bayern Munich) sau în română pentru naționale.</p>`;
+  }, 150);
+  inp.addEventListener('input', run);
+  inp.addEventListener('focus', () => { teamIndex().catch(() => {}); }, { once: true });
+}
+function viewLeagues(live) {
+  V.innerHTML = `${hero('Ligi și echipe', gearBtn())}
+  <div class="search"><input id="q" type="search" placeholder="Caută o echipă sau o națională" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Caută o echipă"></div>
+  <div id="sres"></div>
+  ${GROUPS.map(g => `<section><div class="sec"><h2>${g.title}</h2>${g.aside ? `<span class="aside">${g.aside}</span>` : ''}</div><div class="grp">${COMPS.filter(c => c.g === g.id).map(c => `<a class="row" href="#/c/${c.slug}">${compIcon(c.slug)}<span class="grow">${esc(c.ro)}</span><span class="chev" aria-hidden="true">›</span></a>`).join('')}</div></section>`).join('')}`;
+  wireSearch($('#q'), $('#sres'), t => `#/t/${t.id}${t.lg ? '/' + t.lg : ''}`);
+  restoreScroll();
+}
+
+/* ---------- ecran: competiție ---------- */
+async function viewComp(slug, tab, live) {
+  const c = COMP[slug];
+  V.innerHTML = `${topBar(compLabel(slug))}<section class="chead">${compIcon(slug, true)}<div><h1>${esc(compLabel(slug))}</h1>${c?.en && c.en !== c.ro ? `<small>${esc(c.en)}</small>` : ''}</div></section>
+  <div class="segwrap"><div class="seg wide" role="tablist"><a role="tab" href="#/c/${slug}" aria-selected="${tab !== 'meciuri'}">Clasament</a><a role="tab" href="#/c/${slug}/meciuri" aria-selected="${tab === 'meciuri'}">Meciuri</a></div></div>
+  <div id="cb"><p class="note">Se încarcă…</p></div>`;
+  const cb = () => $('#cb');
+  if (tab === 'meciuri') {
+    try {
+      const evs = (await scoreboard(slug)).sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (!live()) return;
+      if (!evs.length) { cb().innerHTML = `<p class="empty">ESPN nu are meciuri programate în etapa curentă pentru această competiție.</p>`; return; }
+      const byDay = new Map();
+      evs.forEach(e => { const k = sod(new Date(e.date)); if (!byDay.has(k)) byDay.set(k, []); byDay.get(k).push(e); });
+      cb().innerHTML = [...byDay.entries()].map(([k, l]) => `<div class="gname">${esc(cap(nodot(fDayLong.format(new Date(k)))))}</div><div class="grp">${l.map(matchRow).join('')}</div>`).join('');
+      restoreScroll();
+    } catch (e) { if (live()) cb().innerHTML = errBox('Meciurile nu s-au încărcat.'); }
+    return;
+  }
+  try {
+    const groups = await standings(slug);
+    if (!live()) return;
+    if (!groups.length) throw Object.assign(new Error('fără clasament'), { status: 'gol' });
+    const notes = new Map();
+    groups.forEach(g => g.rows.forEach(r => { if (r.note && r.nc) notes.set(r.note, r.nc); }));
+    cb().innerHTML = groups.map(g => `${groups.length > 1 ? `<div class="gname">${esc(g.name)}</div>` : '<div style="height:10px"></div>'}
+      <div class="grp tbl"><div class="th"><span>#</span><span>Echipă</span><span class="num" title="meciuri jucate">M</span><span class="num" title="golaveraj">+/-</span><span class="num" title="puncte">Pct</span></div>
+      ${g.rows.map((r, i) => `<a class="tr" href="#/t/${r.team.id}/${slug}" style="--nc:${r.nc ? '#' + r.nc : 'transparent'}"><span class="pos">${r.rank ?? i + 1}</span><span class="tn">${crest(r.team)}<span>${esc(r.team.name)}</span></span><span class="num">${fin(r.gp) ? r.gp : '–'}</span><span class="num">${fin(r.gd) ? (r.gd > 0 ? '+' : '') + r.gd : '–'}</span><b>${fin(r.pts) ? r.pts : '–'}</b></a>`).join('')}</div>`).join('')
+      + (notes.size ? `<div class="notes">${[...notes].map(([d, col]) => `<span><i style="background:#${col}"></i>${esc(d)}</span>`).join('')}</div>` : '');
+    restoreScroll();
+  } catch (e) {
+    try {
+      const ts = await compTeams(slug);
+      if (!live()) return;
+      if (!ts.length) throw e;
+      cb().innerHTML = `<p class="note">Competiția nu are clasament la ESPN. Echipele participante:</p><div class="grp">${ts.slice().sort((a, b) => a.name.localeCompare(b.name, 'ro')).map(t => `<a class="row" href="#/t/${t.id}">${crest(t)}<span class="grow">${esc(t.name)}</span></a>`).join('')}</div>`;
+    } catch (e2) {
+      if (live()) cb().innerHTML = e2.status ? `<p class="empty">ESPN nu are clasament pentru această competiție. Încearcă fila „Meciuri”.</p>` : errBox('Clasamentul nu s-a încărcat.');
+    }
+  }
+}
+
+/* ---------- ecran: echipă ---------- */
+function compShort(ev) { return compLabel(ev.slug, (ev.league || '').replace(/^\s*\d{4}(\s*[-\/]\s*\d{2,4})?\s+/, '')); }
+function shortDay(iso) {
+  const k = dayDiff(iso), d = new Date(iso);
+  if (k === 0) return 'Azi';
+  if (k === 1) return 'Mâine';
+  if (k === -1) return 'Ieri';
+  return Math.abs(k) <= 6 ? `${cap(nodot(fWk.format(d)))} ${d.getDate()}` : nodot(fDM.format(d));
+}
+function fixtureRow(ev, id) {
+  const home = ev.home.id === id, op = home ? ev.away : ev.home, d = new Date(ev.date);
+  return `<a class="frow" href="#/m/${esc(ev.slug || 'x')}/${ev.id}"><span class="d"><b>${esc(shortDay(ev.date))}</b>${ev.state === 'in' ? `<span style="color:var(--live)">${esc(statusText(ev))}</span>` : fTime.format(d)}</span>
+    <span class="o">${crest(op)}<span>${esc(op.name)}</span></span>
+    <small>${home ? 'acasă' : 'în deplasare'}, ${esc(compShort(ev))}</small></a>`;
+}
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const pair = (a, b) => `${fin(a) ? a : '–'}–${fin(b) ? b : '–'}`;
+function lastRows(S) {
+  return S.rows.map(r => `<a class="lrow" href="#/m/${esc(r.ev.slug || 'x')}/${r.ev.id}">${fcChip(r.res)}
+    <span class="l1">${crest(r.opp)}<b>${esc(r.opp.name)}</b><span class="sc">${r.gf}–${r.ga}</span></span>
+    <span class="l2">${esc(cap(nodot(fDay.format(new Date(r.ev.date)))))}, ${r.home ? 'acasă' : 'în deplasare'}, ${esc(compShort(r.ev))}</span>
+    ${r.ok ? `<span class="ms"><span><small>Cornere</small>${pair(r.cf, r.ca)}</span><span><small>Cartonașe</small>${pair(r.kf, r.ka)}</span><span><small>Șuturi</small>${pair(r.sh, r.sha)}</span><span><small>Posesie</small>${fin(r.p) ? Math.round(r.p) + '%' : '–'}</span></span>` : `<span class="l3 lo">ESPN nu are statistici detaliate pentru acest meci</span>`}</a>`).join('');
+}
+function standingRo(s) {
+  const m = /^(\d+)(?:st|nd|rd|th) in (.+)$/i.exec(s || '');
+  if (!m) return s || '';
+  return `Locul ${m[1]} în ${compLabel(slugFromName(m[2]), m[2])}`;
+}
+async function viewTeam(id, lg, live) {
+  const k = TEAMS.get(id) || {};
+  V.innerHTML = `${topBar('', favBtn(id))}
+  <section class="thead" id="th">${crest(k.id ? k : { id }, 'xl')}<div><h1>${esc(k.name || 'Echipă')}</h1><p class="sub">${esc(lg ? compLabel(lg) : k.nat ? 'Echipă națională' : '')}</p></div></section>
+  <div class="acts"><button class="btn" type="button" data-act="compare" data-id="${esc(id)}">${ICON.vs}Compară cu altă echipă</button></div>
+  <div class="sec"><h2>Următoarele meciuri</h2></div><div id="up"><p class="note">Se încarcă programul…</p></div>
+  <div class="sec"><h2>Forma recentă</h2>${nSeg()}</div><div id="last"><p class="note">Se încarcă rezultatele…</p></div>`;
+  let headStanding = '';
+  const setHead = (t, standing) => {
+    if (!t || !live()) return;
+    if (standing) headStanding = standing;
+    const sub = standingRo(headStanding) || (t.lg ? compLabel(t.lg) : t.nat ? 'Echipă națională' : '');
+    $('#th').innerHTML = `${crest(t, 'xl')}<div><h1>${esc(t.name)}</h1><p class="sub">${esc(sub)}</p></div>`;
+    $('.bar .ttl').textContent = t.name;
+  };
+  upcoming(id).then(u => {
+    if (!live()) return;
+    setHead(u.team || TEAMS.get(id));
+    $('#up').innerHTML = u.list.length ? `<div class="grp">${u.list.slice(0, 8).map(e => fixtureRow(e, id)).join('')}</div>` : `<p class="empty">ESPN nu are meciuri programate pentru această echipă.</p>`;
+  }).catch(() => { if (live()) $('#up').innerHTML = errBox('Programul nu s-a încărcat.'); });
+  let r;
+  try { r = await recent(id, settings.n); } catch (e) { if (live()) $('#last').innerHTML = errBox('Rezultatele nu s-au încărcat.'); return; }
+  if (!live()) return;
+  setHead(r.team || TEAMS.get(id), r.standing);
+  if (!r.list.length) { $('#last').innerHTML = `<p class="empty">Nu am găsit meciuri jucate recent.</p>`; return; }
+  $('#last').innerHTML = `<p class="note" id="lp">Citesc statisticile pentru ${r.list.length} meciuri…</p>`;
+  const stats = new Map();
+  await Promise.all(r.list.map(ev => lim(() => matchStats(ev)).then(s => { stats.set(ev.id, s); })));
+  if (!live()) return;
+  const S = sample(String(id), r.list, stats);
+  const tile = (l, v) => `<div class="tile"><span>${l}</span><b>${v}</b></div>`;
+  const share = f => S.n ? Math.round(S.rows.filter(f).length / S.n * 100) + '%' : '–';
+  const cnt = k => S.rows.filter(x => x.res === k).length;
+  $('#last').innerHTML = `<div class="formline" style="padding-top:0">${formChips(S)}<span class="aside" style="font-size:13px;color:var(--muted)">${plural(cnt('W'), 'victorie', 'victorii')}, ${plural(cnt('D'), 'egal', 'egaluri')}, ${plural(cnt('L'), 'înfrângere', 'înfrângeri')}</span></div>
+    <div class="tiles" style="margin-top:8px">${tile('Goluri marcate', f1(S.gf.m))}${tile('Goluri primite', f1(S.ga.m))}${tile('Cornere obținute', f1(S.cf.m))}${tile('Cornere cedate', f1(S.ca.m))}${tile('Cartonașe primite', f1(S.kf.m))}${tile('Cartonașe adversari', f1(S.ka.m))}${tile('Șuturi', f1(S.sh.m))}${tile('Șuturi pe poartă', f1(S.st.m))}${tile('Posesie', fin(S.p.m) ? Math.round(S.p.m) + '%' : '–')}${tile('Faulturi', f1(S.f.m))}${tile('Peste 2,5 goluri', share(x => x.gf + x.ga > 2.5))}${tile('Ambele marchează', share(x => x.gf > 0 && x.ga > 0))}</div>
+    <p class="note">Medii pe meci. ESPN are statistici detaliate pentru ${S.ns} din ${S.n} meciuri; golurile vin din toate.</p>
+    <div class="grp">${lastRows(S)}</div>`;
+  restoreScroll();
+}
+
+/* ---------- ecran: meci ---------- */
+function headHTML(ev, opt = {}) {
+  const [ca, cb] = teamColors(ev.home, ev.away);
+  const showScore = ev.state !== 'pre' && fin(ev.home.score) && fin(ev.away.score);
+  const d = new Date(ev.date);
+  const mid = opt.vs ? `<div class="vs">vs</div><div class="st">meci ipotetic</div>`
+    : showScore ? `<div class="big">${ev.home.score}<span class="dash">–</span>${ev.away.score}</div>${fin(ev.home.pen) ? `<div class="pen">penalty ${ev.home.pen}–${ev.away.pen}</div>` : ''}<div class="st${ev.state === 'in' ? ' live' : ''}">${esc(statusText(ev))}</div>`
+    : /POSTPONED|CANCEL/.test(ev.status) ? `<div class="vs">–</div><div class="st">${esc(statusText(ev))}</div>`
+    : `<div class="big">${fTime.format(d)}</div><div class="st">${esc(cap(nodot(fDayLong.format(d))))}</div>`;
+  const side = t => `<a class="side" href="#/t/${esc(t.id)}${t.lg ? '/' + t.lg : ''}">${crest(t, 'xl')}<span class="nm">${esc(t.name)}</span></a>`;
+  const meta = opt.vs ? (ev.neutral ? 'Teren neutru' : `${ev.home.name} joacă acasă`) : [compShort(ev), ev.venue ? ev.venue + (ev.neutral ? ' (teren neutru)' : '') : ''].filter(Boolean).map(esc).join('<br>');
+  return `<section class="mh" style="--ca:${ca};--cb:${cb}">${side(ev.home)}<div class="mid">${mid}</div>${side(ev.away)}<p class="meta">${meta}</p></section>`;
+}
+async function viewMatch(slug, id, live) {
+  let ev = EV.get(id);
+  V.innerHTML = `${topBar(ev ? `${ev.home.short || ev.home.name} – ${ev.away.short || ev.away.name}` : 'Meci')}<div id="mh">${ev ? headHTML(ev) : '<p class="note">Se încarcă meciul…</p>'}</div><div id="mb"></div>`;
+  let sum = null;
+  try {
+    const r = await summary(id, [slug !== 'x' ? slug : null]);
+    sum = r.d;
+    ev = evFromSummary(sum, r.slug) || ev;
+  } catch (e) {
+    if (!ev) { if (live()) $('#mh').innerHTML = errBox(e?.status ? 'ESPN nu are detalii pentru acest meci.' : 'Meciul nu s-a încărcat.'); return; }
+  }
+  if (!live()) return;
+  $('#mh').innerHTML = headHTML(ev);
+  $('.bar .ttl').textContent = `${ev.home.short || ev.home.name} – ${ev.away.short || ev.away.name}`;
+  if (ev.state === 'in') {
+    const tick = () => later(async () => {
+      if (!live()) return;
+      try { const r = await summary(id, [ev.slug]); const e2 = evFromSummary(r.d, r.slug); if (e2 && live()) { $('#mh').innerHTML = headHTML(e2); if (e2.state === 'in') tick(); } }
+      catch (e) { tick(); }
+    }, 95000);
+    tick();
+  }
+  await analysis(ev, sum, live);
+}
+async function viewVs(a, b, neutral, live) {
+  const ta = TEAMS.get(a) || { id: a, name: 'Echipa 1' }, tb = TEAMS.get(b) || { id: b, name: 'Echipa 2' };
+  const mk = () => ({ id: `vs-${a}-${b}`, date: new Date().toISOString(), state: 'pre', done: false, status: '', neutral, slug: null, league: '', venue: '', home: { ...(TEAMS.get(a) || ta), score: null }, away: { ...(TEAMS.get(b) || tb), score: null } });
+  V.innerHTML = `${topBar('Comparație')}<div id="mh">${headHTML(mk(), { vs: true })}</div>
+    <div class="acts"><a class="btn" href="#/vs/${esc(b)}/${esc(a)}${neutral ? '/n' : ''}">${ICON.vs}Inversează gazdele</a><label class="btn toggle"><input type="checkbox" id="neu"${neutral ? ' checked' : ''}> Teren neutru</label></div><div id="mb"></div>`;
+  $('#neu').addEventListener('change', e => { location.replace(`#/vs/${a}/${b}${e.target.checked ? '/n' : ''}`); });
+  await analysis(mk(), null, live, { vs: true, refresh: () => { if (live()) $('#mh').innerHTML = headHTML(mk(), { vs: true }); } });
+}
+function legend(A, B, draw = true) {
+  return `<div class="lg" aria-hidden="true"><span><i style="background:var(--ca)"></i><b>${esc(A.short || A.name)}</b></span><span>${draw ? '<i class="d"></i>egal' : ''}</span><span><b>${esc(B.short || B.name)}</b><i style="background:var(--cb)"></i></span></div>`;
+}
+function triRow(label, blk, A, B) {
+  if (!blk) return `<div class="pr"><div class="lab">${esc(label)}</div><p class="nad">ESPN nu are destule statistici din meciurile recente ale echipelor.</p></div>`;
+  const [a, d, b] = pctRound(blk.p);
+  return `<div class="pr" role="group" aria-label="${esc(`${label}: ${A.name} ${a}%, egal ${d}%, ${B.name} ${b}%`)}">
+    <div class="top"><span class="num${a >= b ? '' : ' lo'}">${a}%</span><span class="lab">${esc(label)}<small>egal ${d}%</small></span><span class="num r${b >= a ? '' : ' lo'}">${b}%</span></div>
+    <div class="tri z"><i style="--w:${a};background:var(--ca)"></i><i class="d" style="--w:${d}"></i><i style="--w:${b};background:var(--cb)"></i></div></div>`;
+}
+function splitRow(label, va, vb, fmt = f1) {
+  if (!fin(va) || !fin(vb)) return `<div class="sb na"><span class="v">${fin(va) ? fmt(va) : '–'}</span><span class="l">${esc(label)}</span><span class="v r">${fin(vb) ? fmt(vb) : '–'}</span></div>`;
+  const t = va + vb, wa = t ? va / t * 100 : 50;
+  return `<div class="sb"><span class="v">${fmt(va)}</span><span class="l">${esc(label)}</span><span class="v r">${fmt(vb)}</span><div class="two z"><i style="--w:${wa};background:var(--ca)"></i><i style="--w:${100 - wa};background:var(--cb)"></i></div></div>`;
+}
+const fmtLine = L => nf1.format(L);
+function totalsRows(P) {
+  const rows = [['Peste 1,5 goluri', P.goals.over(1.5)], ['Peste 2,5 goluri', P.goals.over(2.5)], ['Peste 3,5 goluri', P.goals.over(3.5)], ['Ambele echipe marchează', P.goals.btts]];
+  if (P.corners) P.corners.lines.forEach(L => rows.push([`Peste ${fmtLine(L)} cornere`, P.corners.over(L)]));
+  if (P.cards) P.cards.lines.forEach(L => rows.push([`Peste ${fmtLine(L)} cartonașe`, P.cards.over(L)]));
+  return rows.map(([l, p]) => `<div class="row tot"><span>${l}</span><span class="pp"><b>${pct(p)}</b><small>nu: ${pct(1 - p)}</small></span><span class="meter" aria-hidden="true"><i style="width:${(p * 100).toFixed(1)}%"></i></span></div>`).join('');
+}
+function h2hBlock(sum, A, B) {
+  const evs = (sum?.headToHeadGames || [])[0]?.events || [];
+  if (!evs.length) return '';
+  const nm = id => String(id) === A.id ? A.short || A.name : String(id) === B.id ? B.short || B.name : '?';
+  const rows = evs.slice(0, 6).map(e => `<div class="hrow"><span>${esc(nm(e.homeTeamId))}</span><b>${esc(e.homeTeamScore ?? '')}–${esc(e.awayTeamScore ?? '')}</b><span>${esc(nm(e.awayTeamId))}</span><small>${e.gameDate ? esc(fFull.format(new Date(e.gameDate))) : ''}${e.leagueName ? ', ' + esc(compLabel(slugFromName(e.leagueName), e.leagueName)) : ''}</small></div>`).join('');
+  return `<div class="sec"><h2>Întâlniri directe</h2><span class="aside">sursa: ESPN</span></div><div class="grp">${rows}</div>`;
+}
+function actualBlock(sum, ev) {
+  const s = statsFromSummary(sum);
+  if (!s.ok) return '';
+  const a = s.t[ev.home.id], b = s.t[ev.away.id];
+  if (!a || !b) return '';
+  const k = o => fin(o.y) ? o.y + (fin(o.r) ? o.r : 0) : null;
+  return `<div class="sec"><h2>Statisticile meciului</h2></div><div class="panel">${legend(ev.home, ev.away, false)}
+    ${splitRow('Posesie', a.p, b.p, v => Math.round(v) + '%')}${splitRow('Șuturi', a.sh, b.sh, String)}${splitRow('Pe poartă', a.st, b.st, String)}${splitRow('Cornere', a.c, b.c, String)}${splitRow('Faulturi', a.f, b.f, String)}${splitRow('Cartonașe', k(a), k(b), String)}</div>`;
+}
+function pickBlock(ev) {
+  const cur = store.get('picks', {})[ev.id] || {};
+  const lbl = { '1': ev.home.short || ev.home.name, X: 'Egal', '2': ev.away.short || ev.away.name };
+  return `<div class="sec"><h2>Pronosticul tău</h2></div><div class="panel pick" id="pick">
+    <div class="seg" role="group" aria-label="Rezultatul ales">${['1', 'X', '2'].map(k => `<button type="button" data-pk="${k}" aria-pressed="${cur.pick === k}">${esc(lbl[k])}</button>`).join('')}</div>
+    <label class="sc-in">Scor exact (opțional)<input id="psc" inputmode="numeric" placeholder="2-1" maxlength="5" value="${esc(cur.score || '')}"></label>
+    <p class="note" id="pmsg" style="margin:12px 0 0">${cur.pick ? 'Salvat pe acest telefon. Îl verific automat după meci, în Favorite.' : 'Alege un rezultat. Se salvează doar pe acest telefon.'}</p></div>`;
+}
+function wirePick(ev) {
+  const box = $('#pick'); if (!box) return;
+  const save = patch => {
+    const P = store.get('picks', {});
+    const cur = { ...(P[ev.id] || {}), ...patch, slug: ev.slug || '', date: ev.date, h: ev.home.name, a: ev.away.name, hid: ev.home.id, aid: ev.away.id, t: Date.now() };
+    if (!cur.pick && !cur.score) delete P[ev.id]; else P[ev.id] = cur;
+    store.set('picks', P);
+    $('#pmsg').textContent = P[ev.id] ? 'Salvat pe acest telefon. Îl verific automat după meci, în Favorite.' : 'Pronostic șters.';
+  };
+  box.addEventListener('click', e => {
+    const b = e.target.closest('[data-pk]'); if (!b) return;
+    const on = b.getAttribute('aria-pressed') === 'true';
+    $$('[data-pk]', box).forEach(x => x.setAttribute('aria-pressed', 'false'));
+    if (!on) b.setAttribute('aria-pressed', 'true');
+    save({ pick: on ? '' : b.dataset.pk });
+  });
+  $('#psc').addEventListener('change', e => {
+    const v = e.target.value.trim().replace(/\s/g, '').replace(':', '-');
+    if (v && !/^\d{1,2}-\d{1,2}$/.test(v)) { $('#pmsg').textContent = 'Scrie scorul ca 2-1.'; return; }
+    e.target.value = v; save({ score: v });
+  });
+}
+function grow(root) { requestAnimationFrame(() => requestAnimationFrame(() => $$('.z', root).forEach(x => x.classList.remove('z')))); }
+async function analysis(ev, sum, live, opt = {}) {
+  const N = settings.n, A0 = ev.home, B0 = ev.away;
+  const before = ev.state === 'pre' ? Date.now() : new Date(ev.date).getTime() - 60000;
+  const mb = $('#mb');
+  const paint = (x, y) => { const [ca, cb] = teamColors(x, y); mb.style.setProperty('--ca', ca); mb.style.setProperty('--cb', cb); };
+  paint(A0, B0);
+  mb.innerHTML = `${ev.state !== 'pre' && sum ? actualBlock(sum, ev) : ''}
+    <div class="sec"><h2>${ev.done ? 'Ce estima modelul' : ev.state === 'in' ? 'Estimarea de dinainte' : 'Cine câștigă'}</h2>${nSeg()}</div>
+    <div class="panel" id="who"><p class="note" id="ap">Citesc ultimele ${N} meciuri ale fiecărei echipe…</p><div class="prog" style="margin-bottom:14px"><i id="pg"></i></div></div><div id="rest"></div>`;
+  grow(mb);
+  let ha, hb;
+  try { [ha, hb] = await Promise.all([recent(A0.id, N, before), recent(B0.id, N, before)]); }
+  catch (e) { if (live()) $('#who').innerHTML = errBox('Nu am putut citi meciurile recente ale echipelor.'); return; }
+  if (!live()) return;
+  const A = { ...A0, ...(ha.team || {}), id: A0.id }, B = { ...B0, ...(hb.team || {}), id: B0.id };
+  opt.refresh?.();
+  const all = [...new Map([...ha.list, ...hb.list].map(e => [e.id, e])).values()];
+  const stats = new Map();
+  let done = 0;
+  await Promise.all(all.map(m => lim(() => matchStats(m)).then(s => {
+    stats.set(m.id, s); done++;
+    const pg = $('#pg'), ap = $('#ap');
+    if (pg) pg.style.width = (done / all.length * 100) + '%';
+    if (ap) ap.textContent = `Citesc statisticile meciurilor (${done} din ${all.length})…`;
+  })));
+  if (!live()) return;
+  const SA = sample(A.id, ha.list, stats), SB = sample(B.id, hb.list, stats);
+  if (!SA.n || !SB.n) { $('#who').innerHTML = `<p class="empty">Nu există destule meciuri jucate recent pentru ${esc(!SA.n ? A.name : B.name)}.</p>`; return; }
+  const P = predict(SA, SB, ev.neutral);
+  paint(A, B);
+  const who = $('#who');
+  who.innerHTML = `${legend(A, B)}${triRow('Rezultat (goluri)', P.goals, A, B)}${triRow('Mai multe cornere', P.corners, A, B)}${triRow('Mai multe cartonașe', P.cards, A, B)}`;
+  const rest = $('#rest');
+  rest.innerHTML = `
+    <div class="sec"><h2>Cifre așteptate</h2><span class="aside">pe echipă</span></div><div class="panel">${legend(A, B, false)}
+      ${splitRow('Goluri', P.goals.la, P.goals.lb)}${splitRow('Cornere', P.corners?.la, P.corners?.lb)}${splitRow('Cartonașe', P.cards?.la, P.cards?.lb)}</div>
+    <div class="sec"><h2>Totaluri</h2><span class="aside">probabilitate</span></div><div class="grp plain">${totalsRows(P)}</div>
+    <div class="sec"><h2>Scoruri probabile</h2></div><div class="chips">${P.goals.top.map(([i, j, p]) => `<span class="chip">${i}–${j}<small>${pct(p)}</small></span>`).join('')}</div>
+    <div class="sec"><h2>Forma recentă</h2><span class="aside">medii pe meci</span></div>
+    <div class="panel">${legend(A, B, false)}
+      <div class="formline">${formChips(SA)}${formChips(SB)}</div>
+      ${splitRow('Goluri marcate', SA.gf.m, SB.gf.m)}${splitRow('Goluri primite', SA.ga.m, SB.ga.m)}${splitRow('Cornere obținute', SA.cf.m, SB.cf.m)}${splitRow('Cornere cedate', SA.ca.m, SB.ca.m)}
+      ${splitRow('Cartonașe primite', SA.kf.m, SB.kf.m)}${splitRow('Șuturi', SA.sh.m, SB.sh.m)}${splitRow('Șuturi pe poartă', SA.st.m, SB.st.m)}${splitRow('Posesie', SA.p.m, SB.p.m, v => Math.round(v) + '%')}${splitRow('Faulturi', SA.f.m, SB.f.m)}
+      <p class="note">Statistici detaliate la ESPN: ${esc(A.short || A.name)} ${SA.ns} din ${SA.n} meciuri, ${esc(B.short || B.name)} ${SB.ns} din ${SB.n}.</p></div>
+    <div class="sec"><h2>${esc(A.name)}</h2><span class="aside">ultimele ${SA.n}</span></div><div class="grp">${lastRows(SA)}</div>
+    <div class="sec"><h2>${esc(B.name)}</h2><span class="aside">ultimele ${SB.n}</span></div><div class="grp">${lastRows(SB)}</div>
+    ${opt.vs ? '' : h2hBlock(sum, A, B)}
+    ${!opt.vs && ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status) ? pickBlock({ ...ev, home: A, away: B }) : ''}
+    <p class="method"><b>Cum calculez.</b> Iau ultimele ${N} meciuri jucate de fiecare echipă, din toate competițiile. Golurile așteptate combină atacul unei echipe cu apărarea celeilalte, cu un avantaj de teren de 10% pentru gazde, iar când sunt puține meciuri valorile sunt trase ușor spre media obișnuită (1,35 goluri de echipă). Șansele vin dintr-un model Poisson cu corecția Dixon–Coles pentru scorurile mici. Cornerele (obținute față de cedate) și cartonașele (primite față de provocate) folosesc aceeași logică. Sunt estimări statistice, nu certitudini. Date: ESPN.</p>`;
+  grow(who); grow(rest);
+  if (!opt.vs && ev.state === 'pre') wirePick({ ...ev, home: A, away: B });
+  restoreScroll();
+}
+
+/* ---------- ecran: Favorite ---------- */
+function viewFav(live) {
+  const F = favs();
+  V.innerHTML = `${hero('Favorite', gearBtn())}
+    ${F.length ? `<div class="grp" id="fl">${F.map(f => `<a class="row" href="#/t/${esc(f.id)}${f.lg ? '/' + f.lg : ''}" data-id="${esc(f.id)}">${crest(f)}<span class="grow"><b>${esc(f.name)}</b><small class="nx">Caut următorul meci…</small></span><span class="chev" aria-hidden="true">›</span></a>`).join('')}</div>`
+      : `<p class="empty">Apasă steaua de pe pagina unei echipe ca s-o urmărești aici.</p>`}
+    <div class="sec"><h2>Pronosticurile tale</h2></div><div id="pk"></div>`;
+  F.forEach(f => lim(() => upcoming(f.id)).then(u => {
+    if (!live()) return;
+    const n = u.list[0], el = $(`#fl [data-id="${CSS.escape(f.id)}"] .nx`);
+    if (el) el.textContent = n ? `${cap(whenShort(n.date))}: ${n.home.id === f.id ? n.away.name + ', acasă' : 'la ' + n.home.name}` : 'Niciun meci programat la ESPN';
+  }).catch(() => { const el = $(`#fl [data-id="${CSS.escape(f.id)}"] .nx`); if (el && live()) el.textContent = 'Programul nu s-a încărcat'; }));
+  renderPicks(live);
+  restoreScroll();
+}
+async function renderPicks(live) {
+  const P = store.get('picks', {});
+  const ids = Object.keys(P).sort((a, b) => new Date(P[b].date) - new Date(P[a].date));
+  const box = $('#pk');
+  if (!ids.length) { box.innerHTML = `<p class="empty">Când alegi un rezultat pe pagina unui meci viitor, apare aici și îl verific după fluier.</p>`; return; }
+  const out = new Map();
+  const draw = () => {
+    if (!live()) return;
+    let hit = 0, tot = 0, exact = 0;
+    const rows = ids.map(id => {
+      const p = P[id], r = out.get(id);
+      let res = `<span class="res">${new Date(p.date) > Date.now() ? esc(whenShort(p.date)) : 'aștept rezultatul'}</span>`;
+      if (r) {
+        const o = r.h > r.a ? '1' : r.h < r.a ? '2' : 'X';
+        const okP = p.pick ? p.pick === o : null, okS = p.score ? p.score === `${r.h}-${r.a}` : null;
+        if (okP != null) { tot++; if (okP) hit++; }
+        if (okS) exact++;
+        const good = okP ?? okS;
+        res = `<span class="res ${good ? 'ok' : 'no'}">${r.h}–${r.a}: ${okS ? 'scor exact' : good ? 'nimerit' : 'ratat'}</span>`;
+      }
+      return `<a class="row" href="#/m/${esc(p.slug || 'x')}/${esc(id)}"><span class="grow"><b>${esc(p.h)} – ${esc(p.a)}</b><small>Ai ales ${p.pick ? (p.pick === 'X' ? 'egal' : p.pick === '1' ? esc(p.h) : esc(p.a)) : 'doar scorul'}${p.score ? `, scor ${esc(p.score)}` : ''}</small></span>${res}</a>`;
+    }).join('');
+    box.innerHTML = `${tot ? `<p class="note">Ai nimerit ${hit} din ${tot} rezultate${exact ? `, plus ${exact} ${exact === 1 ? 'scor exact' : 'scoruri exacte'}` : ''}.</p>` : ''}<div class="grp plain">${rows}</div>`;
+  };
+  draw();
+  await Promise.all(ids.filter(id => new Date(P[id].date).getTime() < Date.now() - 105 * 60e3).map(id => lim(async () => {
+    try { const { d, slug } = await summary(id, [P[id].slug]); const e = evFromSummary(d, slug); if (e?.done) out.set(id, { h: e.home.score, a: e.away.score }); } catch (e) {}
+  })));
+  draw();
+}
+
+/* ---------- foi: setări și comparație ---------- */
+let needsRender = false;
+function openSheet(html) { const s = $('#sheet'); $('#shin').innerHTML = html; s.hidden = false; document.body.style.overflow = 'hidden'; }
+function closeSheet() {
+  const s = $('#sheet');
+  if (!s || s.hidden) return;
+  s.hidden = true; $('#shin').innerHTML = ''; document.body.style.overflow = '';
+  if (needsRender) { needsRender = false; setTimeout(() => route({ keep: true }), 0); }
+}
+function openSettings() {
+  const th = [['auto', 'Automat'], ['light', 'Luminoasă'], ['dark', 'Întunecată']];
+  openSheet(`<div class="sh-top"><h2 id="sht">Setări</h2><button class="ico" type="button" data-act="close" aria-label="Închide">${ICON.x}</button></div>
+    <div class="field"><span>Meciuri analizate</span>${nSeg()}</div>
+    <div class="field"><span>Temă</span><div class="seg sm" role="group" aria-label="Temă">${th.map(([k, l]) => `<button type="button" data-th="${k}" aria-pressed="${settings.theme === k}">${l}</button>`).join('')}</div></div>
+    <label class="field col"><span>Proxy pentru cereri (opțional)</span><input type="url" id="px" value="${esc(settings.proxy)}" placeholder="https://proxy-ul-tău/?url=" autocomplete="off" autocapitalize="off"><span class="note" style="margin:0">Lasă gol. Completează doar dacă rețeaua ta blochează ESPN și ai un proxy propriu; URL-ul cererii se adaugă la final.</span></label>
+    <div class="acts"><button class="btn" type="button" id="clr">Golește datele din cache</button></div>
+    <details><summary>Jurnal tehnic (${LOG.length})</summary><div class="log">${LOG.length ? LOG.map(esc).join('\n') : 'Nicio eroare de rețea.'}</div></details>
+    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele și pronosticurile rămân doar pe acest dispozitiv.</p>`);
+  $('#shin').setAttribute('aria-labelledby', 'sht');
+  $('#px').addEventListener('change', e => { settings.proxy = e.target.value.trim(); saveSettings(); MEM.clear(); });
+  $('#clr').addEventListener('click', e => { store.clearCache(); MEM.clear(); IDXP = null; for (const k of Object.keys(STATS)) delete STATS[k]; e.target.textContent = 'Cache golit'; });
+}
+function openCompare(id) {
+  const t = TEAMS.get(id) || { name: 'echipa' };
+  openSheet(`<div class="sh-top"><h2 id="sht">Compară ${esc(t.name)} cu…</h2><button class="ico" type="button" data-act="close" aria-label="Închide">${ICON.x}</button></div>
+    <div class="search" style="padding-top:6px"><input type="search" id="cq" placeholder="Caută adversarul" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Caută adversarul"></div><div id="cres"></div>
+    <p class="note">${esc(t.name)} va fi considerată gazdă; poți inversa după.</p>`);
+  $('#shin').setAttribute('aria-labelledby', 'sht');
+  wireSearch($('#cq'), $('#cres'), o => `#/vs/${encodeURIComponent(id)}/${encodeURIComponent(o.id)}`);
+  setTimeout(() => $('#cq')?.focus(), 50);
+}
+
+addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  const h = location.hash;
+  if (/^#?\/?(zi\/0)?$/.test(h) || (h.startsWith('#/m/') && EV.get(h.split('/')[3])?.state === 'in')) route({ keep: true });
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (settings.theme === 'auto') route({ keep: true }); });
+route();
+</script>
+</body>
+</html>
