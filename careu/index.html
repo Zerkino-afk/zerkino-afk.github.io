@@ -292,6 +292,12 @@ summary{padding:10px 16px;font-weight:600;cursor:pointer}
 .tip{position:absolute;z-index:2;pointer-events:none;padding:7px 10px;border-radius:10px;background:var(--ink);color:var(--surface);font-size:13px;line-height:1.3;white-space:nowrap;transform:translate(-50%,calc(-100% - 12px))}
 .tip[hidden]{display:none}
 .pp small{display:block;font-size:12.5px;color:var(--muted)}
+/* cote */
+details.mkt{margin:0;border-top:1px solid var(--line)}
+details.mkt summary{padding:12px 16px;font-size:14.5px;color:var(--ink-2)}
+details.mkt .mt{padding:0 2px 8px}
+details.mkt .mrw.q{grid-template-columns:1fr 58px 58px 58px}
+#who>.note{margin:12px 16px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -647,14 +653,14 @@ const RO_WORDS = {
   Bistrita: 'Bistrița', Focsani: 'Focșani', Barlad: 'Bârlad', Ceahlaul: 'Ceahlăul', Neamt: 'Neamț', Campina: 'Câmpina', Slatina: 'Slatina'
 };
 const roClub = n => String(n || '').replace(/[A-Za-z]+/g, w => RO_WORDS[w] || w);
-async function w365(path, ttl = 300000) {
-  const key = '365:' + path;
+async function w365(path, ttl = 300000, pick = null) {
+  const key = (pick ? '365~' : '365:') + path;
   const hit = MEM.get(key);
   if (hit && Date.now() - hit.t < ttl) return hit.d;
   if (INFLIGHT.has(key)) return INFLIGHT.get(key);
   const url = `${W365}${path}${path.includes('?') ? '&' : '?'}appTypeId=5&langId=1&timezoneName=${encodeURIComponent(TZ)}&userCountryId=29`;
   const job = (async () => {
-    try { const d = await getJSON(url); netState = 'ok'; MEM.set(key, { t: Date.now(), d }); return d; }
+    try { const raw = await getJSON(url), d = pick ? pick(raw) : raw; netState = 'ok'; MEM.set(key, { t: Date.now(), d }); return d; }
     catch (e) { logErr(url, e); if (hit) return hit.d; throw e; }
   })();
   INFLIGHT.set(key, job);
@@ -678,6 +684,8 @@ function ev365(g) {
   const sc = v => fin(v) && v >= 0 ? v : null;
   const lg = c => CID_SLUG[c?.mainCompetitionId];
   const prev = EV.get('s' + g.id);
+  // cu showOdds=true, listele aduc și cotele 1X2; în timpul meciului iau cotele de deschidere
+  const od = g.odds && g.odds.lineTypeId === 1 ? devig([1, 2, 3].map(n => { const o = (g.odds.options || []).find(x => x.num === n); return sg === 3 ? o?.originalRate?.decimal : o?.rate?.decimal; })) : null;
   const ev = {
     id: 's' + g.id, date: g.startTime, slug: CID_SLUG[g.competitionId] || prev?.slug || null, league: g.competitionDisplayName || prev?.league || '', neutral: false,
     state, done: state === 'post' && !canc,
@@ -685,14 +693,18 @@ function ev365(g) {
     clock: g.gameTimeDisplay || '',
     home: { ...remember(home, lg(g.homeCompetitor)), score: state === 'pre' ? null : sc(g.homeCompetitor?.score), pen: null },
     away: { ...remember(away, lg(g.awayCompetitor)), score: state === 'pre' ? null : sc(g.awayCompetitor?.score), pen: null },
-    venue: g.venue?.name || prev?.venue || ''
+    venue: g.venue?.name || prev?.venue || '', x12: od || prev?.x12 || null
   };
   EV.set(ev.id, ev);
   return ev;
 }
 async function schedule365(id, { fixtures = false } = {}) {
   const cid = String(id).slice(1);
-  const d = await w365(`games/${fixtures ? 'fixtures' : 'results'}/?competitors=${cid}`, 10 * 60e3);
+  const path = `games/${fixtures ? 'fixtures' : 'results'}/?competitors=${cid}`;
+  let d;
+  // rezultatele se cer cu cote (folosite la învățare); dacă cererea aceea nu merge, lista simplă ajunge
+  if (fixtures) d = await w365(path, 10 * 60e3);
+  else { try { d = await w365(path + '&showOdds=true', 10 * 60e3); } catch (e) { d = await w365(path, 10 * 60e3); } }
   const c = (d?.competitors || []).find(x => String(x.id) === cid);
   const team = c ? remember(team365(c), CID_SLUG[c.mainCompetitionId]) : TEAMS.get(String(id)) || null;
   return { team, events: (d?.games || []).map(ev365).filter(Boolean), season: null, standing: '' };
@@ -906,12 +918,154 @@ async function matchStats(ev) {
   } catch (e) { return null; }
 }
 
+/* ---------- cote: ce cred casele de pariuri ---------- */
+// Cotele se transformă în probabilități (scoțând marja casei) și intră în calcul alături de model.
+// Sursa principală: 365Scores (rezultat, total goluri, cornere, șuturi pe poartă); rezervă: cotele din rezumatul ESPN.
+// Aplicația nu afișează cote și nu trimite către case; le folosește doar ca informație despre meci.
+const amer = a => { a = parseFloat(a); return !fin(a) || !a ? null : a > 0 ? 1 + a / 100 : 1 + 100 / -a; };
+function devig(odds) {
+  if (!odds.length || odds.some(o => !fin(o) || o <= 1.001)) return null;
+  const q = odds.map(o => 1 / o), s = q.reduce((a, b) => a + b, 0);
+  return s > 0.97 && s < 1.45 ? q.map(v => v / s) : null;
+}
+const halfLine = s => { const v = parseFloat(s); return fin(v) && v > 0 && Math.abs(v % 1 - 0.5) < 1e-9 ? v : null; };
+const emptyMk = src => ({ src, x12: null, ou: [], btts: null, c: [], t: [], k: [], s: [] });
+// live: în timpul meciului cotele curente țin cont de scor, așa că iau cotele de deschidere
+function lines365(lines, live, swap) {
+  const m = emptyMk('365Scores');
+  const rate = o => (live ? o?.originalRate?.decimal : o?.rate?.decimal);
+  const named = (l, re) => (l.options || []).find(o => re.test(String(o.name || '')));
+  const two = (l, a, b) => devig([rate(named(l, a)), rate(named(l, b))]);
+  for (const l of lines || []) {
+    const id = l.lineTypeId, nm = String(l.lineType?.name || '').trim();
+    if (/half|1st|2nd|player/i.test(nm)) continue;
+    if (id === 1 || /^full time result$/i.test(nm)) {
+      const p = devig([1, 2, 3].map(n => rate((l.options || []).find(x => x.num === n))));
+      if (p && !m.x12) m.x12 = swap ? [p[2], p[1], p[0]] : p;
+      continue;
+    }
+    if (id === 12 || /^both teams to score$/i.test(nm)) { const p = two(l, /^yes$/i, /^no$/i); if (p) m.btts = p[0]; continue; }
+    const key = id === 3 || /^total goals( in match)?$/i.test(nm) ? 'ou' : id === 137 || /^total corners$/i.test(nm) ? 'c'
+      : id === 139 || /^total shots on (target|goal)$/i.test(nm) ? 't' : /^total (cards|bookings)$/i.test(nm) ? 'k' : /^total shots$/i.test(nm) ? 's' : null;
+    if (!key) continue;
+    const L = halfLine(l.internalOption), p = two(l, /^over$/i, /^under$/i);
+    if (L != null && p && !m[key].some(x => x[0] === L)) m[key].push([L, p[0]]);
+  }
+  ['ou', 'c', 't', 'k', 's'].forEach(k => m[k].sort((a, b) => a[0] - b[0]));
+  return m;
+}
+function espnOdds(sum) {
+  const pc = (sum?.pickcenter || [])[0] || (sum?.odds || [])[0];
+  if (!pc) return null;
+  const cl = x => x?.close?.odds ?? x?.open?.odds;
+  const x12 = devig([amer(pc.homeTeamOdds?.moneyLine ?? cl(pc.moneyline?.home)), amer(pc.drawOdds?.moneyLine ?? cl(pc.moneyline?.draw)), amer(pc.awayTeamOdds?.moneyLine ?? cl(pc.moneyline?.away))]);
+  const L = halfLine(pc.overUnder), po = devig([amer(pc.overOdds ?? cl(pc.total?.over)), amer(pc.underOdds ?? cl(pc.total?.under))]);
+  if (!x12 && !(L != null && po)) return null;
+  const m = emptyMk('ESPN');
+  m.x12 = x12;
+  if (L != null && po) m.ou.push([L, po[0]]);
+  return m;
+}
+
+/* meciurile ESPN se caută la 365Scores după ora de start și numele echipelor */
+const C365 = Object.assign({ 'eng.1': [7], 'esp.1': [11], 'ita.1': [17], 'ger.1': [25], 'fra.1': [35], 'uefa.champions': [572], 'uefa.europa': [573], 'uefa.europa.conf': [7685], 'uefa.nations': [7016], 'fifa.friendly': [570] }, store.get('c365', {}));
+const M365 = store.get('m365', {});
+const STOPW = new Set('fc cf sc ac afc cfc fk sk bk if cd ud sd ca cs csm acs club de the of and sv as ss us ssc calcio'.split(' '));
+const SQUAD = /^(w|women|feminin|femenino|u\d{2}|ii|b|youth|reserves|olympic)$/;
+const ntoks = s => norm(s).split(' ').filter(t => t && !STOPW.has(t));
+function nameSim(a, b) {
+  const A = ntoks(a), B = ntoks(b);
+  if (!A.length || !B.length) return 0;
+  if (A.filter(t => SQUAD.test(t)).sort().join() !== B.filter(t => SQUAD.test(t)).sort().join()) return 0;   // altă echipă a aceluiași club (tineret, feminin)
+  const ja = A.join(''), jb = B.join('');
+  if (ja === jb) return 1;
+  const [S, L] = A.length <= B.length ? [A, B] : [B, A];
+  if (S.every(t => L.includes(t))) return 0.9;
+  if (S.every(t => t.length > 2 && L.some(u => u.startsWith(t) || t.startsWith(u)))) return 0.8;
+  const big = s => { const o = new Map(); for (let i = 0; i < s.length - 1; i++) { const g = s.slice(i, i + 2); o.set(g, (o.get(g) || 0) + 1); } return o; };
+  const x = big(ja), y = big(jb);
+  let inter = 0, n = 0;
+  x.forEach((v, g) => { n += v; inter += Math.min(v, y.get(g) || 0); });
+  y.forEach(v => { n += v; });
+  return n ? 0.85 * 2 * inter / n : 0;
+}
+const squadOf = s => ntoks(s).filter(t => SQUAD.test(t)).sort().join();
+// numele scurte nu spun mereu că e echipa de tineret sau cea feminină, așa că asta se judecă după numele întreg
+const sim365 = (t, c) => squadOf(t.en || t.name) !== squadOf(c.n[0]) ? 0 : Math.max(0, ...[t.en, t.name, t.short].filter(Boolean).flatMap(x => c.n.map(y => nameSim(x, y))));
+const slimC = c => c && c.name ? { n: uniq([c.name, c.shortName, c.longName, String(c.nameForURL || '').replace(/-/g, ' ')]) } : null;
+const slimGames = d => (d?.games || []).map(g => ({ id: g.id, t: new Date(g.startTime).getTime(), cid: g.competitionId, h: slimC(g.homeCompetitor), a: slimC(g.awayCompetitor) })).filter(g => g.h && g.a && fin(g.t));
+function pick365(ev, games) {
+  const t0 = new Date(ev.date).getTime();
+  let best = null, second = 0;
+  for (const g of games || []) {
+    if (Math.abs(g.t - t0) > 20 * 60e3) continue;
+    const hh = sim365(ev.home, g.h), aa = sim365(ev.away, g.a), ha = sim365(ev.home, g.a), ah = sim365(ev.away, g.h);
+    const swap = ha + ah > hh + aa;
+    const hi = swap ? Math.max(ha, ah) : Math.max(hh, aa), lo = swap ? Math.min(ha, ah) : Math.min(hh, aa), sc = (hi + lo) / 2;
+    // la aceeași oră, o echipă joacă un singur meci: un nume potrivit exact ajunge
+    if (!(sc >= 0.62 || hi >= 0.999 || (hi >= 0.9 && lo >= 0.2))) continue;
+    if (!best || sc > best.sc) { second = best ? best.sc : second; best = { id: g.id, swap, sc, cid: g.cid }; }
+    else if (sc > second) second = sc;
+  }
+  return best && best.sc - second >= 0.08 ? best : null;
+}
+async function find365(ev) {
+  const hit = M365[ev.id];
+  if (hit) return { id: hit[0], swap: !!hit[1] };
+  if (!ev?.date || !ev.home || !ev.away) return null;
+  const d = new Date(ev.date), dmy = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+  const range = `startDate=${dmy}&endDate=${dmy}`, cids = C365[ev.slug] || [];
+  // întâi doar competiția (răspuns mic), apoi toate meciurile zilei
+  const paths = [cids.length ? `games/?competitions=${cids.join(',')}&${range}` : null, `games/allscores/?sports=1&${range}&onlyMajorGames=true`, `games/allscores/?sports=1&${range}`].filter(Boolean);
+  let errs = 0;
+  for (const p of paths) {
+    let games;
+    try { games = await w365(p, 15 * 60e3, slimGames); } catch (e) { errs++; continue; }
+    const g = pick365(ev, games);
+    if (!g) continue;
+    M365[ev.id] = [g.id, g.swap ? 1 : 0, Date.now()];
+    const ks = Object.keys(M365);
+    if (ks.length > 400) ks.sort((a, b) => (M365[a][2] || 0) - (M365[b][2] || 0)).slice(0, ks.length - 300).forEach(k => delete M365[k]);
+    store.cache('m365', M365);
+    if (ev.slug && g.cid != null && !cids.includes(g.cid)) { C365[ev.slug] = [g.cid, ...cids].slice(0, 4); store.cache('c365', C365); }
+    return { id: g.id, swap: g.swap };
+  }
+  if (errs === paths.length) throw new Error('365Scores nu răspunde');
+  return null;
+}
+// întoarce cotele meciului, null dacă nu există încă, sau { fail } dacă sursa n-a putut fi citită
+async function marketFor(ev, sum) {
+  const has = x => !!(x && (x.x12 || x.ou.length));
+  let m = null, fail = false;
+  try {
+    let gid = null, swap = false;
+    if (is365(ev.id)) gid = String(ev.id).slice(1);
+    else { const f = await find365(ev); if (f) { gid = f.id; swap = f.swap; } }
+    if (gid) m = lines365(await w365(`bets/lines/?games=${gid}`, ev.done ? 864e5 : 5 * 60e3, x => (x?.lines || []).filter(l => ![126, 127].includes(l.lineTypeId))), ev.state === 'in', swap);
+  } catch (e) { fail = true; }
+  if (!has(m) && ev.x12) { m = m || emptyMk('365Scores'); m.x12 = ev.x12; }
+  const e2 = sum ? espnOdds(sum) : null;
+  if (e2) {
+    if (!m) m = e2;
+    else {
+      const before = has(m);
+      if (!m.x12 && e2.x12) m.x12 = e2.x12;
+      if (!m.ou.length && e2.ou.length) m.ou = e2.ou;
+      if (!before && has(m)) m.src = m.c.length || m.t.length || m.k.length || m.s.length ? '365Scores și ESPN' : 'ESPN';
+    }
+  }
+  return m && (has(m) || m.c.length || m.t.length || m.k.length || m.s.length) ? m : fail ? { fail: true } : null;
+}
+
 /* ---------- model ---------- */
-const PRIOR = { g: 1.35, c: 4.9, k: 2.0 };
+const PRIOR = { g: 1.35, c: 4.9, k: 2.0, s: 12.2, t: 4.2 };
 const shrink = (a, prior, k = 2) => a && a.n ? (a.m * a.n + prior * k) / (a.n + k) : prior;
 function pois(l, max) { const p = [Math.exp(-l)]; for (let i = 1; i <= max; i++) p[i] = p[i - 1] * l / i; return p; }
-function block(la, lb, max, rho = 0) {
-  const pa = pois(la, max), pb = pois(lb, max);
+// negativ binomială cu media mu și varianța phi·mu: șuturile variază de la meci la meci mai mult decât ar spune Poisson
+function nbin(mu, phi, max) { const r = mu / (phi - 1), q = 1 - 1 / phi, p = [Math.pow(1 / phi, r)]; for (let i = 1; i <= max; i++) p[i] = p[i - 1] * (i - 1 + r) / i * q; return p; }
+const pmf = (mu, max, phi = 1) => phi > 1.02 ? nbin(mu, phi, max) : pois(mu, max);
+function block(la, lb, max, rho = 0, phi = 1) {
+  const pa = pmf(la, max, phi), pb = pmf(lb, max, phi);
   const M = pa.map(x => pb.map(y => x * y));
   if (rho) { M[0][0] *= Math.max(0, 1 - la * lb * rho); M[0][1] *= Math.max(0, 1 + la * rho); M[1][0] *= Math.max(0, 1 + lb * rho); M[1][1] *= Math.max(0, 1 - rho); }
   let s = 0; M.forEach(r => r.forEach(v => { s += v; }));
@@ -930,6 +1084,46 @@ function topScores(M, k) {
   const all = [];
   M.forEach((r, i) => r.forEach((v, j) => all.push([i, j, v])));
   return all.sort((x, y) => y[2] - x[2]).slice(0, k);
+}
+// liniile afișate: cele pe care casele au cote, completate cu cele din jurul totalului așteptat
+const pickLines = (t, mk = []) => uniq([...mk.map(x => x[0]), ...linesAround(t)]).sort((x, y) => Math.abs(x - t) - Math.abs(y - t)).slice(0, 3).sort((x, y) => x - y);
+const mixl = (m, k, w) => Math.exp((1 - w) * Math.log(m) + w * Math.log(k));
+// golurile așteptate „văzute” de case: perechea (λA, λB) pentru care modelul reproduce cel mai bine șansele 1X2 și liniile de total
+function impliedGoals(mk, rho, la0, lb0) {
+  if (!mk || (!mk.x12 && !mk.ou.length)) return null;
+  const at = (u, v) => { const T = Math.exp(u), r = Math.exp(v); return [T * r / (1 + r), T / (1 + r)]; };
+  const loss = (u, v) => {
+    const [la, lb] = at(u, v), b = block(la, lb, 10, rho);
+    let e = 0;
+    if (mk.x12) for (let i = 0; i < 3; i++) e += (b.p[i] - mk.x12[i]) ** 2;
+    for (const [L, p] of mk.ou) e += 0.5 * (b.over(L) - p) ** 2;
+    return e;
+  };
+  // căutare în trepte pe totalul de goluri și pe raportul dintre echipe (în logaritm); fără 1X2, cotele spun doar câte goluri
+  let u = Math.log(la0 + lb0), v = Math.log(la0 / lb0), best = loss(u, v), step = 0.3;
+  const dirs = mk.x12 ? [[1, 0], [-1, 0], [0, 1], [0, -1]] : [[1, 0], [-1, 0]];
+  for (let it = 0; it < 240 && step > 0.002; it++) {
+    let moved = false;
+    for (const [du, dv] of dirs) {
+      const nu = clamp(u + du * step, -0.9, 2), nv = clamp(v + dv * step, -3.2, 3.2), e = loss(nu, nv);
+      if (e < best - 1e-13) { best = e; u = nu; v = nv; moved = true; }
+    }
+    if (!moved) step /= 2;
+  }
+  const [la, lb] = at(u, v);
+  return { la, lb, fit: Math.sqrt(best) };
+}
+// totalul așteptat „văzut” de case la cornere sau șuturi: media pentru care P(total > linie) iese cât spun cotele
+const overTot = (mu, L, phi) => 1 - pmf(mu, Math.floor(L), phi).reduce((a, b) => a + b, 0);
+function impliedTotal(lines, phi = 1) {
+  const est = [];
+  for (const [L, p] of lines) {
+    if (!(p > 0.04 && p < 0.96)) continue;
+    let lo = 0.3, hi = 80;
+    for (let i = 0; i < 36; i++) { const mid = (lo + hi) / 2; if (overTot(mid, L, phi) < p) lo = mid; else hi = mid; }
+    est.push((lo + hi) / 2);
+  }
+  return est.length ? mean(est) : null;
 }
 function sample(teamId, list, stats) {
   const rows = list.map(ev => {
@@ -951,20 +1145,41 @@ function sample(teamId, list, stats) {
   ['gf', 'ga', 'cf', 'ca', 'kf', 'ka', 'sh', 'sha', 'st', 'sta', 'f', 'p'].forEach(k => { S[k] = av(k); });
   return S;
 }
+// Cum se mută cornerele, cartonașele și șuturile când cotele văd meciul altfel decât forma recentă:
+// b = cât din diferența de raport de forțe (la goluri) trece în împărțirea între echipe, g = cât din diferența de total de goluri trece în total.
+// Echipa mai puternică trage și obține cornere mai mult, și primește ceva mai puține cartonașe.
+const MKE = { c: { b: 0.4, g: 0.2 }, k: { b: -0.12, g: 0 }, s: { b: 0.6, g: 0.35 }, t: { b: 0.7, g: 0.6 } };
 // prm: parametrii modelului; cei inițiali (DEF) sau cei învățați din meciurile terminate (vezi „învățare”)
-function predict(SA, SB, neutral, prm = params()) {
+// mk: cotele meciului, ca probabilități (vezi „cote”); fără ele, estimarea vine doar din forma echipelor
+function predict(SA, SB, neutral, prm = params(), mk = null) {
   const lam = (q, prior, xf, ya, yf, xa) => {
     const mid = (q.hH + q.hA) / 2;
     return [(q.w * shrink(xf, prior, q.k) + (1 - q.w) * shrink(ya, prior, q.k)) * (neutral ? mid : q.hH),
       (q.w * shrink(yf, prior, q.k) + (1 - q.w) * shrink(xa, prior, q.k)) * (neutral ? mid : q.hA)];
   };
-  const [la, lb] = lam(prm.g, PRIOR.g, SA.gf, SB.ga, SB.gf, SA.ga);
+  const W = prm.m || DEF.m;
+  const [ma, mb] = lam(prm.g, PRIOR.g, SA.gf, SB.ga, SB.gf, SA.ga);
+  const ig = mk ? impliedGoals(mk, prm.g.rho, ma, mb) : null;
+  const la = ig ? mixl(ma, ig.la, W.g) : ma, lb = ig ? mixl(mb, ig.lb, W.g) : mb;
   const goals = block(la, lb, 10, prm.g.rho);
   goals.top = topScores(goals.M, 5);
-  let corners = null, cards = null;
-  if (SA.cf.n && SB.cf.n) { const [ca, cb] = lam(prm.c, PRIOR.c, SA.cf, SB.ca, SB.cf, SA.ca); corners = block(ca, cb, 30); corners.lines = linesAround(ca + cb); }
-  if (SA.kf.n && SB.kf.n) { const [ka, kb] = lam(prm.k, PRIOR.k, SA.kf, SB.ka, SB.kf, SA.ka); cards = block(ka, kb, 16); cards.lines = linesAround(ka + kb); }
-  return { goals, corners, cards };
+  goals.mdl = [ma, mb]; goals.rho = prm.g.rho;
+  const tilt = Math.log(la / lb) - Math.log(ma / mb), scale = Math.log((la + lb) / (ma + mb));
+  const part = (key, f, a, max) => {
+    if (!SA[f]?.n || !SB[f]?.n) return null;
+    const q = prm[key] || DEF[key], E = MKE[key], phi = q.phi || 1;
+    const [xa, xb] = lam(q, PRIOR[key], SA[f], SB[a], SB[f], SA[a]);
+    const lines = mk?.[key] || [], mkT = lines.length ? impliedTotal(lines, phi) : null;
+    let T = (xa + xb) * Math.exp(E.g * scale);
+    if (mkT) T = mixl(T, mkT, W[key] ?? DEF.m[key]);
+    const sh = 1 / (1 + Math.exp(-(Math.log(xa / xb) + E.b * tilt)));
+    const b = block(T * sh, T * (1 - sh), max, 0, phi);
+    b.mdl = [xa, xb]; b.mkT = mkT; b.lines = pickLines(T, lines);
+    return b;
+  };
+  const P = { goals, corners: part('c', 'cf', 'ca', 30), cards: part('k', 'kf', 'ka', 16), shots: part('s', 'sh', 'sha', 60), sot: part('t', 'st', 'sta', 30), mk: null };
+  if (mk && (ig || [P.corners, P.cards, P.shots, P.sot].some(b => b?.mkT))) P.mk = { src: mk.src, w: W.g, ig, x12: mk.x12, ou: mk.ou.length > 0 };
+  return P;
 }
 function pctRound(ps) {
   const raw = ps.map(p => p * 100), fl = raw.map(Math.floor);
@@ -978,12 +1193,17 @@ function pctRound(ps) {
 // citește rezultatul, iar parametrii modelului se re-estimează prin verosimilitate maximă (Poisson,
 // Dixon–Coles pentru goluri). Cât timp sunt puține meciuri, valorile învățate sunt trase spre cele implicite.
 const DEF = {
-  g: { k: 2, w: 0.5, hH: 1.1, hA: 0.9, rho: -0.1 },
-  c: { k: 2, w: 0.5, hH: 1.06, hA: 0.94, rho: 0 },
-  k: { k: 2, w: 0.5, hH: 0.95, hA: 1.05, rho: 0 }
+  g: { k: 2, w: 0.5, hH: 1.1, hA: 0.9, rho: -0.1, phi: 1 },
+  c: { k: 2, w: 0.5, hH: 1.06, hA: 0.94, rho: 0, phi: 1 },
+  k: { k: 2, w: 0.5, hH: 0.95, hA: 1.05, rho: 0, phi: 1 },
+  s: { k: 2, w: 0.5, hH: 1.08, hA: 0.93, rho: 0, phi: 1.5 },
+  t: { k: 2, w: 0.5, hH: 1.08, hA: 0.93, rho: 0, phi: 1.15 },
+  // cât contează cotele față de forma echipelor, acolo unde există cote; ponderea de la goluri se învață din rezultate
+  m: { g: 0.75, c: 0.7, k: 0.7, s: 0.7, t: 0.7 }
 };
+const PKEYS = ['g', 'c', 'k', 's', 't'];
 const MIN_FIT = 20, N0 = 40, SLUG_MIN = 60;
-const LEARN = Object.assign({ v: 1, on: true, s: {}, fit: null }, store.get('learn', {}));
+const LEARN = Object.assign({ v: 2, on: true, mk: true, s: {}, fit: null }, store.get('learn', {}));
 let learnDirty = false;
 function saveLearn() {
   learnDirty = false;
@@ -1000,26 +1220,32 @@ addEventListener('pagehide', () => { if (learnDirty) saveLearn(); });
 const params = slug => LEARN.on && LEARN.fit?.p ? (slug && LEARN.fit.s?.[slug]) || LEARN.fit.p : DEF;
 const calibrated = () => !!(LEARN.on && LEARN.fit?.p && LEARN.fit.p.g.n >= MIN_FIT);
 const r2 = v => fin(v) ? Math.round(v * 100) / 100 : null;
-const SK = ['gf', 'ga', 'cf', 'ca', 'kf', 'ka'];
-const packS = S => SK.flatMap(k => [r2(S[k].m), S[k].n]);
-const unpackS = a => { const o = {}; SK.forEach((k, i) => { o[k] = { m: a[2 * i], n: a[2 * i + 1] || 0 }; }); o.n = o.gf.n; return o; };
+const SK = ['gf', 'ga', 'cf', 'ca', 'kf', 'ka', 'sh', 'sha', 'st', 'sta'];
+const packS = S => SK.flatMap(k => [r2(S[k]?.m), S[k]?.n || 0]);
+const unpackS = a => { const o = {}; SK.forEach((k, i) => { o[k] = { m: a[2 * i] ?? 0, n: a[2 * i + 1] || 0 }; }); o.n = o.gf.n; return o; };
 function actualOf(ev, st) {
   if (!ev?.done || !fin(ev.home.score) || !fin(ev.away.score)) return null;
   const a = st?.ok ? st.t[ev.home.id] : null, b = st?.ok ? st.t[ev.away.id] : null;
   const c = o => o && fin(o.c) ? o.c : null;
   const k = o => o && fin(o.y) ? o.y + (fin(o.r) ? o.r : 0) : null;
-  return [ev.home.score, ev.away.score, c(a), c(b), k(a), k(b)];
+  const v = (o, key) => o && fin(o[key]) ? o[key] : null;
+  return [ev.home.score, ev.away.score, c(a), c(b), k(a), k(b), v(a, 'sh'), v(b, 'sh'), v(a, 'st'), v(b, 'st')];
 }
-function record(ev, SA, SB, P, R, src) {
+// K: ce spuneau cotele despre meci [goluri gazde, goluri oaspeți, total cornere, total șuturi pe poartă, total cartonașe, total șuturi]
+function record(ev, SA, SB, P, R, src, K = null) {
   if (!ev?.id || /^vs/.test(ev.id) || !SA?.n || !SB?.n) return;
   const cur = LEARN.s[ev.id];
-  if (cur && cur.src === 'live' && src !== 'live') { if (R && !cur.R) { cur.R = R; learnDirty = true; scheduleFit(); } return; }
+  if (cur && cur.src === 'live' && src !== 'live') {
+    if (K && !cur.K) { cur.K = K; learnDirty = true; }
+    if (R && !cur.R) { cur.R = R; learnDirty = true; scheduleFit(); }
+    return;
+  }
   if (cur?.R && !R) return;
   LEARN.s[ev.id] = {
     d: ev.date, sl: ev.slug || '', hn: ev.home.short || ev.home.name, an: ev.away.short || ev.away.name, neu: ev.neutral ? 1 : 0, src,
     A: packS(SA), B: packS(SB),
     P: P ? [...P.goals.p, ...(P.corners ? P.corners.p : [null, null, null]), ...(P.cards ? P.cards.p : [null, null, null])].map(v => fin(v) ? Math.round(v * 1000) / 1000 : null) : null,
-    R: R || null, t: Date.now()
+    R: R || null, K: K || cur?.K || null, t: Date.now()
   };
   learnDirty = true;
   if (R) scheduleFit();
@@ -1063,7 +1289,8 @@ function resolvePending(limit = 25, onProg) {
 
 /* potrivirea parametrilor */
 const KG = [0.5, 1, 2, 3, 5, 8], WG = [0.35, 0.45, 0.5, 0.55, 0.65], RG = [-0.2, -0.15, -0.1, -0.05, 0, 0.05];
-const PARTS = { g: { f: 'gf', a: 'ga', ri: 0, prior: PRIOR.g }, c: { f: 'cf', a: 'ca', ri: 2, prior: PRIOR.c }, k: { f: 'kf', a: 'ka', ri: 4, prior: PRIOR.k } };
+const PARTS = { g: { f: 'gf', a: 'ga', ri: 0, prior: PRIOR.g }, c: { f: 'cf', a: 'ca', ri: 2, prior: PRIOR.c }, k: { f: 'kf', a: 'ka', ri: 4, prior: PRIOR.k },
+  s: { f: 'sh', a: 'sha', ri: 6, prior: PRIOR.s }, t: { f: 'st', a: 'sta', ri: 8, prior: PRIOR.t } };
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const tau = (x, y, l, m, r) => x === 0 && y === 0 ? 1 - l * m * r : x === 0 && y === 1 ? 1 + l * r : x === 1 && y === 0 ? 1 + m * r : x === 1 && y === 1 ? 1 - r : 1;
 function rowsOf(S, part) {
@@ -1101,37 +1328,79 @@ function fitPart(rows, part, d = DEF[part]) {
       if (!best || nll < best.nll) best = { nll, k, w, hH, hA, rho };
     }
   }
+  // cât de împrăștiate sunt valorile față de Poisson (1 = exact Poisson): contează la șuturi
+  let x2 = 0;
+  rows.forEach(r => {
+    const f = r.neu ? (best.hH + best.hA) / 2 : null;
+    const m1 = Math.max(0.05, (best.w * shrink(r.Af, prior, best.k) + (1 - best.w) * shrink(r.Ba, prior, best.k)) * (f ?? best.hH));
+    const m2 = Math.max(0.05, (best.w * shrink(r.Bf, prior, best.k) + (1 - best.w) * shrink(r.Aa, prior, best.k)) * (f ?? best.hA));
+    x2 += (r.yH - m1) ** 2 / m1 + (r.yA - m2) ** 2 / m2;
+  });
+  best.phi = clamp(x2 / (2 * rows.length), 1, 3);
   const a = rows.length / (rows.length + N0);
-  const mix = key => d[key] + (best[key] - d[key]) * a;
-  return { k: mix('k'), w: mix('w'), hH: mix('hH'), hA: mix('hA'), rho: part === 'g' ? mix('rho') : 0, n: rows.length };
+  const mix = key => (d[key] ?? DEF[part][key]) + (best[key] - (d[key] ?? DEF[part][key])) * a;
+  return { k: mix('k'), w: mix('w'), hH: mix('hH'), hA: mix('hA'), rho: part === 'g' ? mix('rho') : 0, phi: part === 'g' ? 1 : clamp(mix('phi'), 1, 3), n: rows.length };
 }
-const fitAll = (S, base = DEF) => ({ g: fitPart(rowsOf(S, 'g'), 'g', base.g), c: fitPart(rowsOf(S, 'c'), 'c', base.c), k: fitPart(rowsOf(S, 'k'), 'k', base.k) });
+const fitAll = (S, base = DEF) => Object.fromEntries(PKEYS.map(p => [p, fitPart(rowsOf(S, p), p, base[p] || DEF[p])]));
+// cât să conteze cotele la goluri: ponderea care ar fi prezis cel mai bine meciurile terminate pentru care existau cote
+const WGRID = [0, 0.2, 0.35, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1];
+const NM0 = 150;
+const hasK = s => Array.isArray(s.K) && fin(s.K[0]) && fin(s.K[1]) && s.K[0] > 0 && s.K[1] > 0;
+function fitMarket(S, p) {
+  const out = { ...DEF.m, n: 0 };
+  const rows = S.filter(hasK).map(s => { const g = predict(unpackS(s.A), unpackS(s.B), !!s.neu, p).goals; return { ma: g.la, mb: g.lb, ka: s.K[0], kb: s.K[1], yH: s.R[0], yA: s.R[1] }; });
+  out.n = rows.length;
+  if (rows.length < MIN_FIT) return out;
+  let best = null;
+  for (const w of WGRID) {
+    let nll = 0;
+    for (const r of rows) {
+      const m1 = mixl(r.ma, r.ka, w), m2 = mixl(r.mb, r.kb, w);
+      nll += m1 - r.yH * Math.log(m1) + m2 - r.yA * Math.log(m2) - Math.log(Math.max(1e-6, tau(r.yH, r.yA, m1, m2, p.g.rho)));
+    }
+    if (!best || nll < best.nll) best = { nll, w };
+  }
+  // cotele pornesc cu un credit mare: e nevoie de multe meciuri ca ponderea să se mute vizibil
+  out.g = DEF.m.g + (best.w - DEF.m.g) * rows.length / (rows.length + NM0);
+  return out;
+}
 function fitModel(S) {
   const p = fitAll(S), s = {}, by = new Map();
+  p.m = fitMarket(S, p);
   S.forEach(x => { if (x.sl) { if (!by.has(x.sl)) by.set(x.sl, []); by.get(x.sl).push(x); } });
-  for (const [sl, L] of by) if (L.length >= SLUG_MIN) s[sl] = fitAll(L, p);
+  for (const [sl, L] of by) if (L.length >= SLUG_MIN) { s[sl] = fitAll(L, p); s[sl].m = p.m; }
   return { p, s };
+}
+// pe meciurile terminate care au avut cote: cât de bine ar fi prezis doar modelul, doar cotele și amestecul folosit acum
+function marketCompare() {
+  const S = learned().filter(hasK);
+  if (S.length < 10) return { n: S.length };
+  const acc = { mdl: [0, 0], mkt: [0, 0], mix: [0, 0] };
+  for (const s of S) {
+    const prm = params(s.sl), g = predict(unpackS(s.A), unpackS(s.B), !!s.neu, prm).goals, w = (prm.m || DEF.m).g, o = outc(s.R[0], s.R[1]);
+    const ps = { mdl: g.p, mkt: block(s.K[0], s.K[1], 10, prm.g.rho).p, mix: block(mixl(g.la, s.K[0], w), mixl(g.lb, s.K[1], w), 10, prm.g.rho).p };
+    for (const k in ps) { acc[k][0] -= Math.log(Math.max(1e-6, ps[k][o])); acc[k][1] += argmax(ps[k]) === o ? 1 : 0; }
+  }
+  const out = { n: S.length };
+  for (const k in acc) out[k] = { ll: acc[k][0] / S.length, acc: acc[k][1] / S.length };
+  return out;
 }
 
 /* evaluare cinstită: validare încrucișată în 5 părți */
 const argmax = p => p.indexOf(Math.max(...p));
 const outc = (h, a) => h > a ? 0 : h === a ? 1 : 2;
-const newAcc = () => ({ g: { n: 0, ll: 0, br: 0, hit: 0, ae: 0 }, c: { n: 0, ll: 0, hit: 0, ae: 0 }, k: { n: 0, ll: 0, hit: 0, ae: 0 } });
+const newAcc = () => Object.fromEntries(PKEYS.map(k => [k, { n: 0, ll: 0, br: 0, hit: 0, ae: 0 }]));
 function scoreInto(acc, R, pr) {
   const o = outc(R[0], R[1]), p = pr.goals.p, g = acc.g;
   g.n++; g.ll -= Math.log(Math.max(1e-6, p[o])); g.br += p.reduce((t, v, i) => t + (v - (i === o ? 1 : 0)) ** 2, 0);
   g.hit += argmax(p) === o ? 1 : 0; g.ae += Math.abs(pr.goals.la + pr.goals.lb - R[0] - R[1]);
-  [['c', pr.corners, 2], ['k', pr.cards, 4]].forEach(([key, b, i]) => {
+  [['c', pr.corners, 2], ['k', pr.cards, 4], ['s', pr.shots, 6], ['t', pr.sot, 8]].forEach(([key, b, i]) => {
     if (!b || !fin(R[i]) || !fin(R[i + 1])) return;
     const x = acc[key], oo = outc(R[i], R[i + 1]);
     x.n++; x.ll -= Math.log(Math.max(1e-6, b.p[oo])); x.hit += argmax(b.p) === oo ? 1 : 0; x.ae += Math.abs(b.la + b.lb - R[i] - R[i + 1]);
   });
 }
-const accOut = a => ({
-  g: a.g.n ? { n: a.g.n, ll: a.g.ll / a.g.n, br: a.g.br / a.g.n, acc: a.g.hit / a.g.n, mae: a.g.ae / a.g.n } : null,
-  c: a.c.n ? { n: a.c.n, ll: a.c.ll / a.c.n, acc: a.c.hit / a.c.n, mae: a.c.ae / a.c.n } : null,
-  k: a.k.n ? { n: a.k.n, ll: a.k.ll / a.k.n, acc: a.k.hit / a.k.n, mae: a.k.ae / a.k.n } : null
-});
+const accOut = a => Object.fromEntries(PKEYS.map(k => [k, a[k].n ? { n: a[k].n, ll: a[k].ll / a[k].n, br: a[k].br / a[k].n, acc: a[k].hit / a[k].n, mae: a[k].ae / a[k].n } : null]));
 const REL_EDGES = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1.0001];
 function evaluateCV(S) {
   const K = 5, def = newAcc(), cal = newAcc(), bins = REL_EDGES.slice(1).map((hi, j) => ({ lo: REL_EDGES[j], hi: Math.min(1, hi), p: 0, o: 0, n: 0 }));
@@ -1238,7 +1507,10 @@ async function trainRun(slug, withStats, prog) {
     const SA = sample(m.home.id, before(m.home.id, t), none), SB = sample(m.away.id, before(m.away.id, t), none);
     const R = actualOf(m, STATS[m.id]?.[1]);
     if (!R) continue;
-    record(m, SA, SB, null, R, 'bt');
+    // unde lista de rezultate a venit cu cote (365Scores), păstrez ce spuneau casele înainte de meci
+    let K = null;
+    if (m.x12) { const g0 = predict(SA, SB, m.neutral, DEF).goals, ig = impliedGoals({ x12: m.x12, ou: [] }, DEF.g.rho, g0.la, g0.lb); if (ig) K = [r2(ig.la), r2(ig.lb), null, null, null, null]; }
+    record(m, SA, SB, null, R, 'bt', K);
     made++;
   }
   refit();
@@ -1246,7 +1518,8 @@ async function trainRun(slug, withStats, prog) {
   prog(1, '');
   return made;
 }
-if (!LEARN.fit && learned().length) refit();
+if ((LEARN.v !== 2 || !LEARN.fit) && learned().length) refit();
+if (LEARN.v !== 2) { LEARN.v = 2; learnDirty = true; }
 
 /* ---------- formatare ---------- */
 const fTime = new Intl.DateTimeFormat('ro-RO', { hour: '2-digit', minute: '2-digit' });
@@ -1658,9 +1931,34 @@ function splitRow(label, va, vb, fmt = f1) {
 const fmtLine = L => nf1.format(L);
 function totalsRows(P) {
   const rows = [['Peste 1,5 goluri', P.goals.over(1.5)], ['Peste 2,5 goluri', P.goals.over(2.5)], ['Peste 3,5 goluri', P.goals.over(3.5)], ['Ambele echipe marchează', P.goals.btts]];
+  if (P.sot) P.sot.lines.forEach(L => rows.push([`Peste ${fmtLine(L)} șuturi pe poartă`, P.sot.over(L)]));
+  if (P.shots) P.shots.lines.forEach(L => rows.push([`Peste ${fmtLine(L)} șuturi`, P.shots.over(L)]));
   if (P.corners) P.corners.lines.forEach(L => rows.push([`Peste ${fmtLine(L)} cornere`, P.corners.over(L)]));
   if (P.cards) P.cards.lines.forEach(L => rows.push([`Peste ${fmtLine(L)} cartonașe`, P.cards.over(L)]));
   return rows.map(([l, p]) => `<div class="row tot"><span>${l}</span><span class="pp"><b>${pct(p)}</b><small>nu: ${pct(1 - p)}</small></span><span class="meter" aria-hidden="true"><i style="width:${(p * 100).toFixed(1)}%"></i></span></div>`).join('');
+}
+const listRo = a => a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} și ${a[a.length - 1]}`;
+// nota de sub pronosticuri: ce cote au intrat în calcul și cât schimbă față de model
+function mkBlock(P, A, B, pre, opt) {
+  if (opt.vs) return '';
+  if (!LEARN.mk) return `<p class="note">Cotele sunt oprite din fila Model, așa că estimarea vine doar din forma echipelor.</p>`;
+  const k = P.mk;
+  if (!k) return `<p class="note">${opt.mkFail ? 'Nu am putut citi cotele acum (rețea lentă sau sursa nu răspunde)' : pre ? 'Casele de pariuri nu au publicat încă cote pentru acest meci (apar de obicei cu câteva zile înainte)' : 'Nu am găsit cote pentru acest meci'}, așa că estimarea vine doar din forma echipelor.${opt.mkFail ? ' Redeschide meciul ca să încerc din nou.' : ''}</p>`;
+  const parts = [['șuturi pe poartă', P.sot], ['șuturi', P.shots], ['cornere', P.corners], ['cartonașe', P.cards]].filter(x => x[1]);
+  const direct = [k.x12 && 'rezultat', k.ou && 'total goluri', ...parts.filter(x => x[1].mkT).map(x => x[0])].filter(Boolean);
+  const indirect = k.ig ? parts.filter(x => !x[1].mkT).map(x => x[0]) : [];
+  const three = p => pctRound(p).map(v => v + '%');
+  const pm = block(P.goals.mdl[0], P.goals.mdl[1], 10, P.goals.rho).p, pk = k.x12 || (k.ig ? block(k.ig.la, k.ig.lb, 10, P.goals.rho).p : null);
+  const cM = three(pm), cK = pk ? three(pk) : ['–', '–', '–'], cF = three(P.goals.p);
+  const row = (l, a, b, c) => `<div class="mrw q"><span>${l}</span><span class="v">${a}</span><span class="v">${b}</span><span class="v b">${c}</span></div>`;
+  const tot = (l, b) => b ? row(l, f1(b.mdl[0] + b.mdl[1]), b.mkT ? f1(b.mkT) : '–', f1(b.la + b.lb)) : '';
+  return `<p class="note">Am ținut cont de cotele caselor de pariuri (sursa: ${esc(k.src)}) pentru ${listRo(direct)}.${k.ig ? ` La goluri, cotele contează ${pct(k.w)}, iar forma recentă ${pct(1 - k.w)}.` : ''}${indirect.length ? ` La ${listRo(indirect)} nu am găsit cote, așa că acolo cotele intră indirect: echipa pe care casele o văd mai puternică decât arată forma ei primește mai multe șuturi și cornere și ceva mai puține cartonașe.` : ''}</p>
+    <details class="mkt"><summary>Model, cote și estimarea finală</summary><div class="mt">
+      <div class="mrw q hd"><span>Șanse</span><span class="v">Model</span><span class="v">Cote</span><span class="v">Final</span></div>
+      ${row(esc(A.short || A.name), cM[0], cK[0], cF[0])}${row('Egal', cM[1], cK[1], cF[1])}${row(esc(B.short || B.name), cM[2], cK[2], cF[2])}
+      <div class="mrw q hd"><span>Total în meci</span><span class="v">Model</span><span class="v">Cote</span><span class="v">Final</span></div>
+      ${row('Goluri', f1(P.goals.mdl[0] + P.goals.mdl[1]), k.ig ? f1(k.ig.la + k.ig.lb) : '–', f1(P.goals.la + P.goals.lb))}${tot('Pe poartă', P.sot)}${tot('Șuturi', P.shots)}${tot('Cornere', P.corners)}${tot('Cartonașe', P.cards)}
+    </div><p class="note" style="margin-top:0">Coloana „Cote” arată ce reiese din cote după ce scot marja casei. Liniuța înseamnă că acolo casele nu au cote.</p></details>`;
 }
 function h2hBlock(sum, A, B) {
   const evs = (sum?.headToHeadGames || [])[0]?.events || [];
@@ -1714,6 +2012,8 @@ async function analysis(ev, sum, live, opt = {}) {
   const mb = $('#mb');
   const paint = (x, y) => { const [ca, cb] = teamColors(x, y); mb.style.setProperty('--ca', ca); mb.style.setProperty('--cb', cb); };
   paint(A0, B0);
+  // cotele se cer în paralel cu statisticile; dacă întârzie, estimarea merge fără ele
+  const mkJob = opt.vs || !LEARN.mk ? Promise.resolve(null) : Promise.race([marketFor(ev, sum).catch(() => ({ fail: true })), new Promise(r => setTimeout(r, 7000, { fail: true }))]);
   mb.innerHTML = `${ev.state !== 'pre' && opt.st ? actualBlock(opt.st, ev) : ''}
     <div class="sec"><h2>${ev.done ? 'Ce estima modelul' : ev.state === 'in' ? 'Estimarea de dinainte' : 'Cine câștigă'}</h2>${nSeg()}</div>
     <div class="panel" id="who"><p class="note" id="ap">Citesc ultimele ${N} meciuri ale fiecărei echipe…</p><div class="prog" style="margin-bottom:14px"><i id="pg"></i></div></div><div id="rest"></div>`;
@@ -1736,18 +2036,24 @@ async function analysis(ev, sum, live, opt = {}) {
   if (!live()) return;
   const SA = sample(A.id, ha.list, stats), SB = sample(B.id, hb.list, stats);
   if (!SA.n || !SB.n) { $('#who').innerHTML = `<p class="empty">Nu există destule meciuri jucate recent pentru ${esc(!SA.n ? A.name : B.name)}.</p>`; return; }
-  const P = predict(SA, SB, ev.neutral, params(ev.slug));
-  // învățare: estimarea se salvează cu datele ei; după meci se compară cu rezultatul
+  let mk = await mkJob;
+  if (!live()) return;
+  const mkFail = !!mk?.fail;
+  if (mkFail) mk = null;
+  const P = predict(SA, SB, ev.neutral, params(ev.slug), mk);
+  // învățare: estimarea se salvează cu datele ei (și cu ce spuneau cotele); după meci se compară cu rezultatul
   const pre = ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status);
-  if (!opt.vs && (pre || ev.state !== 'pre')) record({ ...ev, home: A, away: B }, SA, SB, pre ? P : null, ev.done ? actualOf(ev, opt.st || STATS[ev.id]?.[1]) : null, pre ? 'live' : 'bt');
+  const ig = P.mk?.ig, K = ig ? [ig.la, ig.lb, P.corners?.mkT, P.sot?.mkT, P.cards?.mkT, P.shots?.mkT].map(r2) : null;
+  if (!opt.vs && (pre || ev.state !== 'pre')) record({ ...ev, home: A, away: B }, SA, SB, pre ? P : null, ev.done ? actualOf(ev, opt.st || STATS[ev.id]?.[1]) : null, pre ? 'live' : 'bt', K);
   paint(A, B);
   const who = $('#who');
-  who.innerHTML = `${legend(A, B)}${triRow('Rezultat (goluri)', P.goals, A, B)}${triRow('Mai multe cornere', P.corners, A, B)}${triRow('Mai multe cartonașe', P.cards, A, B)}
+  who.innerHTML = `${legend(A, B)}${triRow('Rezultat (goluri)', P.goals, A, B)}${triRow('Mai multe șuturi pe poartă', P.sot, A, B)}${triRow('Mai multe șuturi', P.shots, A, B)}${triRow('Mai multe cornere', P.corners, A, B)}${triRow('Mai multe cartonașe', P.cards, A, B)}
+    ${mkBlock(P, A, B, pre, { ...opt, mkFail })}
     <p class="note">${pre ? 'Salvez estimarea și o compar cu rezultatul după fluier. ' : ''}${esc(calLine(ev.slug))} <a href="#/model">Vezi ce a învățat</a></p>`;
   const rest = $('#rest');
   rest.innerHTML = `
     <div class="sec"><h2>Cifre așteptate</h2><span class="aside">pe echipă</span></div><div class="panel">${legend(A, B, false)}
-      ${splitRow('Goluri', P.goals.la, P.goals.lb)}${splitRow('Cornere', P.corners?.la, P.corners?.lb)}${splitRow('Cartonașe', P.cards?.la, P.cards?.lb)}</div>
+      ${splitRow('Goluri', P.goals.la, P.goals.lb)}${splitRow('Șuturi pe poartă', P.sot?.la, P.sot?.lb)}${splitRow('Șuturi', P.shots?.la, P.shots?.lb)}${splitRow('Cornere', P.corners?.la, P.corners?.lb)}${splitRow('Cartonașe', P.cards?.la, P.cards?.lb)}</div>
     <div class="sec"><h2>Totaluri</h2><span class="aside">probabilitate</span></div><div class="grp plain">${totalsRows(P)}</div>
     <div class="sec"><h2>Scoruri probabile</h2></div><div class="chips">${P.goals.top.map(([i, j, p]) => `<span class="chip">${i}–${j}<small>${pct(p)}</small></span>`).join('')}</div>
     <div class="sec"><h2>Forma recentă</h2><span class="aside">medii pe meci</span></div>
@@ -1760,7 +2066,7 @@ async function analysis(ev, sum, live, opt = {}) {
     <div class="sec"><h2>${esc(B.name)}</h2><span class="aside">ultimele ${SB.n}</span></div><div class="grp">${lastRows(SB)}</div>
     ${opt.vs ? '' : h2hBlock(sum, A, B)}
     ${!opt.vs && ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status) ? pickBlock({ ...ev, home: A, away: B }) : ''}
-    <p class="method"><b>Cum calculez.</b> Iau ultimele ${N} meciuri jucate de fiecare echipă, din toate competițiile. Golurile așteptate combină atacul unei echipe cu apărarea celeilalte și avantajul de teren, iar când sunt puține meciuri valorile sunt trase spre media obișnuită (1,35 goluri de echipă). Șansele vin dintr-un model Poisson cu corecția Dixon–Coles pentru scorurile mici. Cornerele (obținute față de cedate) și cartonașele (primite față de provocate) folosesc aceeași logică. Ponderile acestea ${calibrated() ? `sunt ajustate automat pe ${plural(LEARN.fit.p.g.n, 'meci terminat', 'meciuri terminate')}` : 'se ajustează automat după ce aplicația vede destule meciuri terminate'} (fila Model). Sunt estimări statistice, nu certitudini. Date: ${srcOf(A.id) === srcOf(B.id) ? srcOf(A.id) : 'ESPN și 365Scores'}.</p>`;
+    <p class="method"><b>Cum calculez.</b> Iau ultimele ${N} meciuri jucate de fiecare echipă, din toate competițiile. Golurile așteptate combină atacul unei echipe cu apărarea celeilalte și avantajul de teren, iar când sunt puține meciuri valorile sunt trase spre media obișnuită (1,35 goluri de echipă). Șansele vin dintr-un model Poisson cu corecția Dixon–Coles pentru scorurile mici. Șuturile, șuturile pe poartă, cornerele (obținute față de cedate) și cartonașele (primite față de provocate) folosesc aceeași logică. Unde casele de pariuri au cote pentru meci, le transform în probabilități, scot marja casei și le combin cu estimarea din formă${P.mk?.ig ? ` (acum cotele contează ${pct(P.mk.w)} la goluri)` : ''}; ponderea lor se ajustează și ea după rezultate. Ponderile modelului ${calibrated() ? `sunt ajustate automat pe ${plural(LEARN.fit.p.g.n, 'meci terminat', 'meciuri terminate')}` : 'se ajustează automat după ce aplicația vede destule meciuri terminate'} (fila Model). Sunt estimări statistice, nu certitudini. Date: ${srcOf(A.id) === srcOf(B.id) ? srcOf(A.id) : 'ESPN și 365Scores'}${P.mk && !P.mk.src.includes(srcOf(A.id)) ? `; cote: ${esc(P.mk.src)}` : ''}.</p>`;
   grow(who); grow(rest);
   if (!opt.vs && ev.state === 'pre') wirePick({ ...ev, home: A, away: B });
   restoreScroll();
@@ -1840,9 +2146,11 @@ function perfHTML(m, n) {
   ];
   if (D.c && C.c) rows.push(row('Cornere: cine are mai multe', D.c.acc, C.c.acc, pct, true), row('Eroare medie la cornere', D.c.mae, C.c.mae, v => nf2.format(v)));
   if (D.k && C.k) rows.push(row('Cartonașe: cine are mai multe', D.k.acc, C.k.acc, pct, true), row('Eroare medie la cartonașe', D.k.mae, C.k.mae, v => nf2.format(v)));
+  if (D.s && C.s) rows.push(row('Șuturi: cine are mai multe', D.s.acc, C.s.acc, pct, true), row('Eroare medie la șuturi', D.s.mae, C.s.mae, v => nf2.format(v)));
+  if (D.t && C.t) rows.push(row('Pe poartă: cine are mai multe', D.t.acc, C.t.acc, pct, true), row('Eroare medie la șuturi pe poartă', D.t.mae, C.t.mae, v => nf2.format(v)));
   return `<div class="sec"><h2>Cât de bine prezice</h2><span class="aside">${plural(C.g.n, 'meci', 'meciuri')}</span></div>
     <div class="grp mt"><div class="mrw hd"><span></span><span class="v">Inițial</span><span class="v">Calibrat</span></div>${rows.join('')}</div>
-    <p class="note">Fiecare meci e prezis de un model ajustat fără el (validare încrucișată în 5 părți), ca scorul să fie cinstit. La log loss, Brier și erori, mai mic e mai bine. Varianta mai bună e scrisă îngroșat.</p>
+    <p class="note">Aici e doar modelul, fără cote. Fiecare meci e prezis de un model ajustat fără el (validare încrucișată în 5 părți), ca scorul să fie cinstit. La log loss, Brier și erori, mai mic e mai bine. Varianta mai bună e scrisă îngroșat.</p>
     ${m.rel?.filter(b => b.n >= REL_MIN).length >= 2 ? relHTML(m.rel) : ''}`;
 }
 const REL_MIN = 10;
@@ -1888,17 +2196,22 @@ function wireRel(all) {
 }
 function parsHTML(f) {
   if (!f?.p) return '';
-  const P = f.p, parts = ['g', 'c', 'k'];
-  const cell = (part, val, ini) => P[part].n < MIN_FIT ? `<span class="v lo">${val}<small>puține date</small></span>` : `<span class="v">${val}${ini != null ? `<small>inițial ${ini}</small>` : ''}</span>`;
-  const row = (label, fn, ini) => `<div class="mrw q"><span>${label}</span>${parts.map(p => cell(p, fn(P[p]), ini ? ini(DEF[p]) : null)).join('')}</div>`;
+  const P = f.p, par = p => P[p] || { ...DEF[p], n: 0 };
+  const cell = (part, val, ini) => par(part).n < MIN_FIT ? `<span class="v lo">${val}<small>puține date</small></span>` : `<span class="v">${val}${ini != null ? `<small>inițial ${ini}</small>` : ''}</span>`;
   const ratio = q => `${Math.round(q.w * 100)}/${100 - Math.round(q.w * 100)}`;
-  return `<div class="sec"><h2>Ce a învățat</h2><span class="aside">${plural(f.n, 'meci', 'meciuri')}</span></div>
-    <div class="grp mt"><div class="mrw q hd"><span></span><span class="v">Goluri</span><span class="v">Cornere</span><span class="v">Cartonașe</span></div>
+  const tbl = (parts, heads, cls) => {
+    const row = (label, fn, ini) => `<div class="mrw${cls}"><span>${label}</span>${parts.map(p => cell(p, fn(par(p)), ini ? ini(DEF[p]) : null)).join('')}</div>`;
+    return `<div class="grp mt"><div class="mrw${cls} hd"><span></span>${heads.map(h => `<span class="v">${h}</span>`).join('')}</div>
       ${row('Gazde', q => sgnPct(q.hH - 1), q => sgnPct(q.hH - 1))}
       ${row('Oaspeți', q => sgnPct(q.hA - 1), q => sgnPct(q.hA - 1))}
       ${row('Atac față de apărare', ratio, ratio)}
       ${row('Tragere spre medie', q => f1(q.k), q => f1(q.k))}
-      ${row('Meciuri folosite', q => String(q.n))}</div>
+      ${row('Meciuri folosite', q => String(q.n || 0))}</div>`;
+  };
+  return `<div class="sec"><h2>Ce a învățat</h2><span class="aside">${plural(f.n, 'meci', 'meciuri')}</span></div>
+    ${tbl(['g', 'c', 'k'], ['Goluri', 'Cornere', 'Cartonașe'], ' q')}
+    <div style="height:10px"></div>
+    ${tbl(['s', 't'], ['Șuturi', 'Pe poartă'], '')}
     <p class="note">Gazde și oaspeți: cât adaugă sau scade terenul față de forma echipei. Atac față de apărare: cât contează ce produce o echipă față de ce cedează adversarul. Tragerea spre medie spune câte meciuri „obișnuite” se adaugă la forma recentă; mai mult înseamnă că forma contează mai puțin. Corecția pentru scorurile mici (Dixon–Coles): ${minus(nf2.format(P.g.rho))}, inițial ${minus(nf2.format(DEF.g.rho))}.</p>
     ${slugsHTML(f)}`;
 }
@@ -1912,6 +2225,19 @@ function slugsHTML(f) {
   return `<div class="sec"><h2>Pe competiții</h2><span class="aside">avantajul de teren la goluri</span></div>
     ${own.length ? `<div class="grp plain">${own.sort((a, b) => b[1].g.n - a[1].g.n).map(([sl, q]) => `<div class="row"><span class="grow"><b>${esc(compLabel(sl))}</b><small>${plural(q.g.n, 'meci', 'meciuri')}</small></span><span class="pp" style="text-align:right">gazde ${sgnPct(q.g.hH - 1)}<small>oaspeți ${sgnPct(q.g.hA - 1)}</small></span></div>`).join('')}</div>` : ''}
     <p class="note">O competiție primește calibrare proprie de la ${SLUG_MIN} de meciuri învățate, trasă spre cea generală cât timp are puține meciuri.${rest.length ? ` Încă pe calibrarea generală: ${rest.slice(0, 6).map(([sl, n]) => `${esc(compLabel(sl))} (${n})`).join(', ')}.` : ''}</p>`;
+}
+function mkCompareHTML() {
+  const c = marketCompare(), w = (params().m || DEF.m).g, fm = LEARN.on ? LEARN.fit?.p?.m : null;
+  const head = `<div class="sec"><h2>Cote față de model</h2>${c.n >= 10 ? `<span class="aside">${plural(c.n, 'meci', 'meciuri')}</span>` : ''}</div>`;
+  const wl = `La goluri, cotele contează acum ${pct(w)}, iar forma echipelor ${pct(1 - w)}${fm && fm.n >= MIN_FIT ? ` (pondere învățată din ${plural(fm.n, 'meci', 'meciuri')} cu cote, inițial ${pct(DEF.m.g)})` : `. Ponderea se ajustează singură după ${MIN_FIT} de meciuri terminate care au avut cote (acum ${c.n})`}.`;
+  if (c.n < 10) return `${head}<p class="note">${wl} Comparația dintre model și cote apare după 10 astfel de meciuri.</p>`;
+  const row = (label, key, fmt, hi) => {
+    const v = [c.mdl[key], c.mkt[key], c.mix[key]], top = hi ? Math.max(...v) : Math.min(...v);
+    return `<div class="mrw q"><span>${label}</span>${v.map(x => `<span class="v${Math.abs(x - top) < 1e-9 ? ' b' : ''}">${fmt(x)}</span>`).join('')}</div>`;
+  };
+  return `${head}<div class="grp mt"><div class="mrw q hd"><span></span><span class="v">Model</span><span class="v">Cote</span><span class="v">Împreună</span></div>
+    ${row('Rezultat ghicit', 'acc', pct, true)}${row('Log loss', 'll', v => nf3.format(v))}</div>
+    <p class="note">Pe meciurile terminate pentru care existau cote: cât de bine ar fi prezis doar modelul, doar cotele și amestecul folosit acum. La log loss, mai mic e mai bine. ${wl}</p>`;
 }
 function histHTML() {
   const L = Object.entries(LEARN.s).filter(([, s]) => s.src === 'live' && s.P).sort((a, b) => new Date(b[1].d) - new Date(a[1].d)).slice(0, 15);
@@ -1931,7 +2257,7 @@ function trainPanel() {
     <div class="panel">
       <p class="note">Refac pronosticul fiecărui meci deja jucat dintr-o competiție, doar cu ce se știa înainte de meci, și îl compar cu rezultatul. Așa modelul învață din sute de meciuri dintr-odată.</p>
       <label class="field"><span>Competiția</span><select id="tsl"${busy ? ' disabled' : ''}>${TRAIN_SLUGS.map(s => `<option value="${s}"${s === (busy ? TRAIN.slug : trainSel) ? ' selected' : ''}>${esc(compLabel(s))}</option>`).join('')}</select></label>
-      <label class="field"><span>Cu cornere și cartonașe<small>mai lent: citesc statisticile fiecărui meci</small></span><input type="checkbox" id="tst"${trainStats ? ' checked' : ''}${busy ? ' disabled' : ''}></label>
+      <label class="field"><span>Cu cornere, cartonașe și șuturi<small>mai lent: citesc statisticile fiecărui meci</small></span><input type="checkbox" id="tst"${trainStats ? ' checked' : ''}${busy ? ' disabled' : ''}></label>
       <div class="acts" style="padding:2px 16px 0"><button class="btn pri" type="button" id="tgo"${busy ? ' disabled' : ''}>${busy ? 'Se antrenează…' : 'Antrenează'}</button></div>
       <div class="prog" style="margin:14px 16px 0"><i id="tpg" style="width:${busy ? Math.round(TRAIN.p * 100) : 0}%"></i></div>
       <p class="note" id="tmsg" role="status" style="margin:8px 16px 14px">${esc(busy ? TRAIN.msg : flash.c === 'train' ? flash.t : '')}</p>
@@ -1951,18 +2277,20 @@ function viewModel(live) {
     : `Pornește de la ${MIN_FIT} de meciuri cu rezultat (acum ${S.length}). Până atunci folosesc valorile inițiale.`;
   const msg = flash.c === 'chk' ? flash.t : '';
   V.innerHTML = `${hero('Model', gearBtn())}
-    <p class="lead">Fiecare pronostic se salvează pe telefon, împreună cu datele din care a fost calculat. După fluier aplicația citește rezultatul, îl compară cu estimarea și își reajustează calculele.</p>
+    <p class="lead">Fiecare pronostic se salvează pe telefon, împreună cu datele din care a fost calculat și cu ce spuneau cotele. După fluier aplicația citește rezultatul, îl compară cu estimarea și își reajustează calculele.</p>
     <div class="tiles">${tile('Meciuri învățate', S.length)}${tile('Salvate înainte de meci', liveN)}${tile('Așteaptă rezultatul', pend)}${tile('Nimerite înainte de meci', lr ? pct(lr.acc) : '–', lr ? `din ${lr.n}` : '')}</div>
     <div class="panel" style="margin-top:12px">
       <label class="field"><span>Folosește calibrarea<small>${esc(state)}</small></span><input type="checkbox" id="lon"${LEARN.on ? ' checked' : ''}></label>
+      <label class="field" style="padding-top:0"><span>Ține cont de cote<small>${LEARN.mk ? 'Pornit: unde casele de pariuri au cote pentru meci, ele intră în calcul alături de model.' : 'Oprit: estimările vin doar din forma echipelor.'}</small></span><input type="checkbox" id="mko"${LEARN.mk ? ' checked' : ''}></label>
       <div class="field" style="padding-top:0"><button class="btn" type="button" id="chk"${pend ? '' : ' disabled'}>Verifică rezultatele</button><span class="note" id="cmsg" role="status" style="margin:0;text-align:right">${esc(msg)}</span></div>
     </div>
     <div id="perf">${S.length >= 30 ? '<p class="note">Calculez scorurile…</p>' : perfHTML(null, S.length)}</div>
+    <div id="mkc">${mkCompareHTML()}</div>
     <div id="pars">${parsHTML(f)}</div>
     ${trainPanel()}
     <div id="hist">${histHTML()}</div>
     <div class="acts" style="padding:24px 12px 0"><button class="btn" type="button" id="rst"${ents.length ? '' : ' disabled'}>Șterge ce a învățat</button></div>
-    <p class="method"><b>Ce se ajustează.</b> Avantajul de teren (separat pentru gazde și oaspeți), cât contează atacul unei echipe față de apărarea adversarului, cât de tare trag valorile spre media obișnuită când sunt puține meciuri și corecția pentru scorurile mici. Parametrii se aleg prin verosimilitate maximă pe meciurile terminate; cât timp sunt puține meciuri, rămân aproape de valorile inițiale. Totul se calculează și se păstrează doar pe acest dispozitiv.</p>`;
+    <p class="method"><b>Ce se ajustează.</b> Avantajul de teren (separat pentru gazde și oaspeți), cât contează atacul unei echipe față de apărarea adversarului, cât de tare trag valorile spre media obișnuită când sunt puține meciuri, corecția pentru scorurile mici și cât contează cotele față de model. Parametrii se aleg prin verosimilitate maximă pe meciurile terminate; cât timp sunt puține meciuri, rămân aproape de valorile inițiale. Totul se calculează și se păstrează doar pe acest dispozitiv.</p>`;
   flash = { t: '', c: '' };
   if (S.length >= 30) later(() => {
     if (!live()) return;
@@ -1972,6 +2300,7 @@ function viewModel(live) {
     if (F?.m?.rel) wireRel(F.m.rel);
   }, 40);
   $('#lon').addEventListener('change', e => { LEARN.on = e.target.checked; saveLearn(); route({ keep: true }); });
+  $('#mko').addEventListener('change', e => { LEARN.mk = e.target.checked; saveLearn(); route({ keep: true }); });
   $('#chk').addEventListener('click', async e => {
     e.currentTarget.disabled = true;
     const got = await resolvePending(80, (n, t) => { const m = $('#cmsg'); if (m && live()) m.textContent = `Verific ${n} din ${t}…`; });
@@ -2031,7 +2360,7 @@ function openSettings() {
     <label class="field col"><span>Proxy pentru cereri (opțional)</span><input type="url" id="px" value="${esc(settings.proxy)}" placeholder="https://proxy-ul-tău/?url=" autocomplete="off" autocapitalize="off"><span class="note" style="margin:0">Lasă gol. Completează doar dacă rețeaua ta blochează ESPN și ai un proxy propriu; URL-ul cererii se adaugă la final.</span></label>
     <div class="acts"><button class="btn" type="button" id="clr">Golește datele din cache</button></div>
     <details><summary>Jurnal tehnic (${LOG.length})</summary><div class="log">${LOG.length ? LOG.map(esc).join('\n') : 'Nicio eroare de rețea.'}</div></details>
-    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub; Liga 1, Liga 2 și Cupa României vin de la 365Scores. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele, pronosticurile și ce învață modelul rămân doar pe acest dispozitiv.</p>`);
+    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub; Liga 1, Liga 2 și Cupa României vin de la 365Scores, la fel și cotele (ca rezervă, cele din ESPN); aplicația le folosește doar în calcul, nu le afișează și nu trimite către case de pariuri. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele, pronosticurile și ce învață modelul rămân doar pe acest dispozitiv.</p>`);
   $('#shin').setAttribute('aria-labelledby', 'sht');
   $('#px').addEventListener('change', e => { settings.proxy = e.target.value.trim(); saveSettings(); MEM.clear(); });
   $('#clr').addEventListener('click', e => { store.clearCache(); MEM.clear(); IDXP = null; for (const k of Object.keys(STATS)) delete STATS[k]; e.target.textContent = 'Cache golit'; });
