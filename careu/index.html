@@ -274,6 +274,12 @@ summary{padding:10px 16px;font-weight:600;cursor:pointer}
 .mt .mrw.q{grid-template-columns:1fr 66px 66px 74px;gap:6px}
 .mt .mrw.v4{grid-template-columns:1fr 46px 52px 74px;gap:6px}
 .bgrid{display:grid;grid-template-columns:1fr 1fr}
+.seg.mk{display:grid;grid-template-columns:repeat(5,1fr)}
+.seg.mk button{padding:6px 2px;font-size:12.5px;line-height:1.15;min-width:0}
+.seg button small.cnt{display:block;font-size:10.5px;font-weight:500;opacity:.7}
+.mt .mrw.on{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.sec h3{margin:0;font:700 19px/1.1 var(--fc)}
+.rel svg.bk{max-height:150px}
 .bgrid>*{min-width:0}
 .field.col input[type=text]{width:100%;box-sizing:border-box;min-width:0}
 .tiles.bt .tile b small{display:block;margin:3px 0 0;font:500 12.5px/1.3 var(--fa);color:var(--muted)}
@@ -868,7 +874,7 @@ async function game365(id) {
   if (!d?.game) throw Object.assign(new Error('meci negăsit'), { status: 404 });
   return d.game;
 }
-const STAT365 = { corners: 'c', 'corner kicks': 'c', 'yellow cards': 'y', 'red cards': 'r', 'total shots': 'sh', shots: 'sh', 'shots on target': 'st', 'shots on goal': 'st', fouls: 'f', 'fouls committed': 'f', possession: 'p', 'ball possession': 'p' };
+const STAT365 = { 'expected goals': 'xg', 'expected goals (xg)': 'xg', xg: 'xg', corners: 'c', 'corner kicks': 'c', 'yellow cards': 'y', 'red cards': 'r', 'total shots': 'sh', shots: 'sh', 'shots on target': 'st', 'shots on goal': 'st', fouls: 'f', 'fouls committed': 'f', possession: 'p', 'ball possession': 'p' };
 async function stats365(ev) {
   const d = await w365(`game/stats/?games=${String(ev.id).slice(1)}`, ev.done ? 864e5 : 60000);
   const out = { ok: false, t: {} };
@@ -1063,7 +1069,7 @@ function statsFromSummary(d) {
     }
     let p = m.possessionPct ?? null;
     if (fin(p) && p > 0 && p <= 1) p *= 100;
-    const o = { c: m.wonCorners ?? null, y: m.yellowCards ?? null, r: m.redCards ?? null, sh: m.totalShots ?? null, st: m.shotsOnTarget ?? null, f: m.foulsCommitted ?? null, p };
+    const o = { c: m.wonCorners ?? null, y: m.yellowCards ?? null, r: m.redCards ?? null, sh: m.totalShots ?? null, st: m.shotsOnTarget ?? null, f: m.foulsCommitted ?? null, p, xg: m.expectedGoals ?? m.xG ?? null };
     if ([o.c, o.y, o.sh, o.st, o.f, o.p].some(v => fin(v) && v > 0)) nz = true;
     out.t[id] = o;
   }
@@ -1094,7 +1100,7 @@ function devig(odds) {
 }
 const halfLine = s => { const v = parseFloat(s); return fin(v) && v > 0 && Math.abs(v % 1 - 0.5) < 1e-9 ? v : null; };
 const emptyMk = src => ({ src, x12: null, ou: [], btts: null, c: [], t: [], k: [], s: [] });
-// live: în timpul meciului cotele curente țin cont de scor, așa că iau cotele de deschidere
+// live: în timpul meciului (și după el) cotele curente țin cont de scor, așa că iau cotele de deschidere
 function lines365(lines, live, swap) {
   const m = emptyMk('365Scores');
   const rate = o => (live ? o?.originalRate?.decimal : o?.rate?.decimal);
@@ -1104,8 +1110,8 @@ function lines365(lines, live, swap) {
     const id = l.lineTypeId, nm = String(l.lineType?.name || '').trim();
     if (/half|1st|2nd|player/i.test(nm)) continue;
     if (id === 1 || /^full time result$/i.test(nm)) {
-      const p = devig([1, 2, 3].map(n => rate((l.options || []).find(x => x.num === n))));
-      if (p && !m.x12) m.x12 = swap ? [p[2], p[1], p[0]] : p;
+      const raw = [1, 2, 3].map(n => rate((l.options || []).find(x => x.num === n))), p = devig(raw);
+      if (p && !m.x12) { m.x12 = swap ? [p[2], p[1], p[0]] : p; m.x12o = swap ? [raw[2], raw[1], raw[0]] : raw; }
       continue;
     }
     if (id === 12 || /^both teams to score$/i.test(nm)) { const p = two(l, /^yes$/i, /^no$/i); if (p) m.btts = p[0]; continue; }
@@ -1122,11 +1128,11 @@ function espnOdds(sum) {
   const pc = (sum?.pickcenter || [])[0] || (sum?.odds || [])[0];
   if (!pc) return null;
   const cl = x => x?.close?.odds ?? x?.open?.odds;
-  const x12 = devig([amer(pc.homeTeamOdds?.moneyLine ?? cl(pc.moneyline?.home)), amer(pc.drawOdds?.moneyLine ?? cl(pc.moneyline?.draw)), amer(pc.awayTeamOdds?.moneyLine ?? cl(pc.moneyline?.away))]);
+  const raw = [amer(pc.homeTeamOdds?.moneyLine ?? cl(pc.moneyline?.home)), amer(pc.drawOdds?.moneyLine ?? cl(pc.moneyline?.draw)), amer(pc.awayTeamOdds?.moneyLine ?? cl(pc.moneyline?.away))], x12 = devig(raw);
   const L = halfLine(pc.overUnder), po = devig([amer(pc.overOdds ?? cl(pc.total?.over)), amer(pc.underOdds ?? cl(pc.total?.under))]);
   if (!x12 && !(L != null && po)) return null;
   const m = emptyMk('ESPN');
-  m.x12 = x12;
+  m.x12 = x12; if (x12) m.x12o = raw;
   if (L != null && po) m.ou.push([L, po[0]]);
   return m;
 }
@@ -1205,7 +1211,7 @@ async function marketFor(ev, sum) {
     let gid = null, swap = false;
     if (is365(ev.id)) gid = String(ev.id).slice(1);
     else { const f = await find365(ev); if (f) { gid = f.id; swap = f.swap; } }
-    if (gid) m = lines365(await w365(`bets/lines/?games=${gid}`, ev.done ? 864e5 : 5 * 60e3, x => (x?.lines || []).filter(l => ![126, 127].includes(l.lineTypeId))), ev.state === 'in', swap);
+    if (gid) m = lines365(await w365(`bets/lines/?games=${gid}`, ev.done ? 864e5 : 5 * 60e3, x => (x?.lines || []).filter(l => ![126, 127].includes(l.lineTypeId))), ev.state !== 'pre', swap);
   } catch (e) { fail = true; }
   if (!has(m) && ev.x12) { m = m || emptyMk('365Scores'); m.x12 = ev.x12; }
   const e2 = sum ? espnOdds(sum) : null;
@@ -1213,7 +1219,7 @@ async function marketFor(ev, sum) {
     if (!m) m = e2;
     else {
       const before = has(m);
-      if (!m.x12 && e2.x12) m.x12 = e2.x12;
+      if (!m.x12 && e2.x12) { m.x12 = e2.x12; m.x12o = e2.x12o; }
       if (!m.ou.length && e2.ou.length) m.ou = e2.ou;
       if (!before && has(m)) m.src = m.c.length || m.t.length || m.k.length || m.s.length ? '365Scores și ESPN' : 'ESPN';
     }
@@ -1328,6 +1334,51 @@ function gfeat(teamId, list) {
   for (const ev of gList(list)) { const home = ev.home.id === teamId; f += home ? ev.home.score : ev.away.score; a += home ? ev.away.score : ev.home.score; n++; }
   return n ? { F: f / n, A: a / n, n } : null;
 }
+// aceeași formă, dar unde un meci are xG (goluri așteptate) pentru ambele echipe, golurile lui se înlocuiesc cu media dintre goluri și xG.
+// Sursele dau xG doar la unele competiții și doar pentru meciurile cu statistici citite; se folosește numai dacă pe meciurile tale prezice mai bine.
+function gfeatX(teamId, list) {
+  let f = 0, a = 0, n = 0, nx = 0;
+  for (const ev of gList(list)) {
+    const home = ev.home.id === teamId, me = home ? ev.home : ev.away, op = home ? ev.away : ev.home, st = STATS[ev.id]?.[1];
+    const x = st?.ok ? st.t[me.id]?.xg : null, y = st?.ok ? st.t[op.id]?.xg : null, ok = fin(x) && fin(y);
+    f += ok ? (me.score + x) / 2 : me.score; a += ok ? (op.score + y) / 2 : op.score; n++; if (ok) nx++;
+  }
+  return n && nx ? { F: f / n, A: a / n, n, nx } : null;
+}
+// zile de odihnă: de la ultimul meci oficial al echipei (din orice competiție) până la începutul meciului
+const restDays = (list, t) => { const e = (list || []).find(x => new Date(x.date).getTime() < t - 3600e3); return e ? (t - new Date(e.date).getTime()) / 864e5 : null; };
+const rz = z => clamp(z, 2, 7);
+/* absențele: indisponibilii anunțați (365Scores), cântăriți după cât au jucat în ultimele meciuri. Un titular obișnuit care lipsește
+   scade golurile marcate de echipă (mai mult la atacanți și la cei care înscriu sau dau pase de gol) și crește golurile primite
+   (mai mult la portar și fundași). Pondera fiecărui post e o estimare de pornire; aplicația o ajustează (×) din meciurile terminate. */
+const ABS_ATT = { G: 0, D: 0.01, M: 0.025, F: 0.045 }, ABS_DEF = { G: 0.06, D: 0.03, M: 0.012, F: 0 };
+function absFactors(team, out, agg) {
+  if (!agg?.n || !out?.length) return null;
+  const tg = agg.players.reduce((t, a) => t + a.g, 0);
+  let att = 0, def = 0;
+  const who = [];
+  for (const b of out) {
+    const p = team.of(b), a = p?.a;
+    if (!a) continue;
+    const reg = Math.min(1, a.minSt / (90 * agg.n));
+    if (reg < 0.35) continue;
+    const w = reg * (b.doubt ? 0.5 : 1), pos = a.pos || p.pos || 'M';
+    const gi = a.eapps ? (a.g + 0.5 * a.a) / Math.max(3, tg) : 0;
+    att += w * ((ABS_ATT[pos] ?? 0.02) + 0.2 * gi); def += w * (ABS_DEF[pos] ?? 0.01);
+    who.push(p.short || p.name || b.name);
+  }
+  return who.length ? { f: [Math.max(0.8, 1 - att), Math.min(1.15, 1 + def)], who } : null;
+}
+// meciul de azi: indisponibilii celor două echipe și cât au jucat în ultimele meciuri (aceleași surse ca fila Jucători)
+async function absences(ev, sum, A, B, la, lb) {
+  const src = await matchSources(ev, sum, null, A, B);
+  if (!src?.s) return null;
+  const all = [...new Map([...la, ...lb].map(e => [e.id, e])).values()], boxes = new Map();
+  await Promise.all(all.map(m => (is365(m.id) ? lim365 : lim)(() => playerBox(m)).then(b => { boxes.set(m.id, b); })));
+  const ro = is365(ev.id), aggs = [squadAgg(A.id, la, boxes), squadAgg(B.id, lb, boxes)], s3 = [src.s.home, src.s.away];
+  const r = [0, 1].map(i => absFactors(buildTeam(aggs[i], src.bio[i], src.sq[i], s3[i], ro), s3[i].out, aggs[i]));
+  return { r, nOut: s3.map(x => x.out.length) };
+}
 // meciurile învățate înainte de versiunea aceasta au doar forma scurtă: atunci folosesc golurile din ea
 const gOf = S => S.G || { F: S.gf?.m ?? PRIOR.g, A: S.ga?.m ?? PRIOR.g, n: S.gf?.n || 0 };
 // Golurile așteptate: atacul unei echipe înmulțit cu apărarea adversarului (exponenții e1 și e2 spun cât contează fiecare), apoi terenul.
@@ -1339,6 +1390,14 @@ function goalsLam(SA, SB, neutral, q) {
   let lb = Math.max(0.05, P * Math.pow(s(B.F, B.n), e1) * Math.pow(s(A.A, A.n), e2) * (neutral ? mid : q.hA));
   if (T !== 1) { const g = Math.sqrt(la * lb), r = Math.pow(la / lb, T / 2); la = g * r; lb = g / r; }
   return [la, lb];
+}
+// golurile modelului cu odihna (coeficient învățat, pornește de la 0) și absențele (exponent învățat, pornește de la 1)
+function goalsAdj(SA, SB, neutral, q) {
+  let [ma, mb] = goalsLam(SA, SB, neutral, q);
+  const rc = q.rc ?? 0, xs = q.xs ?? 1;
+  if (rc && fin(SA.Z) && fin(SB.Z)) { const d = (rz(SA.Z) - rz(SB.Z)) / 5; ma *= Math.exp(rc * d); mb *= Math.exp(-rc * d); }
+  if (xs && (SA.X || SB.X)) { const a = SA.X || [1, 1], b = SB.X || [1, 1]; ma *= Math.pow(a[0] * b[1], xs); mb *= Math.pow(b[0] * a[1], xs); }
+  return [Math.max(0.05, ma), Math.max(0.05, mb)];
 }
 // doar șansele 1X2, fără matricea de scoruri: pentru potrivirile pe sute de meciuri
 const P1A = new Float64Array(11), P1B = new Float64Array(11);
@@ -1361,7 +1420,7 @@ function predict(SA, SB, neutral, prm = params(), mk = null) {
       (q.w * shrink(yf, prior, q.k) + (1 - q.w) * shrink(xa, prior, q.k)) * (neutral ? mid : q.hA)];
   };
   const W = prm.m || DEF.m;
-  const [ma, mb] = goalsLam(SA, SB, neutral, prm.g);
+  const [ma, mb] = goalsAdj(SA, SB, neutral, prm.g);
   const ig = mk ? impliedGoals(mk, prm.g.rho, ma, mb) : null;
   const la = ig ? mixl(ma, ig.la, W.g) : ma, lb = ig ? mixl(mb, ig.lb, W.g) : mb;
   // corecția pentru egaluri e învățată pe model; când intră și cotele, contează doar partea modelului
@@ -1399,7 +1458,7 @@ function pctRound(ps) {
 // Dixon–Coles pentru goluri). Cât timp sunt puține meciuri, valorile învățate sunt trase spre cele implicite.
 // La goluri, valorile inițiale sunt potrivite pe peste 6.000 de meciuri reale (10 campionate mari și Liga Campionilor, 2024–2026).
 const DEF = {
-  g: { k: 12, w: 0.5, e1: 1.05, e2: 0.8, hH: 1.1, hA: 0.9, rho: -0.025, phi: 1, T: 1.3, dl: 0.08 },
+  g: { k: 12, w: 0.5, e1: 1.05, e2: 0.8, hH: 1.1, hA: 0.9, rho: -0.025, phi: 1, T: 1.3, dl: 0.08, rc: 0, xs: 1 },
   c: { k: 2, w: 0.5, hH: 1.06, hA: 0.94, rho: 0, phi: 1 },
   k: { k: 2, w: 0.5, hH: 0.95, hA: 1.05, rho: 0, phi: 1 },
   s: { k: 2, w: 0.5, hH: 1.08, hA: 0.93, rho: 0, phi: 1.5 },
@@ -1411,7 +1470,7 @@ const DEF = {
 const OLD_G = { k: 2, w: 0.5, hH: 1.1, hA: 0.9, rho: -0.1, phi: 1 };
 const PKEYS = ['g', 'c', 'k', 's', 't'];
 const MIN_FIT = 20, N0 = 40, SLUG_MIN = 60;
-const LEARN = Object.assign({ v: 3, on: true, mk: true, s: {}, fit: null }, store.get('learn', {}));
+const LEARN = Object.assign({ v: 3, on: true, mk: true, abs: true, s: {}, fit: null }, store.get('learn', {}));
 let learnDirty = false;
 /* Meciurile reconstruite la antrenament (src 'bt') pot fi mii, așa că stau în IndexedDB. Stocarea locală (localStorage) e mică
    și comună cu celelalte aplicații de pe același site; acolo rămân doar setările, pronosticurile salvate înainte de meci și parametrii.
@@ -1481,6 +1540,8 @@ const unpackS = a => { const o = {}; SK.forEach((k, i) => { o[k] = { m: a[2 * i]
 function AB(s) {
   const A = unpackS(s.A), B = unpackS(s.B);
   if (hasG(s)) { A.G = { F: s.G[0], A: s.G[1], n: s.G[2] }; B.G = { F: s.G[3], A: s.G[4], n: s.G[5] }; }
+  if (Array.isArray(s.Z)) { A.Z = s.Z[0]; B.Z = s.Z[1]; }
+  if (Array.isArray(s.X)) { A.X = [s.X[0], s.X[1]]; B.X = [s.X[2], s.X[3]]; }
   return [A, B];
 }
 function actualOf(ev, st) {
@@ -1493,12 +1554,20 @@ function actualOf(ev, st) {
 }
 // K: ce spuneau cotele despre meci [goluri gazde, goluri oaspeți, total cornere, total șuturi pe poartă, total cartonașe, total șuturi,
 //    apoi, dacă existau cote 1X2, probabilitățile pieței fără marjă: gazde, egal, oaspeți]
-function record(ev, SA, SB, P, R, src, K = null) {
+// Q: liniile caselor pentru total goluri, cornere, șuturi pe poartă și cartonașe [[linia, P(peste)]]; Z: zilele de odihnă; X: factorii absențelor;
+// GX: forma de goluri cu xG; PM: șansele 1X2 doar ale modelului (fără cote)
+function record(ev, SA, SB, P, R, src, K = null, Q = null) {
   if (!ev?.id || /^vs/.test(ev.id) || !SA?.n || !SB?.n) return;
   const cur = LEARN.s[ev.id];
-  const G = SA.G && SB.G ? [r2(SA.G.F), r2(SA.G.A), SA.G.n, r2(SB.G.F), r2(SB.G.A), SB.G.n] : null;
+  const G0 = SA.G0 || SA.G, G1 = SB.G0 || SB.G;
+  const G = G0 && G1 ? [r2(G0.F), r2(G0.A), G0.n, r2(G1.F), r2(G1.A), G1.n] : null;
+  const GX = SA.GX && SB.GX ? [r2(SA.GX.F), r2(SA.GX.A), SA.GX.n, r2(SB.GX.F), r2(SB.GX.A), SB.GX.n] : null;
+  const Z = fin(SA.Z) && fin(SB.Z) ? [Math.round(SA.Z * 10) / 10, Math.round(SB.Z * 10) / 10] : null;
+  const X = SA.X || SB.X ? [...(SA.X || [1, 1]), ...(SB.X || [1, 1])].map(r3) : null;
   if (cur && cur.src === 'live' && src !== 'live') {
     if (K && !cur.K) { cur.K = K; learnDirty = true; }
+    if (Q && !cur.Q) { cur.Q = Q; learnDirty = true; }
+    if (Z && !cur.Z) { cur.Z = Z; learnDirty = true; }
     if (R && !cur.R) { cur.R = R; learnDirty = true; scheduleFit(); }
     // pronosticurile salvate înainte de versiunea aceasta nu aveau forma pe termen lung: o completez (tot cu meciuri de dinainte)
     if (G && !cur.G) { cur.G = G; learnDirty = true; }
@@ -1507,13 +1576,40 @@ function record(ev, SA, SB, P, R, src, K = null) {
   if (cur?.R && !R) return;
   LEARN.s[ev.id] = {
     d: ev.date, sl: ev.slug || '', hn: ev.home.short || ev.home.name, an: ev.away.short || ev.away.name, neu: ev.neutral ? 1 : 0, src,
-    A: packS(SA), B: packS(SB), G,
+    A: packS(SA), B: packS(SB), G, GX, Z, X,
+    PM: P ? p1x2(P.goals.mdl[0], P.goals.mdl[1], P.goals.rho, P.goals.dl).map(r3) : null,
+    Q: Q || cur?.Q || null, O: cur?.O || null, C: cur?.C || null,
     P: P ? [...P.goals.p, ...(P.corners ? P.corners.p : [null, null, null]), ...(P.cards ? P.cards.p : [null, null, null])].map(v => fin(v) ? Math.round(v * 1000) / 1000 : null) : null,
     R: R || null, K: K || cur?.K || null, t: Date.now()
   };
   learnDirty = true;
   if (R) scheduleFit();
 }
+/* O și C: prima și ultima privire la cotele 1X2 înainte de start [ora, P gazde, P egal, P oaspeți, cota 1, cota X, cota 2].
+   C se reîmprospătează singură cât timp aplicația e deschisă în ultimele ore dinainte de meci, ca să ajungă cât mai aproape de închidere. */
+function noteOdds(id, mk, kick) {
+  const s = LEARN.s[id], now = Date.now();
+  if (!s || !mk?.x12 || now >= kick) return;
+  const snap = [now, ...mk.x12.map(r3), ...(mk.x12o || [null, null, null]).map(v => fin(v) ? r2(v) : null)];
+  if (!s.O) s.O = snap;
+  s.C = snap; learnDirty = true;
+}
+let closing = false;
+async function refreshCloses() {
+  if (closing || !LEARN.mk) return;
+  closing = true;
+  try {
+    const now = Date.now();
+    const L = Object.entries(LEARN.s).filter(([, s]) => s.src === 'live' && s.O && !s.R && !s.x).filter(([, s]) => { const k = new Date(s.d).getTime(); return k > now + 60e3 && k - now < 4 * 3600e3 && now - (s.C?.[0] || 0) > 9 * 60e3; });
+    await Promise.all(L.map(([id, s]) => lim365(async () => {
+      const ev = { id, date: s.d, slug: s.sl, state: 'pre', done: false, status: '', home: { id: null, name: s.hn, short: s.hn }, away: { id: null, name: s.an, short: s.an } };
+      try { const mk = await marketFor(ev, null); if (mk && !mk.fail) noteOdds(id, mk, new Date(s.d).getTime()); } catch (e) {}
+    })));
+  } finally { closing = false; }
+}
+setInterval(refreshCloses, 10 * 60e3);
+setTimeout(refreshCloses, 20e3);
+addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') setTimeout(refreshCloses, 3000); });
 async function finalResult(id, slugHint) {
   if (is365(id)) {
     const ev = ev365(await game365(id));
@@ -1698,11 +1794,51 @@ function fitMarket(S, p) {
   out.g = DEF.m.g + (best.w - DEF.m.g) * rows.length / (rows.length + NM0);
   return out;
 }
+// odihna: un coeficient pe log(goluri) pentru diferența de odihnă (2–7 zile, împărțită la 5), tras puternic spre 0.
+// Doar zero sau pozitiv (oboseala poate doar să strice): un coeficient negativ ar prinde altceva, de exemplu că echipele care joacă
+// des, în cupele europene, sunt mai bune decât arată forma lor.
+const RCG = [0, 0.03, 0.06, 0.09, 0.12, 0.15], NRC = 3000;
+// absențele: exponentul factorilor (0 = nu contează, 1 = cum sunt estimați), tras spre 1
+const XSG = [0, 0.5, 1, 1.5, 2], NXS = 200;
+function fit1(S, p, has, grid, setv) {
+  const rows = S.filter(s => hasG(s) && has(s)).map(s => { const [A, B] = AB(s); return { A, B, neu: !!s.neu, yH: s.R[0], yA: s.R[1] }; });
+  if (rows.length < MIN_FIT) return { v: null, n: rows.length };
+  let best = null;
+  for (const v of grid) {
+    const g = setv({ ...p.g }, v);
+    let nll = 0;
+    for (const r of rows) {
+      const [m1, m2] = goalsAdj(r.A, r.B, r.neu, g);
+      nll += m1 - r.yH * Math.log(m1) + m2 - r.yA * Math.log(m2) - Math.log(Math.max(1e-6, tau(r.yH, r.yA, m1, m2, g.rho)));
+    }
+    if (!best || nll < best.nll) best = { nll, v };
+  }
+  return { v: best.v, n: rows.length };
+}
+// xG: pe meciurile care au și forma cu xG, care din cele două ar fi prezis mai bine rezultatul (log loss, cu parametrii actuali)
+function xgCheck(S, p) {
+  const rows = S.filter(s => hasG(s) && Array.isArray(s.GX) && s.GX.length === 6);
+  if (!rows.length) return { n: 0, d: 0, on: false };
+  let a = 0, b = 0;
+  for (const s of rows) {
+    const [A, B] = AB(s), o = outc(s.R[0], s.R[1]);
+    const pr = (X, Y) => { const [la, lb] = goalsAdj(X, Y, !!s.neu, p.g); return p1x2(la, lb, p.g.rho, p.g.dl ?? DEF.g.dl)[o]; };
+    a -= Math.log(Math.max(1e-6, pr(A, B)));
+    b -= Math.log(Math.max(1e-6, pr({ ...A, G: { F: s.GX[0], A: s.GX[1], n: s.GX[2] } }, { ...B, G: { F: s.GX[3], A: s.GX[4], n: s.GX[5] } })));
+  }
+  const d = (b - a) / rows.length;
+  return { n: rows.length, d, on: rows.length >= 100 && d < 0 };
+}
 function fitModel(S) {
   const p = fitAll(S), s = {}, by = new Map();
+  const rc = fit1(S, p, x => Array.isArray(x.Z), RCG, (g, v) => { g.rc = v; return g; });
+  p.g.rc = rc.v == null ? 0 : rc.v * rc.n / (rc.n + NRC); p.g.nrc = rc.n;
+  const xs = fit1(S, p, x => Array.isArray(x.X), XSG, (g, v) => { g.xs = v; return g; });
+  p.g.xs = xs.v == null ? 1 : 1 + (xs.v - 1) * xs.n / (xs.n + NXS); p.g.nxs = xs.n;
   p.m = fitMarket(S, p);
   S.forEach(x => { if (x.sl) { if (!by.has(x.sl)) by.set(x.sl, []); by.get(x.sl).push(x); } });
-  for (const [sl, L] of by) if (L.length >= SLUG_MIN) { s[sl] = fitAll(L, p, false); s[sl].m = p.m; }
+  for (const [sl, L] of by) if (L.length >= SLUG_MIN) { s[sl] = fitAll(L, p, false); s[sl].m = p.m; s[sl].g.rc = p.g.rc; s[sl].g.xs = p.g.xs; }
+  p.xg = xgCheck(S, p);
   return { p, s };
 }
 
@@ -1724,20 +1860,35 @@ function scoreInto(acc, R, pr) {
 const accOut = a => Object.fromEntries(PKEYS.map(k => [k, a[k].n ? { n: a[k].n, ll: a[k].ll / a[k].n, br: a[k].br / a[k].n, acc: a[k].hit / a[k].n, mae: a[k].ae / a[k].n } : null]));
 const REL_EDGES = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1.0001];
 /* valoare față de cotă: pe meciurile cu cote, ce ar fi dat pariurile pe care modelul le vedea „sub-prețuite”.
-   La fiecare meci iau rezultatul cu cea mai mare valoare așteptată (probabilitatea modelului × cota − 1) și pariez 1 unitate dacă trece de prag.
-   Cota presupusă = cota corectă a pieței (fără marjă) micșorată cu marja casei; nu sunt cotele reale ale unei case. */
+   La fiecare meci și piață iau pariul cu cea mai mare valoare așteptată (probabilitatea modelului × cota − 1); tabelele pariază 1 unitate
+   doar unde valoarea trece de prag. Cota presupusă = cota corectă a pieței (fără marjă) micșorată cu marja casei, nu cotele reale ale unei case.
+   Fiecare pariu posibil se ține ca [valoare, cotă, câștigat, competiție, probabilitate], în ordinea meciurilor. */
 const VT = [-1, 0, 0.03, 0.06, 0.1, 0.15];   // pragurile de valoare așteptată (−1 = orice meci)
 const VM = [0.02, 0.05];                      // marja presupusă a casei
-const newVal = () => ({ mdl: VM.map(() => VT.map(() => [0, 0, 0, 0])), mix: VM.map(() => VT.map(() => [0, 0, 0, 0])) });   // [pariuri, nimerite, profit, profit²]
+const VMK = [['x', '1X2'], ['g', 'Goluri'], ['c', 'Cornere'], ['k', 'Cartonașe'], ['t', 'Pe poartă']];
+const newVal = () => Object.fromEntries(['mdl', 'mix'].map(src => [src, Object.fromEntries(VMK.map(([k]) => [k, VM.map(() => [])]))]));
 const mktX = (s, fb) => Array.isArray(s.K) && [6, 7, 8].every(i => fin(s.K[i]) && s.K[i] > 0) ? s.K.slice(6, 9) : fb;
-function addVal(V, p, q, o) {
+function addVal(arrs, p, q, o, sl) {
   VM.forEach((m, mi) => {
     let best = -9, bi = 0;
     for (let i = 0; i < 3; i++) { const ev = p[i] / (q[i] * (1 + m)) - 1; if (ev > best) { best = ev; bi = i; } }
-    const pr = bi === o ? 1 / (q[bi] * (1 + m)) - 1 : -1;
-    VT.forEach((t, ti) => { if (best > t) { const c = V[mi][ti]; c[0]++; c[1] += bi === o ? 1 : 0; c[2] += pr; c[3] += pr * pr; } });
+    arrs[mi].push([best, 1 / (q[bi] * (1 + m)), bi === o ? 1 : 0, sl, p[bi]]);
   });
 }
+// peste/sub: pe fiecare linie cu cote, partea cu valoarea cea mai mare; la un meci intră un singur pariu pe piață (cel mai bun)
+function addOU(arrs, lines, over, tot, sl) {
+  VM.forEach((m, mi) => {
+    let best = null;
+    for (const [L, q] of lines) {
+      if (!(q > 0.03 && q < 0.97) || tot === L) continue;
+      const po = over(L);
+      for (const [pp, qq, w] of [[po, q, tot > L], [1 - po, 1 - q, tot < L]]) { const o = 1 / (qq * (1 + m)), ev = pp * o - 1; if (!best || ev > best[0]) best = [ev, o, w ? 1 : 0, sl, pp]; }
+    }
+    if (best) arrs[mi].push(best);
+  });
+}
+const mkOfQ = s => ({ src: '', x12: mktX(s, null), ou: s.Q?.ou || [], btts: null, c: s.Q?.c || [], t: s.Q?.t || [], k: s.Q?.k || [], s: [] });
+const sumR = (R, i) => fin(R[i]) && fin(R[i + 1]) ? R[i] + R[i + 1] : null;
 function evaluateCV(S) {
   const K = 5, def = newAcc(), cal = newAcc(), bins = REL_EDGES.slice(1).map((hi, j) => ({ lo: REL_EDGES[j], hi: Math.min(1, hi), p: 0, o: 0, n: 0 }));
   const old = { n: 0, ll: 0, hit: 0 }, mk = { n: 0, mdl: [0, 0], mkt: [0, 0], mix: [0, 0] }, sz = Math.ceil(S.length / (K + 1)), val = newVal();
@@ -1757,8 +1908,17 @@ function evaluateCV(S) {
         const g = pr.goals, w = (prm.m || DEF.m).g, rho = prm.g.rho;
         const ps = { mdl: g.p, mkt: mktX(s, p1x2(s.K[0], s.K[1], rho)), mix: p1x2(mixl(g.la, s.K[0], w), mixl(g.lb, s.K[1], w), rho, g.dl * (1 - w)) };
         mk.n++;
-        addVal(val.mdl, ps.mdl, ps.mkt, o); addVal(val.mix, ps.mix, ps.mkt, o);
+        addVal(val.mdl.x, ps.mdl, ps.mkt, o, s.sl); addVal(val.mix.x, ps.mix, ps.mkt, o, s.sl);
         for (const k in ps) { mk[k][0] -= Math.log(Math.max(1e-6, ps[k][o])); mk[k][1] += argmax(ps[k]) === o ? 1 : 0; }
+      }
+      // celelalte piețe: total goluri, cornere, cartonașe, șuturi pe poartă; „finale” = estimarea cu tot cu cote
+      if (s.Q) {
+        const px = predict(A, B, !!s.neu, prm, mkOfQ(s));
+        for (const [key, lines, b0, b1, ri] of [['g', s.Q.ou, pr.goals, px.goals, 0], ['c', s.Q.c, pr.corners, px.corners, 2], ['k', s.Q.k, pr.cards, px.cards, 4], ['t', s.Q.t, pr.sot, px.sot, 8]]) {
+          const tot = sumR(s.R, ri);
+          if (!lines?.length || !b0 || !b1 || tot == null) continue;
+          addOU(val.mdl[key], lines, L => b0.over(L), tot, s.sl); addOU(val.mix[key], lines, L => b1.over(L), tot, s.sl);
+        }
       }
       pr.goals.p.forEach((p, i) => { const j = REL_EDGES.findIndex((e, x) => p >= e && p < REL_EDGES[x + 1]); if (j >= 0) { bins[j].p += p; bins[j].o += i === o ? 1 : 0; bins[j].n++; } });
     }
@@ -1778,7 +1938,8 @@ function liveRecord() {
   return { n: L.length, acc: hit / L.length };
 }
 const learned = () => Object.values(LEARN.s).filter(s => s.R && !s.x && Array.isArray(s.A) && Array.isArray(s.B)).sort((a, b) => new Date(a.d) - new Date(b.d));
-let fitTimer = 0;
+let fitTimer = 0, EVC = null;
+const useXG = () => !!(LEARN.on && LEARN.fit?.p?.xg?.on);
 function scheduleFit() { clearTimeout(fitTimer); fitTimer = setTimeout(refit, 1200); }
 let refitQueued = false;
 function refit() {
@@ -1792,6 +1953,7 @@ function refit() {
   // scorurile din validarea cronologică se recalculează doar când se deschide fila Model
   const M = fitModel(S);
   LEARN.fit = { p: M.p, s: M.s, n: S.length, at: Date.now(), m: old?.m || null, mn: old?.mn || 0 };
+  EVC = null;
   learnDirty = true;
   return LEARN.fit;
 }
@@ -1809,7 +1971,7 @@ function sbStats(e) {
     for (const s of cp.statistics || []) { const v = parseFloat(String(s.displayValue ?? s.value ?? '').replace('%', '')); m[s.name] = fin(v) ? v : null; }
     let p = m.possessionPct ?? null;
     if (fin(p) && p > 0 && p <= 1) p *= 100;
-    out.t[id] = { c: m.wonCorners ?? null, y: det ? 0 : null, r: det ? 0 : null, sh: m.totalShots ?? null, st: m.shotsOnTarget ?? null, f: m.foulsCommitted ?? null, p };
+    out.t[id] = { c: m.wonCorners ?? null, y: det ? 0 : null, r: det ? 0 : null, sh: m.totalShots ?? null, st: m.shotsOnTarget ?? null, f: m.foulsCommitted ?? null, p, xg: m.expectedGoals ?? null };
   }
   for (const d of c.details || []) { const o = out.t[String(d.team?.id ?? '')]; if (!o) continue; if (d.redCard) o.r++; else if (d.yellowCard) o.y++; }
   const ids = Object.keys(out.t);
@@ -1892,6 +2054,8 @@ async function trainRun(slug, withStats, prog, { quota = Infinity, prev = false 
     const t = new Date(m.date), none = new Map(), LA = before(m.home.id, t), LB = before(m.away.id, t);
     const SA = sample(m.home.id, LA.slice(0, N), none), SB = sample(m.away.id, LB.slice(0, N), none);
     SA.G = gfeat(m.home.id, LA); SB.G = gfeat(m.away.id, LB);
+    SA.GX = gfeatX(m.home.id, LA); SB.GX = gfeatX(m.away.id, LB);
+    SA.Z = restDays(LA, t.getTime()); SB.Z = restDays(LB, t.getTime());
     const R = actualOf(m, STATS[m.id]?.[1]);
     if (!R) continue;
     // unde lista de rezultate a venit cu cote (365Scores), păstrez ce spuneau casele înainte de meci
@@ -2431,10 +2595,14 @@ async function analysis(ev, sum, live, opt = {}) {
   try { [ha, hb] = await Promise.all([recent(A0.id, Math.max(N, GW), before), recent(B0.id, Math.max(N, GW), before)]); }
   catch (e) { if (live()) $('#who').innerHTML = errBox('Nu am putut citi meciurile recente ale echipelor.'); return; }
   if (!live()) return;
-  const gA = gfeat(A0.id, ha.list), gB = gfeat(B0.id, hb.list);
+  const gA = gfeat(A0.id, ha.list), gB = gfeat(B0.id, hb.list), kick = new Date(ev.date).getTime();
+  const zA = restDays(ha.list, kick), zB = restDays(hb.list, kick), longA = ha.list, longB = hb.list;
   ha = { ...ha, list: ha.list.slice(0, N) }; hb = { ...hb, list: hb.list.slice(0, N) };
   const A = { ...A0, ...(ha.team || {}), id: A0.id }, B = { ...B0, ...(hb.team || {}), id: B0.id };
   opt.refresh?.();
+  // absențele contează doar înainte de meci; dacă sursele întârzie peste 9 secunde, estimarea merge fără ele
+  const pre0 = ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status);
+  const absJob = opt.vs || !LEARN.abs || !pre0 ? Promise.resolve(null) : Promise.race([absences(ev, sum, A, B, ha.list, hb.list).catch(() => null), new Promise(r => setTimeout(r, 9000, null))]);
   const all = [...new Map([...ha.list, ...hb.list].map(e => [e.id, e])).values()];
   const stats = new Map();
   let done = 0;
@@ -2446,7 +2614,13 @@ async function analysis(ev, sum, live, opt = {}) {
   })));
   if (!live()) return;
   const SA = sample(A.id, ha.list, stats), SB = sample(B.id, hb.list, stats);
-  SA.G = gA; SB.G = gB;
+  SA.G = gA; SB.G = gB; SA.Z = zA; SB.Z = zB;
+  SA.GX = gfeatX(A.id, longA); SB.GX = gfeatX(B.id, longB);
+  if (useXG() && SA.GX && SB.GX) { SA.G0 = gA; SB.G0 = gB; SA.G = SA.GX; SB.G = SB.GX; }
+  const ab = await absJob;
+  if (!live()) return;
+  if (ab?.r[0]) SA.X = ab.r[0].f;
+  if (ab?.r[1]) SB.X = ab.r[1].f;
   if (!SA.n || !SB.n) { $('#who').innerHTML = `<p class="empty">Nu există destule meciuri jucate recent pentru ${esc(!SA.n ? A.name : B.name)}.</p>`; return; }
   let mk = await mkJob;
   if (!live()) return;
@@ -2456,11 +2630,15 @@ async function analysis(ev, sum, live, opt = {}) {
   // învățare: estimarea se salvează cu datele ei (și cu ce spuneau cotele); după meci se compară cu rezultatul
   const pre = ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status);
   const ig = P.mk?.ig, K = ig ? [ig.la, ig.lb, P.corners?.mkT, P.sot?.mkT, P.cards?.mkT, P.shots?.mkT].map(r2).concat(P.mk.x12 ? P.mk.x12.map(r3) : []) : null;
-  if (!opt.vs && (pre || ev.state !== 'pre')) record({ ...ev, home: A, away: B }, SA, SB, pre ? P : null, ev.done ? actualOf(ev, opt.st || STATS[ev.id]?.[1]) : null, pre ? 'live' : 'bt', K);
+  const qOf = a => (a || []).map(([L, q]) => [L, r3(q)]);
+  const Q = mk && (mk.ou.length || mk.c.length || mk.t.length || mk.k.length) ? { ou: qOf(mk.ou), c: qOf(mk.c), t: qOf(mk.t), k: qOf(mk.k) } : null;
+  if (!opt.vs && (pre || ev.state !== 'pre')) record({ ...ev, home: A, away: B }, SA, SB, pre ? P : null, ev.done ? actualOf(ev, opt.st || STATS[ev.id]?.[1]) : null, pre ? 'live' : 'bt', K, Q);
+  if (!opt.vs && pre && mk) noteOdds(ev.id, mk, kick);
   paint(A, B);
   const who = $('#who');
   who.innerHTML = `${legend(A, B)}${triRow('Rezultat (goluri)', P.goals, A, B)}${triRow('Mai multe șuturi pe poartă', P.sot, A, B)}${triRow('Mai multe șuturi', P.shots, A, B)}${triRow('Mai multe cornere', P.corners, A, B)}${triRow('Mai multe cartonașe', P.cards, A, B)}
     ${mkBlock(P, A, B, pre, { ...opt, mkFail })}
+    ${extraNote(A, B, SA, SB, ab, pre)}
     <p class="note">${pre ? 'Salvez estimarea și o compar cu rezultatul după fluier. ' : ''}${esc(calLine(ev.slug))} <a href="#/model">Vezi ce a învățat</a></p>`;
   const rest = $('#rest');
   rest.innerHTML = `
@@ -4536,6 +4714,27 @@ function parsHTML(f) {
     ${slugsHTML(f)}`;
 }
 const minus = s => s.replace('-', '−');
+// odihna, absențele, xG și cotele salvate: ce s-a strâns și ce a învățat aplicația din ele
+function extrasHTML(f, S) {
+  const g = f?.p?.g || DEF.g, xg = f?.p?.xg, cnt = k => S.filter(k).length;
+  const nZ = cnt(s => Array.isArray(s.Z)), nX = cnt(s => Array.isArray(s.X)), nGX = cnt(s => Array.isArray(s.GX)), nQ = cnt(s => s.Q), nOC = Object.values(LEARN.s).filter(s => s.O && s.C).length;
+  const rcEff = Math.exp((g.rc || 0) / 5) - 1;
+  const rest = nZ < MIN_FIT ? `strâng zilele de odihnă (acum ${plural(nZ, 'meci', 'meciuri')}); antrenează din nou ca să le am pentru toate meciurile învățate.`
+    : Math.abs(rcEff) < 0.002 ? `pe ${plural(g.nrc || nZ, 'meci', 'meciuri')}, odihna n-a schimbat vizibil golurile, așa că nu intră în calcul. Nici pe peste 6.000 de meciuri din campionatele mari nu s-a văzut un efect.`
+    : `pe ${plural(g.nrc || nZ, 'meci', 'meciuri')}, fiecare zi de odihnă în plus față de adversar (între 2 și 7 zile) crește golurile echipei cu ${sgn1(rcEff)} și le scade pe ale adversarului cu cât.`;
+  const abs = !LEARN.abs ? 'oprite.' : nX < MIN_FIT ? `se citesc la fiecare meci deschis înainte de start (acum ${plural(nX, 'meci terminat', 'meciuri terminate')} cu absențe). Ajustarea lor pornește de la estimarea pe posturi și se corectează după ${MIN_FIT} de meciuri.`
+    : `pe ${plural(g.nxs || nX, 'meci', 'meciuri')} cu absențe, efectul estimat se înmulțește cu ${nf2.format(g.xs ?? 1)}${(g.xs ?? 1) < 0.9 ? ' (estimarea pe posturi exagera)' : (g.xs ?? 1) > 1.1 ? ' (estimarea pe posturi era prea mică)' : ' (estimarea pe posturi se potrivește)'}.`;
+  const xgT = !nGX ? 'sursele n-au dat încă xG pentru meciurile citite. ESPN nu are xG; 365Scores îl are doar la unele competiții, iar aplicația îl vede doar unde citește statisticile meciurilor.'
+    : !xg || xg.n < 100 ? `${plural(nGX, 'meci are', 'meciuri au')} formă cu xG; decid dacă îl folosesc de la 100 de meciuri.`
+    : xg.on ? `folosit: pe ${plural(xg.n, 'meci', 'meciuri')}, forma cu xG a scăzut log loss-ul cu ${nf3.format(-xg.d)}.` : `nefolosit: pe ${plural(xg.n, 'meci', 'meciuri')}, forma cu xG n-a prezis mai bine (log loss ${xg.d >= 0 ? '+' : '−'}${nf3.format(Math.abs(xg.d))}).`;
+  return `<div class="sec"><h2>Odihnă, absențe, xG</h2></div>
+    <div class="grp plain">
+      <div class="row"><span class="grow"><b>Odihnă</b><small>${esc(cap(rest))}</small></span></div>
+      <div class="row"><span class="grow"><b>Absențe</b><small>${esc(cap(abs))}</small></span></div>
+      <div class="row"><span class="grow"><b>xG</b><small>${esc(cap(xgT))}</small></span></div>
+      <div class="row"><span class="grow"><b>Cote salvate</b><small>${esc(`${plural(nQ, 'meci are', 'meciuri au')} linii de total goluri, cornere, șuturi sau cartonașe; ${plural(nOC, 'meci are', 'meciuri au')} cote de deschidere și de închidere.`)}</small></span></div>
+    </div>`;
+}
 function slugsHTML(f) {
   const own = Object.entries(f.s || {});
   const cnt = new Map();
@@ -4612,6 +4811,7 @@ function viewModel(live) {
     <div class="tiles">${tile('Meciuri învățate', S.length)}${tile('Salvate înainte de meci', liveN)}${tile('Așteaptă rezultatul', pend)}${tile('Nimerite înainte de meci', lr ? pct(lr.acc) : '–', lr ? `din ${lr.n}` : '')}</div>
     <div class="panel" style="margin-top:12px">
       <label class="field"><span>Folosește calibrarea<small>${esc(state)}</small></span><input type="checkbox" id="lon"${LEARN.on ? ' checked' : ''}></label>
+      <label class="field" style="padding-top:0"><span>Ține cont de absențe<small>${LEARN.abs ? 'Pornit: înainte de meci citesc indisponibilii și ajustez golurile după cât jucau.' : 'Oprit: indisponibilii nu intră în estimare.'}</small></span><input type="checkbox" id="abo"${LEARN.abs ? ' checked' : ''}></label>
       <label class="field" style="padding-top:0"><span>Ține cont de cote<small>${LEARN.mk ? 'Pornit: unde casele de pariuri au cote pentru meci, ele intră în calcul alături de model.' : 'Oprit: estimările vin doar din forma echipelor.'}</small></span><input type="checkbox" id="mko"${LEARN.mk ? ' checked' : ''}></label>
       <div class="field" style="padding-top:0"><button class="btn" type="button" id="chk"${pend ? '' : ' disabled'}>Verifică rezultatele</button><span class="note" id="cmsg" role="status" style="margin:0;text-align:right">${esc(msg)}</span></div>
     </div>
@@ -4622,6 +4822,7 @@ function viewModel(live) {
     <div class="sec"><h2>Pariuri</h2></div>
     <div class="grp plain"><a class="row" href="#/pariuri"><span class="grow"><b>Valoare față de cote și jurnal de pariuri</b><small>Ar fi câștigat modelul pe meciurile trecute? Notează-ți pariurile și urmărește CLV și ROI.</small></span><span class="chev" aria-hidden="true">›</span></a></div>
     <div id="pars">${parsHTML(f)}</div>
+    ${extrasHTML(f, S)}
     ${trainPanel()}
     <div id="hist">${histHTML()}</div>
     <div class="acts" style="padding:24px 12px 0"><button class="btn" type="button" id="rst"${ents.length && BT !== 'fail' ? '' : ' disabled'}>Șterge ce a învățat</button></div>
@@ -4630,13 +4831,14 @@ function viewModel(live) {
   if (SG.length >= 30) later(() => {
     if (!live()) return;
     const F = LEARN.fit;
-    if (F && (!F.m || !F.m.val || F.mn !== SG.length)) { F.m = evaluateCV(SG); F.mn = SG.length; learnDirty = true; }
+    if (F && (!F.m || F.mn !== SG.length)) ensureEval(SG);
     $('#perf').innerHTML = perfHTML(F?.m, S.length);
     $('#mkc').innerHTML = mkCompareHTML(F?.m?.mk || null);
     if (F?.m?.rel) wireRel(F.m.rel);
   }, 40);
   $('#lon').addEventListener('change', e => { LEARN.on = e.target.checked; saveLearn(); route({ keep: true }); });
   $('#mko').addEventListener('change', e => { LEARN.mk = e.target.checked; saveLearn(); route({ keep: true }); });
+  $('#abo').addEventListener('change', e => { LEARN.abs = e.target.checked; saveLearn(); route({ keep: true }); });
   $('#chk').addEventListener('click', async e => {
     e.currentTarget.disabled = true;
     const got = await resolvePending(80, (n, t) => { const m = $('#cmsg'); if (m && live()) m.textContent = `Verific ${n} din ${t}…`; });
@@ -4688,6 +4890,20 @@ function viewModel(live) {
 
 /* ---------- foi: setări și comparație ---------- */
 let needsRender = false;
+// nota despre odihnă, absențe și xG de sub pronostic
+function extraNote(A, B, SA, SB, ab, pre) {
+  const out = [], q = params().g, z = v => fin(v) ? (v >= 14 ? 'peste două săptămâni' : plural(Math.round(v), 'zi', 'zile')) : null;
+  if (fin(SA.Z) && fin(SB.Z)) out.push(`Odihnă de la ultimul meci: ${esc(A.short || A.name)} ${z(SA.Z)}, ${esc(B.short || B.name)} ${z(SB.Z)}${Math.abs(q.rc || 0) >= 0.005 && Math.abs(rz(SA.Z) - rz(SB.Z)) >= 1 ? ' (intră în calcul)' : Math.abs(q.rc || 0) < 0.005 ? ' (deocamdată nu schimbă estimarea: pe meciurile învățate n-a contat)' : ''}.`);
+  if (pre && LEARN.abs) {
+    if (!ab) out.push('Indisponibilii nu s-au putut citi la timp, așa că absențele nu intră în estimare.');
+    else {
+      const t = (T, r, n) => r ? `${esc(T.short || T.name)} fără ${listRo(r.who.map(esc))} (goluri marcate ${sgnPct(r.f[0] - 1)}, primite ${sgnPct(r.f[1] - 1)})` : n ? `${esc(T.short || T.name)}: niciun titular obișnuit printre indisponibili` : `${esc(T.short || T.name)}: niciun indisponibil anunțat`;
+      out.push(`Absențe: ${t(A, ab.r[0], ab.nOut[0])}; ${t(B, ab.r[1], ab.nOut[1])}.${ab.r[0] || ab.r[1] ? ` Efectul e o estimare${Math.abs((q.xs ?? 1) - 1) > 0.02 ? `, ajustată ×${nf2.format(q.xs)} din meciurile terminate` : ''}.` : ''}`);
+    }
+  }
+  if (SA.G0) out.push('La goluri, forma folosește și xG (goluri așteptate), pentru că pe meciurile tale a prezis mai bine.');
+  return out.length ? `<p class="note">${out.join(' ')}</p>` : '';
+}
 /* ---------- ecran: Pariuri (valoare față de cote și jurnalul tău de pariuri) ---------- */
 // Aplicația nu plasează pariuri și nu trimite către case: jurnalul păstrează doar ce notezi tu, pe acest dispozitiv.
 const BETS = store.get('bets', []);
@@ -4702,6 +4918,8 @@ const newDraft = () => ({ id: '', pm: null, pk: null });
 function autoSettle() {
   let ch = false;
   for (const b of BETS) {
+    const c = b.mid ? LEARN.s[b.mid]?.C : null;
+    if (b.pk != null && b.close == null && c && fin(c[4 + b.pk]) && c[4 + b.pk] > 1 && Date.now() > new Date(LEARN.s[b.mid].d).getTime()) { b.close = c[4 + b.pk]; b.ca = 1; ch = true; }
     if (b.res || b.pk == null || !b.mid) continue;
     const s = LEARN.s[b.mid];
     if (s?.R && !s.x) { b.res = outc(s.R[0], s.R[1]) === b.pk ? 'w' : 'l'; ch = true; }
@@ -4717,36 +4935,105 @@ function betStats(L) {
   }
   return { n, stake, profit, roi: stake ? profit / stake : null, clv: clv.length ? mean(clv) : null, pos: clv.length ? clv.filter(x => x > 0).length / clv.length : null, nc: clv.length };
 }
+// validarea cronologică, ținută în memorie pentru sesiunea curentă; în fila Model se păstrează doar scorurile, fără lista de pariuri simulate
 function ensureEval(SG) {
   const F = LEARN.fit;
-  if (F && SG.length >= 30 && (!F.m || !F.m.val || F.mn !== SG.length)) { F.m = evaluateCV(SG); F.mn = SG.length; learnDirty = true; }
-  return F?.m?.val ? F.m : null;
+  if (!F || SG.length < 30) return null;
+  if (!EVC || EVC.n !== SG.length || EVC.at !== F.at) {
+    const m = evaluateCV(SG), { val, ...rest } = m;
+    EVC = { n: SG.length, at: F.at, m };
+    F.m = rest; F.mn = SG.length; learnDirty = true;
+  }
+  return EVC.m;
+}
+const statOf = L => { let n = 0, h = 0, pf = 0, sq = 0; for (const x of L) { const r = x[2] ? x[1] - 1 : -1; n++; h += x[2]; pf += r; sq += r * r; } const roi = n ? pf / n : 0; return { n, hit: n ? h / n : 0, roi, se: n ? Math.sqrt(Math.max(0, sq / n - roi * roi) / n) : 0 }; };
+const thLab = t => t < 0 ? 'Orice meci' : t === 0 ? 'Valoare peste 0%' : `Valoare peste ${Math.round(t * 100)}%`;
+const roiCell = (x, lo) => `<span class="v${lo ? ' lo' : ''}">${sgnPct(x.roi)}<small>±${Math.round(196 * x.se)}%</small></span>`;
+let valK = 'x', valT = 1, valKF = 1;
+const KF = [[0.125, '1/8'], [0.25, '1/4'], [0.5, '1/2']];
+// banca: pornește de la 100, pariază o fracțiune din Kelly (cel mult 5% din bancă pe un pariu), în ordinea meciurilor
+function bankSim(L, f) {
+  let bank = 100, peak = 100, dd = 0, run = 0, worst = 0;
+  const path = [100];
+  for (const [, o, w, , p] of L) {
+    const k = Math.min(0.05, Math.max(0, f * (p * o - 1) / (o - 1))), st = bank * k;
+    bank += w ? st * (o - 1) : -st;
+    peak = Math.max(peak, bank); dd = Math.max(dd, (peak - bank) / peak);
+    run = w ? 0 : run + 1; worst = Math.max(worst, run);
+    path.push(bank);
+  }
+  return { bank, dd, worst, path };
+}
+function bankSVG(path) {
+  const W = 320, H = 120, x0 = 34, x1 = 312, y0 = 8, y1 = 104;
+  const lo = Math.min(...path, 100), hi = Math.max(...path, 100), sp = Math.max(1, hi - lo);
+  const X = i => +(x0 + (path.length > 1 ? i / (path.length - 1) : 0) * (x1 - x0)).toFixed(1), Y = v => +(y1 - (v - lo) / sp * (y1 - y0)).toFixed(1);
+  const step = Math.max(1, Math.ceil(path.length / 300)), pts = path.map((v, i) => [i, v]).filter(([i]) => i % step === 0 || i === path.length - 1);
+  return `<svg class="bk" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evoluția băncii simulate, de la 100 la ${f1(path[path.length - 1])}">
+    <line class="gl" x1="${x0}" x2="${x1}" y1="${Y(100)}" y2="${Y(100)}"/><text x="${x0 - 6}" y="${Y(100) + 4}" text-anchor="end">100</text>
+    ${Y(100) - Y(hi) > 14 ? `<text x="${x0 - 6}" y="${Y(hi) + 8}" text-anchor="end">${Math.round(hi)}</text>` : ''}${Y(lo) - Y(100) > 14 ? `<text x="${x0 - 6}" y="${Y(lo)}" text-anchor="end">${Math.round(lo)}</text>` : ''}
+    <polyline class="ln" points="${pts.map(([i, v]) => `${X(i)},${Y(v)}`).join(' ')}"/></svg>`;
 }
 function valueHTML(m, nK) {
-  const head = `<div class="sec"><h2>Ar fi câștigat modelul?</h2>${m?.mk?.n >= 30 ? `<span class="aside">${plural(m.mk.n, 'meci testat', 'meciuri testate')}</span>` : ''}</div>`;
-  if (!m || !m.mk || m.mk.n < 30) {
-    return `${head}<p class="note">Simularea apare când sunt cel puțin 30 de meciuri terminate cu cote în testul cronologic${m?.mk ? ` (acum ${m.mk.n})` : ` (acum ${plural(nK, 'meci învățat are', 'meciuri învățate au')} cote)`}. Cotele se salvează odată cu meciul, acolo unde sursele le au; antrenează pe toate competițiile din fila Model ca să strângi mai multe.</p>`;
-  }
-  const cells = m.val[valS][valM], mg = VM[valM];
-  const stat = c => { const [n, h, pf, sq] = c, roi = n ? pf / n : 0, se = n ? Math.sqrt(Math.max(0, sq / n - roi * roi) / n) : 0; return { n, hit: n ? h / n : 0, roi, se }; };
+  const head = `<div class="sec"><h2>Ar fi câștigat modelul?</h2>${m?.mk?.n ? `<span class="aside">${plural(m.mk.n, 'meci cu cote 1X2', 'meciuri cu cote 1X2')}</span>` : ''}</div>`;
+  if (!m) return `${head}<p class="note">Simularea apare după 30 de meciuri învățate cu modelul nou (acum ${plural(nK, 'meci are', 'meciuri au')} cote). Cotele se salvează odată cu meciul, acolo unde sursele le au; antrenează pe toate competițiile din fila Model ca să strângi mai multe.</p>`;
+  const counts = Object.fromEntries(VMK.map(([k]) => [k, m.val.mdl[k][0].length]));
+  const all = m.val[valS][valK][valM], mg = VM[valM], th = VT[valT];
+  const ctl = `<div class="panel">
+      <div class="field col"><span>Piața</span><div class="seg sm mk" role="group" aria-label="Piața">${VMK.map(([k, l]) => `<button type="button" data-vk="${k}" aria-pressed="${valK === k}">${l}<small class="cnt">${counts[k]}</small></button>`).join('')}</div></div>
+      <div class="field" style="padding-top:0"><span>Marja casei<small>cu cât scade cota față de cea corectă a pieței</small></span><div class="seg sm" role="group" aria-label="Marja casei">${VM.map((x, i) => `<button type="button" data-vm="${i}" aria-pressed="${valM === i}">${Math.round(x * 100)}%</button>`).join('')}</div></div>
+      <div class="field" style="padding-top:0"><span>Probabilitățile<small>modelul singur sau estimarea finală, cu cote</small></span><div class="seg sm" role="group" aria-label="Probabilitățile">${[['mdl', 'Model'], ['mix', 'Finale']].map(([k, l]) => `<button type="button" data-vs="${k}" aria-pressed="${valS === k}">${l}</button>`).join('')}</div></div>
+    </div><div style="height:10px"></div>`;
+  const mkName = { x: 'rezultatul final (1X2)', g: 'totalul de goluri', c: 'cornere', k: 'cartonașe', t: 'șuturi pe poartă' }[valK];
+  if (all.length < 30) return `${head}${ctl}<p class="note">La ${mkName} sunt ${plural(all.length, 'meci testat', 'meciuri testate')} cu cote; simularea apare de la 30. ${valK === 'x' ? 'Cotele 1X2 vin din listele de rezultate (365Scores) și din meciurile deschise.' : 'Pentru piața asta cotele se salvează doar când deschizi un meci în aplicație (înainte sau după ce s-a jucat), iar la cornere, cartonașe și șuturi e nevoie și de statisticile meciurilor (antrenamentul cu bifa „Cu cornere, cartonașe și șuturi”).'}</p>`;
   const rows = VT.map((t, ti) => {
-    const x = stat(cells[ti]), lab = t < 0 ? 'Orice meci' : t === 0 ? 'Valoare peste 0%' : `Valoare peste ${Math.round(t * 100)}%`, lo = x.n < 30;
-    if (!x.n) return `<div class="mrw v4"><span>${lab}</span><span class="v lo">0</span><span class="v lo">–</span><span class="v lo">–</span></div>`;
-    return `<div class="mrw v4"><span>${lab}</span><span class="v${lo ? ' lo' : ''}">${x.n}</span><span class="v${lo ? ' lo' : ''}">${pct(x.hit)}</span><span class="v${lo ? ' lo' : ''}">${sgnPct(x.roi)}<small>±${Math.round(196 * x.se)}%</small></span></div>`;
+    const x = statOf(all.filter(b => b[0] > t)), lo = x.n < 30;
+    if (!x.n) return `<div class="mrw v4"><span>${thLab(t)}</span><span class="v lo">0</span><span class="v lo">–</span><span class="v lo">–</span></div>`;
+    return `<div class="mrw v4${ti === valT ? ' on' : ''}"><span>${thLab(t)}</span><span class="v${lo ? ' lo' : ''}">${x.n}</span><span class="v${lo ? ' lo' : ''}">${pct(x.hit)}</span>${roiCell(x, lo)}</div>`;
   });
-  const sure = VT.map((t, ti) => ({ t, x: stat(cells[ti]) })).filter(o => o.t >= 0 && o.x.n >= 100 && o.x.roi - 1.96 * o.x.se > 0);
+  const sure = VT.map(t => ({ t, x: statOf(all.filter(b => b[0] > t)) })).filter(o => o.t >= 0 && o.x.n >= 100 && o.x.roi - 1.96 * o.x.se > 0);
   const verdict = sure.length
     ? `La ${sure.length === 1 ? 'valoarea peste' : 'valorile peste'} ${listRo(sure.map(o => Math.round(o.t * 100) + '%'))}, ROI-ul rămâne peste zero chiar și în cel mai prost capăt al intervalului de 95%, pe cel puțin 100 de pariuri. E un semn bun, nu o dovadă: confirmă-l cu cote reale, în jurnalul de mai jos, înainte să mizezi sume.`
-    : `Niciun prag nu are un câștig dovedit: fie intervalul (±) include zero, fie sunt prea puține pariuri. Asta se așteaptă: cotele caselor sunt greu de bătut, iar modelul nu vede accidentările și formațiile.`;
-  return `${head}
-    <div class="panel">
-      <div class="field"><span>Marja casei<small>cu cât scade cota față de cea corectă a pieței</small></span><div class="seg sm" role="group" aria-label="Marja casei">${VM.map((x, i) => `<button type="button" data-vm="${i}" aria-pressed="${valM === i}">${Math.round(x * 100)}%</button>`).join('')}</div></div>
-      <div class="field" style="padding-top:0"><span>Probabilitățile<small>modelul singur sau estimarea finală, cu cote</small></span><div class="seg sm" role="group" aria-label="Probabilitățile">${[['mdl', 'Model'], ['mix', 'Finale']].map(([k, l]) => `<button type="button" data-vs="${k}" aria-pressed="${valS === k}">${l}</button>`).join('')}</div></div>
-    </div>
+    : `Niciun prag nu are un câștig dovedit: fie intervalul (±) include zero, fie sunt prea puține pariuri. Asta se așteaptă: cotele caselor sunt greu de bătut.`;
+  // pe competiții, la pragul ales
+  const sel = all.filter(b => b[0] > th), by = new Map();
+  sel.forEach(b => { const k = b[3] || ''; if (!by.has(k)) by.set(k, []); by.get(k).push(b); });
+  const comp = [...by].map(([sl, L]) => [sl, statOf(L)]).sort((x, y) => y[1].n - x[1].n);
+  const compHTML = comp.length ? `<div class="grp mt"><div class="mrw v4 hd"><span></span><span class="v">Pariuri</span><span class="v">Nimerite</span><span class="v">ROI</span></div>${comp.map(([sl, x]) => { const lo = x.n < 30; return `<div class="mrw v4"><span>${esc(sl ? compLabel(sl) : 'Altele')}</span><span class="v${lo ? ' lo' : ''}">${x.n}</span><span class="v${lo ? ' lo' : ''}">${pct(x.hit)}</span>${roiCell(x, lo)}</div>`; }).join('')}</div>` : '<p class="note">Niciun pariu la pragul ales.</p>';
+  // banca
+  const kf = KF[valKF][0], bs = bankSim(sel, kf), fl = statOf(sel);
+  const bankHTML = sel.length ? `<div class="panel"><div class="field" style="padding-bottom:4px"><span>Miza<small>fracțiune din Kelly, cel mult 5% din bancă pe pariu</small></span><div class="seg sm" role="group" aria-label="Fracțiune Kelly">${KF.map(([, l], i) => `<button type="button" data-kf="${i}" aria-pressed="${valKF === i}">${l}</button>`).join('')}</div></div>
+      <div class="rel">${bankSVG(bs.path)}</div></div>
     <div style="height:10px"></div>
+    <div class="tiles bt">${[['Banca la final', f1(bs.bank), 'din 100'], ['Cea mai mare scădere', `−${Math.round(bs.dd * 100)}%`, 'de la un vârf'], ['Pierderi la rând', String(bs.worst), 'cel mai lung șir'], ['Cu miză fixă', `${fl.roi >= 0 ? '+' : '−'}${f1(Math.abs(fl.roi * fl.n))}`, `unități din ${fl.n}`]].map(([l, v, sub]) => `<div class="tile"><span>${l}</span><b>${v}<small>${sub}</small></b></div>`).join('')}</div>` : '';
+  return `${head}${ctl}
     <div class="grp mt"><div class="mrw v4 hd"><span></span><span class="v">Pariuri</span><span class="v">Nimerite</span><span class="v">ROI</span></div>${rows.join('')}</div>
     <p class="note">${esc(verdict)}</p>
-    <p class="note">Cum e făcută: la fiecare meci terminat cu cote, modelul (care a învățat doar din meciurile de dinainte) caută rezultatul cu cea mai mare valoare, adică probabilitatea lui × cota − 1. Dacă valoarea trece de prag, pariez 1 unitate. Cota e cea corectă a pieței, fără marjă, micșorată cu ${Math.round(mg * 100)}%; nu sunt cotele reale ale unei case, așa că ROI-ul adevărat poate ieși mai bun sau mai prost. Cifra de după ± arată cât poate greși ROI-ul din hazard (interval de 95%): fără pariuri multe, un ROI frumos poate fi noroc. „Orice meci” arată ce pierzi, în medie, dacă pariezi la întâmplare.</p>`;
+    <div class="field" style="padding:2px 16px 0"><span>Pragul pentru competiții și bancă</span><select id="vth">${VT.map((t, i) => `<option value="${i}"${i === valT ? ' selected' : ''}>${thLab(t)}</option>`).join('')}</select></div>
+    <div class="sec"><h3>Pe competiții</h3></div>${compHTML}
+    <p class="note">Unde casele investesc mai puțin (ligile mici, cupele), cotele sunt mai des greșite; dar sub 100 de pariuri, diferențele dintre competiții sunt în mare parte hazard.</p>
+    ${sel.length ? `<div class="sec"><h3>Simularea băncii</h3></div>${bankHTML}<p class="note">Banca pornește de la 100 și pariază la fiecare meci, în ordinea datei, ${KF[valKF][1]} din miza Kelly (cât spune formula Kelly după probabilitatea ${valS === 'mdl' ? 'modelului' : 'finală'}), cel mult 5% din bancă. Arată cât de mari pot fi scăderile pe drum, nu doar media. Kelly întreg e prea riscant când probabilitățile au erori.</p>` : ''}
+    <p class="note">Cum e făcută: la fiecare meci terminat cu cote, modelul (care a învățat doar din meciurile de dinainte) caută pariul cu cea mai mare valoare, adică probabilitatea lui × cota − 1${valK === 'x' ? '' : ', pe toate liniile peste/sub cu cote ale pieței alese'}. Dacă valoarea trece de prag, pariez 1 unitate. Cota e cea corectă a pieței, fără marjă, micșorată cu ${Math.round(mg * 100)}%; nu sunt cotele reale ale unei case, așa că ROI-ul adevărat poate ieși mai bun sau mai prost. Cifra de după ± arată cât poate greși ROI-ul din hazard (interval de 95%). „Orice meci” arată ce pierzi, în medie, dacă pariezi la întâmplare.</p>`;
+}
+// cum s-au mișcat cotele între prima privire și închidere, pe pronosticurile salvate înainte de meci
+function moveHTML() {
+  const L = Object.values(LEARN.s).filter(s => s.src === 'live' && s.O && s.C && s.C[0] - s.O[0] >= 30 * 60e3 && (s.PM || s.P));
+  const head = '<div class="sec"><h2>Cum s-au mișcat cotele</h2></div>';
+  const pend = Object.values(LEARN.s).filter(s => s.src === 'live' && s.O && !s.R).length;
+  const howTo = `Aplicația notează singură cotele 1X2 când deschizi un meci înainte de start și le reîmprospătează la 10 minute cât timp e deschisă, în ultimele 4 ore dinainte de meci; ultima citire e cota de închidere.${pend ? ` Acum urmăresc ${plural(pend, 'meci', 'meciuri')}.` : ''}`;
+  let n = 0, sum = 0, pos = 0, sev = 0;
+  for (const s of L) {
+    const pm = (s.PM || s.P).slice(0, 3), pO = s.O.slice(1, 4), pC = s.C.slice(1, 4);
+    if (![...pm, ...pO, ...pC].every(v => fin(v) && v > 0)) continue;
+    let bi = -1, be = 0;
+    pm.forEach((p, i) => { const e = p / pO[i] - 1; if (e > be) { be = e; bi = i; } });
+    if (bi < 0) continue;
+    const clv = pC[bi] / pO[bi] - 1;
+    n++; sum += clv; sev += be; if (clv > 0) pos++;
+  }
+  if (n < 5) return `${head}<p class="note">Dacă piața se mută după pronostic spre ce credea modelul, modelul a văzut ceva înaintea ei: e cel mai rapid semn de avantaj real. Comparația apare după 5 meciuri cu cote citite de două ori, la cel puțin 30 de minute distanță (acum ${n}). ${howTo}</p>`;
+  return `${head}<div class="tiles bt">${[['Meciuri', String(n), ''], ['CLV mediu al modelului', sgn1(sum / n), 'cote corecte, fără marjă'], ['Spre model', pct(pos / n), 'din mișcări'], ['Valoare la pronostic', sgn1(sev / n), 'în medie, după model']].map(([l, v, sub]) => `<div class="tile"><span>${l}</span><b>${v}${sub ? `<small>${sub}</small>` : ''}</b></div>`).join('')}</div>
+    <p class="note">La fiecare pronostic iau rezultatul la care modelul vedea valoare față de cotele de atunci și compar cota corectă de atunci cu cea de la închidere. Peste 50% „spre model” și un CLV mediu pozitiv, pe sute de meciuri, înseamnă că modelul anticipează piața; în jur de 50% și 0% înseamnă că nu. ${howTo}</p>`;
 }
 function betSumHTML() {
   const t = betStats(BETS), tile = (l, v, sub = '') => `<div class="tile"><span>${l}</span><b>${v}${sub ? `<small>${sub}</small>` : ''}</b></div>`;
@@ -4757,7 +5044,7 @@ function betListHTML() {
   if (!BETS.length) return `<p class="note">Încă n-ai notat niciun pariu.</p>`;
   return `<div class="grp plain">${[...BETS].sort((a, b) => b.t - a.t).map(b => {
     const st = b.res === 'w' ? `<span class="res ok">${sgnMoney(b.stake * (b.odds - 1))}</span>` : b.res === 'l' ? `<span class="res no">${sgnMoney(-b.stake)}</span>` : b.res === 'v' ? '<span class="res">anulat</span>' : '<span class="res">în așteptare</span>';
-    const clv = fin(b.close) && b.close > 1 ? ` · CLV ${sgn1(b.odds / b.close - 1)}` : '';
+    const clv = fin(b.close) && b.close > 1 ? ` · CLV ${sgn1(b.odds / b.close - 1)}${b.ca ? ' (închidere automată)' : ''}` : '';
     return `<button type="button" class="row" data-bet="${esc(b.id)}"><span class="grow"><b>${esc(b.ev)}</b><small>${esc(b.sel)} la ${nf2.format(b.odds)} · ${money(b.stake)}${clv}</small></span>${st}</button>`;
   }).join('')}</div>`;
 }
@@ -4787,7 +5074,9 @@ function openBet(id, after) {
   $$('#shin [data-res]').forEach(el => el.addEventListener('click', () => { res = el.dataset.res; $$('#shin [data-res]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.res === res))); }));
   $('#bsv').addEventListener('click', () => {
     const c = parseNum($('#bcl').value);
-    b.close = c != null && c > 1 ? c : null; b.res = res || null;
+    const nc = c != null && c > 1 ? c : null;
+    if (nc !== b.close) b.ca = 0;
+    b.close = nc; b.res = res || null;
     saveBets(); closeSheet(); after();
   });
   let armed = false;
@@ -4808,21 +5097,25 @@ function viewBets(live) {
   if (S.length && (!LEARN.fit || LEARN.fit.n !== S.length)) refit();
   draft = newDraft();
   V.innerHTML = `${topBar('Pariuri')}
-    <p class="lead">Aici vezi dacă modelul ar fi bătut cotele pe meciurile trecute și îți notezi pariurile tale. Cotele caselor sunt greu de bătut; semnul cel mai sigur de avantaj e să prinzi constant cote mai bune decât cele de la închidere (CLV), pe câteva sute de pariuri.</p>
+    <p class="lead">Aici vezi dacă modelul ar fi bătut cotele pe meciurile trecute, pe fiecare piață și competiție, și îți notezi pariurile tale. Cotele caselor sunt greu de bătut; semnul cel mai sigur de avantaj e să prinzi constant cote mai bune decât cele de la închidere (CLV), pe câteva sute de pariuri.</p>
     <div id="val"></div>
+    ${moveHTML()}
     <div class="sec"><h2>Jurnalul tău</h2></div>
     <div id="bsum">${betSumHTML()}</div>
     <div class="sec"><h2>Adaugă un pariu</h2></div>
     ${betFormHTML()}
     <div class="sec"><h2>Pariurile tale</h2></div>
     <div id="blist">${betListHTML()}</div>
-    <p class="method"><b>Despre jurnal.</b> Aplicația nu plasează pariuri, nu arată cotele caselor și nu trimite către ele: aici rămâne doar ce scrii tu, pe acest dispozitiv, și se păstrează și când golești cache-ul. Profitul și ROI-ul se calculează din pariurile decise (câștigat sau pierdut; cele anulate nu intră). CLV = cota ta împărțită la cota de închidere, minus 1. Un pariu notat dintr-un pronostic al aplicației, cu 1, X sau 2, se decide singur după rezultat. Pariază doar sume pe care ți le permiți să le pierzi.</p>`;
+    <p class="method"><b>Despre jurnal.</b> Aplicația nu plasează pariuri, nu arată cotele caselor și nu trimite către ele: aici rămâne doar ce scrii tu, pe acest dispozitiv, și se păstrează și când golești cache-ul. Profitul și ROI-ul se calculează din pariurile decise (câștigat sau pierdut; cele anulate nu intră). CLV = cota ta împărțită la cota de închidere, minus 1. Un pariu notat dintr-un pronostic al aplicației, cu 1, X sau 2, se decide singur după rezultat și primește singur cota de închidere, dacă aplicația a citit-o (o poți corecta). Pariază doar sume pe care ți le permiți să le pierzi.</p>`;
   const drawLists = () => { $('#bsum').innerHTML = betSumHTML(); $('#blist').innerHTML = betListHTML(); };
   const drawVal = m => {
     const box = $('#val'); if (!box) return;
     box.innerHTML = valueHTML(m, nK);
     $$('[data-vm]', box).forEach(el => el.addEventListener('click', () => { valM = +el.dataset.vm; drawVal(m); }));
     $$('[data-vs]', box).forEach(el => el.addEventListener('click', () => { valS = el.dataset.vs; drawVal(m); }));
+    $$('[data-vk]', box).forEach(el => el.addEventListener('click', () => { valK = el.dataset.vk; drawVal(m); }));
+    $$('[data-kf]', box).forEach(el => el.addEventListener('click', () => { valKF = +el.dataset.kf; drawVal(m); }));
+    $('#vth', box)?.addEventListener('change', e => { valT = +e.target.value; drawVal(m); });
   };
   if (SG.length >= 30) {
     $('#val').innerHTML = '<div class="sec"><h2>Ar fi câștigat modelul?</h2></div><p class="note">Calculez simularea…</p>';
