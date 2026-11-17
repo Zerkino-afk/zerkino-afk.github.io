@@ -1221,10 +1221,12 @@ function pois(l, max) { const p = [Math.exp(-l)]; for (let i = 1; i <= max; i++)
 // negativ binomială cu media mu și varianța phi·mu: șuturile variază de la meci la meci mai mult decât ar spune Poisson
 function nbin(mu, phi, max) { const r = mu / (phi - 1), q = 1 - 1 / phi, p = [Math.pow(1 / phi, r)]; for (let i = 1; i <= max; i++) p[i] = p[i - 1] * (i - 1 + r) / i * q; return p; }
 const pmf = (mu, max, phi = 1) => phi > 1.02 ? nbin(mu, phi, max) : pois(mu, max);
-function block(la, lb, max, rho = 0, phi = 1) {
+// dl: cât de des ies egaluri în plus față de Poisson (calibrarea 1X2 de la goluri); 0 = deloc
+function block(la, lb, max, rho = 0, phi = 1, dl = 0) {
   const pa = pmf(la, max, phi), pb = pmf(lb, max, phi);
   const M = pa.map(x => pb.map(y => x * y));
   if (rho) { M[0][0] *= Math.max(0, 1 - la * lb * rho); M[0][1] *= Math.max(0, 1 + la * rho); M[1][0] *= Math.max(0, 1 + lb * rho); M[1][1] *= Math.max(0, 1 - rho); }
+  if (dl) for (let i = 0; i <= max; i++) M[i][i] *= 1 + dl;
   let s = 0; M.forEach(r => r.forEach(v => { s += v; }));
   let a = 0, dr = 0, b = 0, btts = 0;
   const T = new Array(2 * max + 1).fill(0);
@@ -1308,6 +1310,43 @@ function sample(teamId, list, stats) {
 const MKE = { c: { b: 0.4, g: 0.2 }, k: { b: -0.12, g: 0 }, s: { b: 0.6, g: 0.35 }, t: { b: 0.7, g: 0.6 } };
 // prm: parametrii modelului; cei inițiali (DEF) sau cei învățați din meciurile terminate (vezi „învățare”)
 // mk: cotele meciului, ca probabilități (vezi „cote”); fără ele, estimarea vine doar din forma echipelor
+// Forma pe termen lung, pentru goluri: ultimele GW meciuri oficiale ale echipei (fără amicalele cluburilor), din toate competițiile
+// și din sezonul trecut când sezonul acesta nu ajunge. Testat pe peste 6.000 de meciuri din 10 campionate și Liga Campionilor (2024–2026),
+// cu validare cronologică: 40 de meciuri prezic mult mai bine decât 5. Ponderea mai mare pentru meciurile recente, forța adversarilor
+// și forma separată acasă/deplasare n-au ajutat acolo, așa că nu sunt folosite.
+const GW = 40;
+const gList = list => list.filter(e => e.slug !== 'club.friendly' && fin(e.home.score) && fin(e.away.score)).slice(0, GW);
+function gfeat(teamId, list) {
+  let f = 0, a = 0, n = 0;
+  for (const ev of gList(list)) { const home = ev.home.id === teamId; f += home ? ev.home.score : ev.away.score; a += home ? ev.away.score : ev.home.score; n++; }
+  return n ? { F: f / n, A: a / n, n } : null;
+}
+// meciurile învățate înainte de versiunea aceasta au doar forma scurtă: atunci folosesc golurile din ea
+const gOf = S => S.G || { F: S.gf?.m ?? PRIOR.g, A: S.ga?.m ?? PRIOR.g, n: S.gf?.n || 0 };
+// Golurile așteptate: atacul unei echipe înmulțit cu apărarea adversarului (exponenții e1 și e2 spun cât contează fiecare), apoi terenul.
+// La final, calibrarea rezultatului 1X2: T > 1 mărește diferențele dintre echipe (modelul ieșea prea prudent), iar dl (în block) adaugă egaluri.
+function goalsLam(SA, SB, neutral, q) {
+  const P = PRIOR.g, d = DEF.g, k = q.k ?? d.k, e1 = q.e1 ?? d.e1, e2 = q.e2 ?? d.e2, T = q.T ?? d.T, A = gOf(SA), B = gOf(SB);
+  const s = (m, n) => shrink({ m, n }, P, k) / P, mid = (q.hH + q.hA) / 2;
+  let la = Math.max(0.05, P * Math.pow(s(A.F, A.n), e1) * Math.pow(s(B.A, B.n), e2) * (neutral ? mid : q.hH));
+  let lb = Math.max(0.05, P * Math.pow(s(B.F, B.n), e1) * Math.pow(s(A.A, A.n), e2) * (neutral ? mid : q.hA));
+  if (T !== 1) { const g = Math.sqrt(la * lb), r = Math.pow(la / lb, T / 2); la = g * r; lb = g / r; }
+  return [la, lb];
+}
+// doar șansele 1X2, fără matricea de scoruri: pentru potrivirile pe sute de meciuri
+const P1A = new Float64Array(11), P1B = new Float64Array(11);
+function p1x2(la, lb, rho = 0, dl = 0) {
+  P1A[0] = Math.exp(-la); P1B[0] = Math.exp(-lb);
+  for (let i = 1; i <= 10; i++) { P1A[i] = P1A[i - 1] * la / i; P1B[i] = P1B[i - 1] * lb / i; }
+  let h = 0, d = 0, a = 0;
+  for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) {
+    let v = P1A[i] * P1B[j];
+    if (rho && i < 2 && j < 2) v *= Math.max(0, i === 0 && j === 0 ? 1 - la * lb * rho : i === 0 ? 1 + la * rho : j === 0 ? 1 + lb * rho : 1 - rho);
+    if (i === j) d += dl ? v * (1 + dl) : v; else if (i > j) h += v; else a += v;
+  }
+  const t = h + d + a;
+  return [h / t, d / t, a / t];
+}
 function predict(SA, SB, neutral, prm = params(), mk = null) {
   const lam = (q, prior, xf, ya, yf, xa) => {
     const mid = (q.hH + q.hA) / 2;
@@ -1315,12 +1354,14 @@ function predict(SA, SB, neutral, prm = params(), mk = null) {
       (q.w * shrink(yf, prior, q.k) + (1 - q.w) * shrink(xa, prior, q.k)) * (neutral ? mid : q.hA)];
   };
   const W = prm.m || DEF.m;
-  const [ma, mb] = lam(prm.g, PRIOR.g, SA.gf, SB.ga, SB.gf, SA.ga);
+  const [ma, mb] = goalsLam(SA, SB, neutral, prm.g);
   const ig = mk ? impliedGoals(mk, prm.g.rho, ma, mb) : null;
   const la = ig ? mixl(ma, ig.la, W.g) : ma, lb = ig ? mixl(mb, ig.lb, W.g) : mb;
-  const goals = block(la, lb, 10, prm.g.rho);
+  // corecția pentru egaluri e învățată pe model; când intră și cotele, contează doar partea modelului
+  const dlm = prm.g.dl ?? DEF.g.dl, dl = ig ? dlm * (1 - W.g) : dlm;
+  const goals = block(la, lb, 10, prm.g.rho, 1, dl);
   goals.top = topScores(goals.M, 5);
-  goals.mdl = [ma, mb]; goals.rho = prm.g.rho;
+  goals.mdl = [ma, mb]; goals.rho = prm.g.rho; goals.dl = dlm;
   const tilt = Math.log(la / lb) - Math.log(ma / mb), scale = Math.log((la + lb) / (ma + mb));
   const part = (key, f, a, max) => {
     if (!SA[f]?.n || !SB[f]?.n) return null;
@@ -1349,8 +1390,9 @@ function pctRound(ps) {
 // Fiecare pronostic se salvează împreună cu datele din care a fost calculat. După fluier aplicația
 // citește rezultatul, iar parametrii modelului se re-estimează prin verosimilitate maximă (Poisson,
 // Dixon–Coles pentru goluri). Cât timp sunt puține meciuri, valorile învățate sunt trase spre cele implicite.
+// La goluri, valorile inițiale sunt potrivite pe peste 6.000 de meciuri reale (10 campionate mari și Liga Campionilor, 2024–2026).
 const DEF = {
-  g: { k: 2, w: 0.5, hH: 1.1, hA: 0.9, rho: -0.1, phi: 1 },
+  g: { k: 12, w: 0.5, e1: 1.05, e2: 0.8, hH: 1.1, hA: 0.9, rho: -0.025, phi: 1, T: 1.3, dl: 0.08 },
   c: { k: 2, w: 0.5, hH: 1.06, hA: 0.94, rho: 0, phi: 1 },
   k: { k: 2, w: 0.5, hH: 0.95, hA: 1.05, rho: 0, phi: 1 },
   s: { k: 2, w: 0.5, hH: 1.08, hA: 0.93, rho: 0, phi: 1.5 },
@@ -1358,18 +1400,65 @@ const DEF = {
   // cât contează cotele față de forma echipelor, acolo unde există cote; ponderea de la goluri se învață din rezultate
   m: { g: 0.75, c: 0.7, k: 0.7, s: 0.7, t: 0.7 }
 };
+// modelul de goluri de până acum (media atacului și a apărării din forma scurtă), păstrat doar ca reper în fila Model
+const OLD_G = { k: 2, w: 0.5, hH: 1.1, hA: 0.9, rho: -0.1, phi: 1 };
 const PKEYS = ['g', 'c', 'k', 's', 't'];
 const MIN_FIT = 20, N0 = 40, SLUG_MIN = 60;
-const LEARN = Object.assign({ v: 2, on: true, mk: true, s: {}, fit: null }, store.get('learn', {}));
+const LEARN = Object.assign({ v: 3, on: true, mk: true, s: {}, fit: null }, store.get('learn', {}));
 let learnDirty = false;
+/* Meciurile reconstruite la antrenament (src 'bt') pot fi mii, așa că stau în IndexedDB. Stocarea locală (localStorage) e mică
+   și comună cu celelalte aplicații de pe același site; acolo rămân doar setările, pronosticurile salvate înainte de meci și parametrii.
+   BT: 'ls' = încă în localStorage (ca înainte), 'load' = se citesc din IndexedDB, 'idb' = în IndexedDB, 'fail' = IndexedDB nu răspunde. */
+const LDB = (() => {
+  let dbp = null;
+  const open = () => dbp ||= new Promise((res, rej) => {
+    let r;
+    try { r = indexedDB.open('careu', 1); } catch (e) { rej(e); return; }
+    r.onupgradeneeded = () => { try { r.result.createObjectStore('kv'); } catch (e) {} };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error || new Error('IndexedDB'));
+    r.onblocked = () => rej(new Error('IndexedDB blocat'));
+  });
+  const run = (mode, f) => open().then(db => new Promise((res, rej) => {
+    const t = db.transaction('kv', mode), q = f(t.objectStore('kv'));
+    t.oncomplete = () => res(q?.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error('anulat'));
+  }));
+  return { get: k => run('readonly', s => s.get(k)), put: (k, v) => run('readwrite', s => s.put(v, k)) };
+})();
+const tmo = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+let BT = LEARN.where === 'idb' ? 'load' : 'ls';
+const btReady = (async () => {
+  try {
+    if (BT === 'load') {
+      const bt = await tmo(LDB.get('bt'), 6000);
+      // ce s-a învățat între timp, în sesiunea asta, are prioritate
+      if (bt && typeof bt === 'object') for (const [id, s] of Object.entries(bt)) if (!LEARN.s[id]) LEARN.s[id] = s;
+      BT = 'idb';
+    } else {
+      await tmo(LDB.put('probe', 1), 6000);
+      BT = 'idb'; learnDirty = true; // la prima salvare, meciurile reconstruite se mută din localStorage în IndexedDB
+    }
+  } catch (e) { BT = BT === 'load' ? 'fail' : 'ls'; }
+})();
+function pruneLearn() {
+  const ks = Object.keys(LEARN.s), cap = BT === 'idb' ? 4000 : 900, keep = BT === 'idb' ? 3600 : 800;
+  if (ks.length > cap) {
+    ks.sort((a, b) => (LEARN.s[a].src === 'live') - (LEARN.s[b].src === 'live') || new Date(LEARN.s[a].d) - new Date(LEARN.s[b].d))
+      .slice(0, ks.length - keep).forEach(k => delete LEARN.s[k]);
+  }
+}
+let btChain = Promise.resolve();
 function saveLearn() {
   learnDirty = false;
-  const ks = Object.keys(LEARN.s);
-  if (ks.length > 900) {
-    ks.sort((a, b) => (LEARN.s[a].src === 'live') - (LEARN.s[b].src === 'live') || new Date(LEARN.s[a].d) - new Date(LEARN.s[b].d))
-      .slice(0, ks.length - 800).forEach(k => delete LEARN.s[k]);
-  }
-  store.cache('learn', LEARN);
+  const split = () => { const bt = {}, rest = {}; for (const [k, s] of Object.entries(LEARN.s)) (s.src === 'bt' ? bt : rest)[k] = s; return [bt, rest]; };
+  // cât timp nu am citit (sau nu pot citi) IndexedDB, nu scriu acolo: aș șterge ce e salvat; păstrez doar partea din localStorage
+  if (BT === 'load' || BT === 'fail') { store.cache('learn', { ...LEARN, s: split()[1] }); return; }
+  pruneLearn();
+  if (BT === 'ls') { store.cache('learn', LEARN); return; }
+  const [bt, rest] = split();
+  btChain = btChain.then(() => LDB.put('bt', bt)).then(
+    () => { LEARN.where = 'idb'; store.cache('learn', { ...LEARN, s: rest }); },
+    () => { store.cache('learn', LEARN.where === 'idb' ? { ...LEARN, s: rest } : LEARN); });
 }
 setInterval(() => { if (learnDirty) saveLearn(); }, 5000);
 addEventListener('pagehide', () => { if (learnDirty) saveLearn(); });
@@ -1380,6 +1469,12 @@ const r2 = v => fin(v) ? Math.round(v * 100) / 100 : null;
 const SK = ['gf', 'ga', 'cf', 'ca', 'kf', 'ka', 'sh', 'sha', 'st', 'sta'];
 const packS = S => SK.flatMap(k => [r2(S[k]?.m), S[k]?.n || 0]);
 const unpackS = a => { const o = {}; SK.forEach((k, i) => { o[k] = { m: a[2 * i] ?? 0, n: a[2 * i + 1] || 0 }; }); o.n = o.gf.n; return o; };
+// trăsăturile salvate ale unui meci învățat: forma scurtă (A, B) și, de la versiunea 3, golurile pe termen lung (G)
+function AB(s) {
+  const A = unpackS(s.A), B = unpackS(s.B);
+  if (hasG(s)) { A.G = { F: s.G[0], A: s.G[1], n: s.G[2] }; B.G = { F: s.G[3], A: s.G[4], n: s.G[5] }; }
+  return [A, B];
+}
 function actualOf(ev, st) {
   if (!ev?.done || !fin(ev.home.score) || !fin(ev.away.score)) return null;
   const a = st?.ok ? st.t[ev.home.id] : null, b = st?.ok ? st.t[ev.away.id] : null;
@@ -1392,15 +1487,18 @@ function actualOf(ev, st) {
 function record(ev, SA, SB, P, R, src, K = null) {
   if (!ev?.id || /^vs/.test(ev.id) || !SA?.n || !SB?.n) return;
   const cur = LEARN.s[ev.id];
+  const G = SA.G && SB.G ? [r2(SA.G.F), r2(SA.G.A), SA.G.n, r2(SB.G.F), r2(SB.G.A), SB.G.n] : null;
   if (cur && cur.src === 'live' && src !== 'live') {
     if (K && !cur.K) { cur.K = K; learnDirty = true; }
     if (R && !cur.R) { cur.R = R; learnDirty = true; scheduleFit(); }
+    // pronosticurile salvate înainte de versiunea aceasta nu aveau forma pe termen lung: o completez (tot cu meciuri de dinainte)
+    if (G && !cur.G) { cur.G = G; learnDirty = true; }
     return;
   }
   if (cur?.R && !R) return;
   LEARN.s[ev.id] = {
     d: ev.date, sl: ev.slug || '', hn: ev.home.short || ev.home.name, an: ev.away.short || ev.away.name, neu: ev.neutral ? 1 : 0, src,
-    A: packS(SA), B: packS(SB),
+    A: packS(SA), B: packS(SB), G,
     P: P ? [...P.goals.p, ...(P.corners ? P.corners.p : [null, null, null]), ...(P.cards ? P.cards.p : [null, null, null])].map(v => fin(v) ? Math.round(v * 1000) / 1000 : null) : null,
     R: R || null, K: K || cur?.K || null, t: Date.now()
   };
@@ -1498,14 +1596,84 @@ function fitPart(rows, part, d = DEF[part]) {
   const mix = key => (d[key] ?? DEF[part][key]) + (best[key] - (d[key] ?? DEF[part][key])) * a;
   return { k: mix('k'), w: mix('w'), hH: mix('hH'), hA: mix('hA'), rho: part === 'g' ? mix('rho') : 0, phi: part === 'g' ? 1 : clamp(mix('phi'), 1, 3), n: rows.length };
 }
-const fitAll = (S, base = DEF) => Object.fromEntries(PKEYS.map(p => [p, fitPart(rowsOf(S, p), p, base[p] || DEF[p])]));
+// goluri (modelul nou): atac × apărare pe forma lungă, apoi calibrarea 1X2
+const KG2 = [4, 8, 12, 16], E1G = [0.8, 0.95, 1.05, 1.2], E2G = [0.5, 0.65, 0.8, 0.95], TG = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6], DG = [0, 0.04, 0.08, 0.12, 0.16];
+// Valorile de pornire vin deja din peste 6.000 de meciuri, așa că se mută încet: pe meciurile publice, o potrivire rapidă pe câteva sute
+// sau mii de meciuri (cum era la modelul vechi) a prezis mai prost decât valorile de pornire; cu atâta tragere spre ele, iese la fel de bine.
+const N0G = 2000, NCG = 4000;
+// meciurile învățate cu versiunea veche au doar forma scurtă: nu le folosesc la goluri, altfel parametrii s-ar potrivi pe alt fel de date
+const hasG = s => Array.isArray(s.G) && s.G.length === 6 && s.G[2] > 0 && s.G[5] > 0;
+function rowsG(S) {
+  return S.filter(hasG).map(s => {
+    const yH = s.R[0], yA = s.R[1];
+    if (!fin(yH) || !fin(yA)) return null;
+    const [A, B] = AB(s);
+    return { A: gOf(A), B: gOf(B), neu: s.neu, yH, yA };
+  }).filter(Boolean);
+}
+function fitG(rows, d = DEF.g, cal = true) {
+  const D = { ...DEF.g, ...d };
+  if (rows.length < MIN_FIT) return { ...D, n: rows.length };
+  const P = PRIOR.g, lg = (m, n, k) => Math.log(shrink({ m, n }, P, k) / P);
+  let best = null;
+  for (const k of KG2) {
+    const x = rows.map(r => [lg(r.A.F, r.A.n, k), lg(r.A.A, r.A.n, k), lg(r.B.F, r.B.n, k), lg(r.B.A, r.B.n, k)]);
+    for (const e1 of E1G) for (const e2 of E2G) {
+      const bH = [], bA = [];
+      let sy = 0, sb = 0, ty = 0, tb = 0;
+      rows.forEach((r, i) => {
+        bH[i] = P * Math.exp(e1 * x[i][0] + e2 * x[i][3]); bA[i] = P * Math.exp(e1 * x[i][2] + e2 * x[i][1]);
+        if (!r.neu) { sy += r.yH; sb += bH[i]; ty += r.yA; tb += bA[i]; }
+      });
+      const hH = sb > 0 ? clamp(sy / sb, 0.6, 1.6) : D.hH, hA = tb > 0 ? clamp(ty / tb, 0.5, 1.5) : D.hA;
+      for (const rho of RG) {
+        let nll = 0;
+        rows.forEach((r, i) => {
+          const f = r.neu ? (hH + hA) / 2 : null;
+          const m1 = Math.max(0.05, bH[i] * (f ?? hH)), m2 = Math.max(0.05, bA[i] * (f ?? hA));
+          nll += m1 - r.yH * Math.log(m1) + m2 - r.yA * Math.log(m2);
+          if (rho) nll -= Math.log(Math.max(1e-6, tau(r.yH, r.yA, m1, m2, rho)));
+        });
+        if (!best || nll < best.nll) best = { nll, k, e1, e2, hH, hA, rho };
+      }
+    }
+  }
+  const a = rows.length / (rows.length + N0G), mix = key => D[key] + (best[key] - D[key]) * a;
+  const out = { k: mix('k'), w: D.w, e1: mix('e1'), e2: mix('e2'), hH: mix('hH'), hA: mix('hA'), rho: mix('rho'), phi: 1, T: D.T, dl: D.dl, n: rows.length };
+  if (cal) {
+    // calibrarea rezultatului 1X2, potrivită direct pe log loss: cât de mari ies diferențele dintre echipe (T) și egalurile (dl)
+    const L = rows.map(r => goalsLam({ G: r.A }, { G: r.B }, !!r.neu, { ...out, T: 1 }));
+    let bc = null;
+    for (const T of TG) for (const dl of DG) {
+      let ll = 0;
+      rows.forEach((r, i) => {
+        let [la, lb] = L[i];
+        if (T !== 1) { const g = Math.sqrt(la * lb), q = Math.pow(la / lb, T / 2); la = g * q; lb = g / q; }
+        ll -= Math.log(Math.max(1e-6, p1x2(la, lb, out.rho, dl)[outc(r.yH, r.yA)]));
+      });
+      if (!bc || ll < bc.ll) bc = { ll, T, dl };
+    }
+    const c = rows.length / (rows.length + NCG);
+    out.T = D.T + (bc.T - D.T) * c; out.dl = D.dl + (bc.dl - D.dl) * c;
+  }
+  return out;
+}
+// cal: calibrarea 1X2 se potrivește doar pe toate meciurile; competițiile o preiau de acolo
+const fitAll = (S, base = DEF, cal = true) => Object.fromEntries(PKEYS.map(p => [p, p === 'g' ? fitG(rowsG(S), base.g || DEF.g, cal) : fitPart(rowsOf(S, p), p, base[p] || DEF[p])]));
+// modelul de dinainte, pe forma scurtă: doar pentru comparația din fila Model
+function oldGoals(A, B, neu, q) {
+  const mid = (q.hH + q.hA) / 2, P = PRIOR.g;
+  const la = Math.max(0.05, (q.w * shrink(A.gf, P, q.k) + (1 - q.w) * shrink(B.ga, P, q.k)) * (neu ? mid : q.hH));
+  const lb = Math.max(0.05, (q.w * shrink(B.gf, P, q.k) + (1 - q.w) * shrink(A.ga, P, q.k)) * (neu ? mid : q.hA));
+  return p1x2(la, lb, q.rho, 0);
+}
 // cât să conteze cotele la goluri: ponderea care ar fi prezis cel mai bine meciurile terminate pentru care existau cote
 const WGRID = [0, 0.2, 0.35, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1];
 const NM0 = 150;
 const hasK = s => Array.isArray(s.K) && fin(s.K[0]) && fin(s.K[1]) && s.K[0] > 0 && s.K[1] > 0;
 function fitMarket(S, p) {
   const out = { ...DEF.m, n: 0 };
-  const rows = S.filter(hasK).map(s => { const g = predict(unpackS(s.A), unpackS(s.B), !!s.neu, p).goals; return { ma: g.la, mb: g.lb, ka: s.K[0], kb: s.K[1], yH: s.R[0], yA: s.R[1] }; });
+  const rows = S.filter(s => hasK(s) && hasG(s)).map(s => { const [A, B] = AB(s), g = predict(A, B, !!s.neu, p).goals; return { ma: g.la, mb: g.lb, ka: s.K[0], kb: s.K[1], yH: s.R[0], yA: s.R[1] }; });
   out.n = rows.length;
   if (rows.length < MIN_FIT) return out;
   let best = null;
@@ -1525,25 +1693,12 @@ function fitModel(S) {
   const p = fitAll(S), s = {}, by = new Map();
   p.m = fitMarket(S, p);
   S.forEach(x => { if (x.sl) { if (!by.has(x.sl)) by.set(x.sl, []); by.get(x.sl).push(x); } });
-  for (const [sl, L] of by) if (L.length >= SLUG_MIN) { s[sl] = fitAll(L, p); s[sl].m = p.m; }
+  for (const [sl, L] of by) if (L.length >= SLUG_MIN) { s[sl] = fitAll(L, p, false); s[sl].m = p.m; }
   return { p, s };
 }
-// pe meciurile terminate care au avut cote: cât de bine ar fi prezis doar modelul, doar cotele și amestecul folosit acum
-function marketCompare() {
-  const S = learned().filter(hasK);
-  if (S.length < 10) return { n: S.length };
-  const acc = { mdl: [0, 0], mkt: [0, 0], mix: [0, 0] };
-  for (const s of S) {
-    const prm = params(s.sl), g = predict(unpackS(s.A), unpackS(s.B), !!s.neu, prm).goals, w = (prm.m || DEF.m).g, o = outc(s.R[0], s.R[1]);
-    const ps = { mdl: g.p, mkt: block(s.K[0], s.K[1], 10, prm.g.rho).p, mix: block(mixl(g.la, s.K[0], w), mixl(g.lb, s.K[1], w), 10, prm.g.rho).p };
-    for (const k in ps) { acc[k][0] -= Math.log(Math.max(1e-6, ps[k][o])); acc[k][1] += argmax(ps[k]) === o ? 1 : 0; }
-  }
-  const out = { n: S.length };
-  for (const k in acc) out[k] = { ll: acc[k][0] / S.length, acc: acc[k][1] / S.length };
-  return out;
-}
 
-/* evaluare cinstită: validare încrucișată în 5 părți */
+/* evaluare cinstită: validare cronologică. Meciurile se ordonează după dată și se împart în 6 blocuri; modelul învață pe tot ce e
+   înainte de un bloc și e testat pe el (de 5 ori). Așa nu învață niciodată din meciuri jucate după cel pe care îl prezice. */
 const argmax = p => p.indexOf(Math.max(...p));
 const outc = (h, a) => h > a ? 0 : h === a ? 1 : 2;
 const newAcc = () => Object.fromEntries(PKEYS.map(k => [k, { n: 0, ll: 0, br: 0, hit: 0, ae: 0 }]));
@@ -1561,20 +1716,34 @@ const accOut = a => Object.fromEntries(PKEYS.map(k => [k, a[k].n ? { n: a[k].n, 
 const REL_EDGES = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1.0001];
 function evaluateCV(S) {
   const K = 5, def = newAcc(), cal = newAcc(), bins = REL_EDGES.slice(1).map((hi, j) => ({ lo: REL_EDGES[j], hi: Math.min(1, hi), p: 0, o: 0, n: 0 }));
-  for (let f = 0; f < K; f++) {
-    const test = S.filter((_, i) => i % K === f);
+  const old = { n: 0, ll: 0, hit: 0 }, mk = { n: 0, mdl: [0, 0], mkt: [0, 0], mix: [0, 0] }, sz = Math.ceil(S.length / (K + 1));
+  for (let f = 1; f <= K; f++) {
+    const train = S.slice(0, f * sz), test = S.slice(f * sz, (f + 1) * sz);
     if (!test.length) continue;
-    const mc = fitModel(S.filter((_, i) => i % K !== f));
+    const mc = fitModel(train), og = fitPart(rowsOf(train, 'g'), 'g', OLD_G);
     for (const s of test) {
-      const A = unpackS(s.A), B = unpackS(s.B);
+      const [A, B] = AB(s), o = outc(s.R[0], s.R[1]), prm = mc.s[s.sl] || mc.p;
       scoreInto(def, s.R, predict(A, B, !!s.neu, DEF));
-      const pr = predict(A, B, !!s.neu, mc.s[s.sl] || mc.p);
+      const pr = predict(A, B, !!s.neu, prm);
       scoreInto(cal, s.R, pr);
-      const o = outc(s.R[0], s.R[1]);
+      const po = oldGoals(A, B, !!s.neu, og);
+      old.n++; old.ll -= Math.log(Math.max(1e-6, po[o])); old.hit += argmax(po) === o ? 1 : 0;
+      // unde existau cote: doar modelul, doar cotele și amestecul, cu ponderea învățată tot doar din meciurile de dinainte
+      if (hasK(s)) {
+        const g = pr.goals, w = (prm.m || DEF.m).g, rho = prm.g.rho;
+        const ps = { mdl: g.p, mkt: p1x2(s.K[0], s.K[1], rho), mix: p1x2(mixl(g.la, s.K[0], w), mixl(g.lb, s.K[1], w), rho, g.dl * (1 - w)) };
+        mk.n++;
+        for (const k in ps) { mk[k][0] -= Math.log(Math.max(1e-6, ps[k][o])); mk[k][1] += argmax(ps[k]) === o ? 1 : 0; }
+      }
       pr.goals.p.forEach((p, i) => { const j = REL_EDGES.findIndex((e, x) => p >= e && p < REL_EDGES[x + 1]); if (j >= 0) { bins[j].p += p; bins[j].o += i === o ? 1 : 0; bins[j].n++; } });
     }
   }
-  return { def: accOut(def), cal: accOut(cal), rel: bins.filter(b => b.n).map(b => ({ lo: b.lo, hi: b.hi, p: b.p / b.n, o: b.o / b.n, n: b.n })) };
+  const mko = { n: mk.n };
+  if (mk.n) for (const k of ['mdl', 'mkt', 'mix']) mko[k] = { ll: mk[k][0] / mk.n, acc: mk[k][1] / mk.n };
+  return {
+    def: accOut(def), cal: accOut(cal), old: old.n ? { n: old.n, ll: old.ll / old.n, acc: old.hit / old.n } : null, mk: mko,
+    rel: bins.filter(b => b.n).map(b => ({ lo: b.lo, hi: b.hi, p: b.p / b.n, o: b.o / b.n, n: b.n }))
+  };
 }
 function liveRecord() {
   const L = Object.values(LEARN.s).filter(s => s.src === 'live' && s.P && s.R && !s.x);
@@ -1586,9 +1755,16 @@ function liveRecord() {
 const learned = () => Object.values(LEARN.s).filter(s => s.R && !s.x && Array.isArray(s.A) && Array.isArray(s.B)).sort((a, b) => new Date(a.d) - new Date(b.d));
 let fitTimer = 0;
 function scheduleFit() { clearTimeout(fitTimer); fitTimer = setTimeout(refit, 1200); }
+let refitQueued = false;
 function refit() {
+  // fără meciurile din IndexedDB aș potrivi modelul pe o parte din date: aștept să se încarce, iar dacă nu se pot citi, păstrez ce era
+  if (BT === 'load') {
+    if (!refitQueued) { refitQueued = true; btReady.then(() => { refitQueued = false; if (BT !== 'fail') refit(); }); }
+    return LEARN.fit;
+  }
+  if (BT === 'fail') return LEARN.fit;
   const S = learned(), old = LEARN.fit;
-  // scorurile din validarea încrucișată se recalculează doar când se deschide fila Model
+  // scorurile din validarea cronologică se recalculează doar când se deschide fila Model
   const M = fitModel(S);
   LEARN.fit = { p: M.p, s: M.s, n: S.length, at: Date.now(), m: old?.m || null, mn: old?.mn || 0 };
   learnDirty = true;
@@ -1616,33 +1792,61 @@ function sbStats(e) {
   return out;
 }
 const roErr = m => Object.assign(new Error(m), { ro: true });
-async function trainOn(slug, withStats, prog) {
+// la „toate competițiile”: cam atâtea meciuri din fiecare, cele mai recente întâi (13 × 140 ≈ 1.800)
+const ALL_QUOTA = 140;
+async function trainOn(slug, withStats, prog, opt) {
   statsHold = true;
-  try { return await trainRun(slug, withStats, prog); } finally { statsHold = false; }
+  try { return await trainRun(slug, withStats, prog, opt); } finally { statsHold = false; }
 }
-async function trainRun(slug, withStats, prog) {
+// quota: câte meciuri iau din competiție, cele mai recente întâi; prev: dacă sezonul acesta nu ajunge, completez cu sezonul trecut
+async function trainRun(slug, withStats, prog, { quota = Infinity, prev = false } = {}) {
   const N = settings.n;
   prog(0.02, 'Iau lista de echipe…');
   let teams = [];
   try { teams = await compTeams(slug); } catch (e) {}
   if (!teams.length) throw roErr(`Nu am găsit echipele din ${compLabel(slug)}. Încearcă din nou mai târziu.`);
-  const hist = new Map();
+  // rezultatele fiecărei echipe, din sezonul acesta și din cel trecut: la goluri modelul folosește ultimele 40 de meciuri,
+  // care în prima parte a sezonului trec în sezonul trecut (la fel ca în pronosticurile obișnuite)
+  const hist = new Map(), past = new Set();
+  let yr = null;
+  const add = (id, evs, old) => {
+    const m = hist.get(id) || new Map();
+    for (const e of evs) if (e.done && fin(e.home.score) && fin(e.away.score)) { m.set(e.id, e); if (old) past.add(e.id); }
+    hist.set(id, m);
+  };
   let i = 0;
   await Promise.all(teams.map(t => lim(async () => {
-    try { const s = await schedule(t.id); hist.set(t.id, s.events.filter(e => e.done && fin(e.home.score) && fin(e.away.score))); } catch (e) {}
-    prog(0.05 + 0.35 * (++i / teams.length), `Citesc rezultatele echipelor (${i} din ${teams.length})…`);
+    try {
+      const s = await schedule(t.id);
+      add(t.id, s.events, false);
+      if (s.season) { yr = yr || s.season; try { add(t.id, (await schedule(t.id, { season: s.season - 1 })).events, true); } catch (e) {} }
+    } catch (e) {}
+    prog(0.05 + 0.3 * (++i / teams.length), `Citesc rezultatele echipelor (${i} din ${teams.length})…`);
   })));
-  const all = new Map();
-  hist.forEach(l => l.forEach(e => all.set(e.id, e)));
-  const before = (id, t) => (hist.get(id) || []).filter(e => new Date(e.date) < t).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, N);
-  const targets = [...all.values()]
-    .filter(e => e.slug === slug && hist.has(e.home.id) && hist.has(e.away.id))
-    .filter(m => { const t = new Date(m.date); return before(m.home.id, t).length >= 3 && before(m.away.id, t).length >= 3; })
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  if (prev && yr) {
+    // echipele din sezonul trecut care nu mai sunt în competiție (retrogradate sau, în cupele europene, alte participante)
+    const ids = new Set();
+    hist.forEach(m => m.forEach(e => { if (past.has(e.id) && e.slug === slug) [e.home.id, e.away.id].forEach(x => { if (!hist.has(x)) ids.add(x); }); }));
+    let j = 0;
+    await Promise.all([...ids].map(id => lim(async () => {
+      try { add(id, (await schedule(id, { season: yr - 1 })).events, true); } catch (e) {}
+      prog(0.35 + 0.05 * (++j / ids.size), `Citesc echipele din sezonul trecut (${j} din ${ids.size})…`);
+    })));
+  }
+  const all = new Map(), sorted = new Map();
+  hist.forEach((m, id) => { m.forEach((e, k) => all.set(k, e)); sorted.set(id, [...m.values()].sort((a, b) => new Date(b.date) - new Date(a.date))); });
+  // meciurile unei echipe de dinaintea momentului t, de la cel mai recent
+  const before = (id, t) => (sorted.get(id) || []).filter(e => new Date(e.date) < t);
+  const ok = m => { const t = new Date(m.date); return before(m.home.id, t).length >= 3 && before(m.away.id, t).length >= 3; };
+  const recentFirst = (a, b) => new Date(b.date) - new Date(a.date);
+  const cand = [...all.values()].filter(e => e.slug === slug && hist.has(e.home.id) && hist.has(e.away.id));
+  let targets = cand.filter(e => !past.has(e.id) && ok(e)).sort(recentFirst);
+  if (prev && targets.length < quota) targets = targets.concat(cand.filter(e => past.has(e.id) && ok(e)).sort(recentFirst));
+  targets = targets.slice(0, quota).sort((a, b) => new Date(a.date) - new Date(b.date));
   if (!targets.length) throw roErr('Nu sunt încă destule meciuri jucate în această competiție.');
   if (withStats) {
     const need = new Set();
-    targets.forEach(m => { const t = new Date(m.date); need.add(m.id); before(m.home.id, t).forEach(e => need.add(e.id)); before(m.away.id, t).forEach(e => need.add(e.id)); });
+    targets.forEach(m => { const t = new Date(m.date); need.add(m.id); before(m.home.id, t).slice(0, N).forEach(e => need.add(e.id)); before(m.away.id, t).slice(0, N).forEach(e => need.add(e.id)); });
     const miss = [...need].filter(id => !STATS[id]).map(id => all.get(id)).filter(Boolean);
     const m365 = miss.filter(e => is365(e.id)), mEspn = miss.filter(e => !is365(e.id));
     let k = 0;
@@ -1660,8 +1864,9 @@ async function trainRun(slug, withStats, prog) {
   prog(0.93, 'Compar pronosticurile cu rezultatele…');
   let made = 0;
   for (const m of targets) {
-    const t = new Date(m.date), none = new Map();
-    const SA = sample(m.home.id, before(m.home.id, t), none), SB = sample(m.away.id, before(m.away.id, t), none);
+    const t = new Date(m.date), none = new Map(), LA = before(m.home.id, t), LB = before(m.away.id, t);
+    const SA = sample(m.home.id, LA.slice(0, N), none), SB = sample(m.away.id, LB.slice(0, N), none);
+    SA.G = gfeat(m.home.id, LA); SB.G = gfeat(m.away.id, LB);
     const R = actualOf(m, STATS[m.id]?.[1]);
     if (!R) continue;
     // unde lista de rezultate a venit cu cote (365Scores), păstrez ce spuneau casele înainte de meci
@@ -1670,13 +1875,26 @@ async function trainRun(slug, withStats, prog) {
     record(m, SA, SB, null, R, 'bt', K);
     made++;
   }
+  for (const [id, s] of Object.entries(LEARN.s)) if (s.src === 'bt' && s.sl === slug && !hasG(s)) { delete LEARN.s[id]; learnDirty = true; }
   refit();
   saveLearn();
   prog(1, '');
   return made;
 }
-if ((LEARN.v !== 2 || !LEARN.fit) && learned().length) refit();
-if (LEARN.v !== 2) { LEARN.v = 2; learnDirty = true; }
+// toate competițiile din listă, una după alta; ce s-a învățat se salvează după fiecare, ca să nu se piardă dacă te oprești
+async function trainAll(withStats, prog) {
+  let made = 0;
+  const bad = [];
+  for (let i = 0; i < TRAIN_SLUGS.length; i++) {
+    const sl = TRAIN_SLUGS[i], lab = `${compLabel(sl)} (${i + 1} din ${TRAIN_SLUGS.length})`;
+    try { made += await trainOn(sl, withStats, (p, m) => prog((i + p) / TRAIN_SLUGS.length, m ? `${lab}: ${m}` : ''), { quota: ALL_QUOTA, prev: true }); }
+    catch (e) { bad.push(compLabel(sl)); }
+  }
+  return { made, bad };
+}
+// versiunea 3: s-a schimbat modelul de goluri, așa că parametrii potriviți pentru cel vechi nu mai sunt buni; îi refac din meciurile învățate
+if (LEARN.v !== 3) { LEARN.v = 3; LEARN.fit = null; learnDirty = true; }
+btReady.then(() => { if (BT !== 'fail' && learned().length && (!LEARN.fit || LEARN.fit.n !== learned().length)) refit(); });
 
 /* ---------- formatare ---------- */
 const fTime = new Intl.DateTimeFormat('ro-RO', { hour: '2-digit', minute: '2-digit' });
@@ -2112,7 +2330,7 @@ function mkBlock(P, A, B, pre, opt) {
   const direct = [k.x12 && 'rezultat', k.ou && 'total goluri', ...parts.filter(x => x[1].mkT).map(x => x[0])].filter(Boolean);
   const indirect = k.ig ? parts.filter(x => !x[1].mkT).map(x => x[0]) : [];
   const three = p => pctRound(p).map(v => v + '%');
-  const pm = block(P.goals.mdl[0], P.goals.mdl[1], 10, P.goals.rho).p, pk = k.x12 || (k.ig ? block(k.ig.la, k.ig.lb, 10, P.goals.rho).p : null);
+  const pm = block(P.goals.mdl[0], P.goals.mdl[1], 10, P.goals.rho, 1, P.goals.dl || 0).p, pk = k.x12 || (k.ig ? block(k.ig.la, k.ig.lb, 10, P.goals.rho).p : null);
   const cM = three(pm), cK = pk ? three(pk) : ['–', '–', '–'], cF = three(P.goals.p);
   const row = (l, a, b, c) => `<div class="mrw q"><span>${l}</span><span class="v">${a}</span><span class="v">${b}</span><span class="v b">${c}</span></div>`;
   const tot = (l, b) => b ? row(l, f1(b.mdl[0] + b.mdl[1]), b.mkT ? f1(b.mkT) : '–', f1(b.la + b.lb)) : '';
@@ -2183,9 +2401,12 @@ async function analysis(ev, sum, live, opt = {}) {
     <div class="panel" id="who"><p class="note" id="ap">Citesc ultimele ${N} meciuri ale fiecărei echipe…</p><div class="prog" style="margin-bottom:14px"><i id="pg"></i></div></div><div id="rest"></div>`;
   grow(mb);
   let ha, hb;
-  try { [ha, hb] = await Promise.all([recent(A0.id, N, before), recent(B0.id, N, before)]); }
+  // la goluri modelul folosește ultimele GW meciuri; statisticile pe meci și forma afișată rămân pe ultimele N
+  try { [ha, hb] = await Promise.all([recent(A0.id, Math.max(N, GW), before), recent(B0.id, Math.max(N, GW), before)]); }
   catch (e) { if (live()) $('#who').innerHTML = errBox('Nu am putut citi meciurile recente ale echipelor.'); return; }
   if (!live()) return;
+  const gA = gfeat(A0.id, ha.list), gB = gfeat(B0.id, hb.list);
+  ha = { ...ha, list: ha.list.slice(0, N) }; hb = { ...hb, list: hb.list.slice(0, N) };
   const A = { ...A0, ...(ha.team || {}), id: A0.id }, B = { ...B0, ...(hb.team || {}), id: B0.id };
   opt.refresh?.();
   const all = [...new Map([...ha.list, ...hb.list].map(e => [e.id, e])).values()];
@@ -2199,6 +2420,7 @@ async function analysis(ev, sum, live, opt = {}) {
   })));
   if (!live()) return;
   const SA = sample(A.id, ha.list, stats), SB = sample(B.id, hb.list, stats);
+  SA.G = gA; SB.G = gB;
   if (!SA.n || !SB.n) { $('#who').innerHTML = `<p class="empty">Nu există destule meciuri jucate recent pentru ${esc(!SA.n ? A.name : B.name)}.</p>`; return; }
   let mk = await mkJob;
   if (!live()) return;
@@ -2230,7 +2452,7 @@ async function analysis(ev, sum, live, opt = {}) {
     <div class="sec"><h2>${esc(B.name)}</h2><span class="aside">ultimele ${SB.n}</span></div><div class="grp">${lastRows(SB)}</div>
     ${opt.vs ? '' : h2hBlock(sum, A, B)}
     ${!opt.vs && ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status) ? pickBlock({ ...ev, home: A, away: B }) : ''}
-    <p class="method"><b>Cum calculez.</b> Iau ultimele ${N} meciuri jucate de fiecare echipă, din toate competițiile. Golurile așteptate combină atacul unei echipe cu apărarea celeilalte și avantajul de teren, iar când sunt puține meciuri valorile sunt trase spre media obișnuită (1,35 goluri de echipă). Șansele vin dintr-un model Poisson cu corecția Dixon–Coles pentru scorurile mici. Șuturile, șuturile pe poartă, cornerele (obținute față de cedate) și cartonașele (primite față de provocate) folosesc aceeași logică. Unde casele de pariuri au cote pentru meci, le transform în probabilități, scot marja casei și le combin cu estimarea din formă${P.mk?.ig ? ` (acum cotele contează ${pct(P.mk.w)} la goluri)` : ''}; ponderea lor se ajustează și ea după rezultate. Ponderile modelului ${calibrated() ? `sunt ajustate automat pe ${plural(LEARN.fit.p.g.n, 'meci terminat', 'meciuri terminate')}` : 'se ajustează automat după ce aplicația vede destule meciuri terminate'} (fila Model). Sunt estimări statistice, nu certitudini. Date: ${srcOf(A.id) === srcOf(B.id) ? srcOf(A.id) : 'ESPN și 365Scores'}${P.mk && !P.mk.src.includes(srcOf(A.id)) ? `; cote: ${esc(P.mk.src)}` : ''}.</p>`;
+    <p class="method"><b>Cum calculez.</b> La goluri iau ultimele ${GW} de meciuri oficiale ale fiecărei echipe, din toate competițiile (și din sezonul trecut, dacă e nevoie): golurile așteptate înmulțesc atacul unei echipe cu apărarea celeilalte și țin cont de avantajul de teren, iar când sunt puține meciuri valorile sunt trase spre media obișnuită (1,35 goluri de echipă). Șansele vin dintr-un model Poisson cu corecția Dixon–Coles pentru scorurile mici, calibrat pe rezultatul final: cât de mari ies diferențele dintre echipe și cât de des ies egaluri. Șuturile, șuturile pe poartă, cornerele (obținute față de cedate) și cartonașele (primite față de provocate) vin din ultimele ${N} meciuri, cu statisticile fiecăruia. Unde casele de pariuri au cote pentru meci, le transform în probabilități, scot marja casei și le combin cu estimarea din formă${P.mk?.ig ? ` (acum cotele contează ${pct(P.mk.w)} la goluri)` : ''}; ponderea lor se ajustează și ea după rezultate. Ponderile modelului ${calibrated() ? `sunt ajustate automat pe ${plural(LEARN.fit.p.g.n, 'meci terminat', 'meciuri terminate')}` : 'se ajustează automat după ce aplicația vede destule meciuri terminate'} (fila Model). Sunt estimări statistice, nu certitudini. Date: ${srcOf(A.id) === srcOf(B.id) ? srcOf(A.id) : 'ESPN și 365Scores'}${P.mk && !P.mk.src.includes(srcOf(A.id)) ? `; cote: ${esc(P.mk.src)}` : ''}.</p>`;
   grow(who); grow(rest);
   if (!opt.vs && ev.state === 'pre') wirePick({ ...ev, home: A, away: B });
   restoreScroll();
@@ -3608,9 +3830,11 @@ async function playersRun(ev, sum, live, opt) {
   paint(A0, B0);
   mb.innerHTML = `<div class="sec"><h2>Jucători</h2>${nSeg()}</div><div class="panel"><p class="note" id="plp">Citesc ultimele ${N} meciuri ale fiecărei echipe…</p><div class="prog" style="margin-bottom:14px"><i id="pg"></i></div></div>`;
   let ha, hb;
-  try { [ha, hb] = await Promise.all([recent(A0.id, N, before), recent(B0.id, N, before)]); }
+  try { [ha, hb] = await Promise.all([recent(A0.id, Math.max(N, GW), before), recent(B0.id, Math.max(N, GW), before)]); }
   catch (e) { if (live()) mb.innerHTML = errBox('Nu am putut citi meciurile recente ale echipelor.'); return; }
   if (!live()) return;
+  const gA = gfeat(A0.id, ha.list), gB = gfeat(B0.id, hb.list);
+  ha = { ...ha, list: ha.list.slice(0, N) }; hb = { ...hb, list: hb.list.slice(0, N) };
   const A = { ...A0, ...(ha.team || {}), id: A0.id }, B = { ...B0, ...(hb.team || {}), id: B0.id };
   // în paralel: foile de joc ale meciurilor recente și datele meciului de azi (formații, indisponibili, loturi)
   // sursele care întârzie nu țin pagina pe loc: după 5 secunde afișez ce am și completez când sosesc
@@ -3629,6 +3853,7 @@ async function playersRun(ev, sum, live, opt) {
   await Promise.all(all.map(m => lim(() => matchStats(m)).then(s => { stats.set(m.id, s); })));
   if (!live()) return;
   const SA = sample(A.id, ha.list, stats), SB = sample(B.id, hb.list, stats);
+  SA.G = gA; SB.G = gB;
   let mk = await mkJob;
   if (mk?.fail) mk = null;
   if (!live()) return;
@@ -4189,15 +4414,15 @@ const TRAIN_SLUGS = ['rou.1', 'eng.1', 'ita.1', 'esp.1', 'ger.1', 'fra.1', 'por.
 const nf2 = new Intl.NumberFormat('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const nf3 = new Intl.NumberFormat('ro-RO', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 const sgnPct = v => { const r = Math.round(v * 100); return r === 0 ? '0%' : (r > 0 ? '+' : '−') + Math.abs(r) + '%'; };
-let TRAIN = null, trainSel = 'rou.1', trainStats = true, flash = { t: '', c: '' };
+let TRAIN = null, trainSel = 'all', trainStats = false, flash = { t: '', c: '' };
 function calLine(slug) {
-  const n = learned().length, own = slug && LEARN.on && LEARN.fit?.s?.[slug];
+  const n = learned().filter(hasG).length, own = slug && LEARN.on && LEARN.fit?.s?.[slug];
   return calibrated() ? `Modelul e calibrat pe ${plural(LEARN.fit.p.g.n, 'meci terminat', 'meciuri terminate')}${own ? `, cu ajustări proprii pentru ${compLabel(slug)}` : ''}.`
     : !LEARN.on ? 'Calibrarea e oprită, folosesc valorile inițiale.'
     : `Modelul se calibrează după ${MIN_FIT} de meciuri terminate (acum ${n}).`;
 }
 function perfHTML(m, n) {
-  if (!m) return `<div class="sec"><h2>Cât de bine prezice</h2></div><p class="note">Scorurile apar după 30 de meciuri învățate${n ? ` (acum ${n})` : ''}. Le obții repede cu antrenamentul de mai jos.</p>`;
+  if (!m) return `<div class="sec"><h2>Cât de bine prezice</h2></div><p class="note">Scorurile apar după 30 de meciuri învățate cu modelul nou${n ? ` (acum ${n})` : ''}. Le obții repede cu antrenamentul de mai jos.</p>`;
   const row = (label, d, c, fmt, hi) => {
     const ok = fin(d) && fin(c) && Math.abs(d - c) > 1e-9;
     const bd = ok && (hi ? d > c : d < c), bc = ok && !bd;
@@ -4214,9 +4439,11 @@ function perfHTML(m, n) {
   if (D.k && C.k) rows.push(row('Cartonașe: cine are mai multe', D.k.acc, C.k.acc, pct, true), row('Eroare medie la cartonașe', D.k.mae, C.k.mae, v => nf2.format(v)));
   if (D.s && C.s) rows.push(row('Șuturi: cine are mai multe', D.s.acc, C.s.acc, pct, true), row('Eroare medie la șuturi', D.s.mae, C.s.mae, v => nf2.format(v)));
   if (D.t && C.t) rows.push(row('Pe poartă: cine are mai multe', D.t.acc, C.t.acc, pct, true), row('Eroare medie la șuturi pe poartă', D.t.mae, C.t.mae, v => nf2.format(v)));
-  return `<div class="sec"><h2>Cât de bine prezice</h2><span class="aside">${plural(C.g.n, 'meci', 'meciuri')}</span></div>
+  const O = m.old;
+  return `<div class="sec"><h2>Cât de bine prezice</h2><span class="aside">${plural(C.g.n, 'meci testat', 'meciuri testate')}</span></div>
     <div class="grp mt"><div class="mrw hd"><span></span><span class="v">Inițial</span><span class="v">Calibrat</span></div>${rows.join('')}</div>
-    <p class="note">Aici e doar modelul, fără cote. Fiecare meci e prezis de un model ajustat fără el (validare încrucișată în 5 părți), ca scorul să fie cinstit. La log loss, Brier și erori, mai mic e mai bine. Varianta mai bună e scrisă îngroșat.</p>
+    <p class="note">Aici e doar modelul, fără cote. Validare cronologică: meciurile se iau în ordinea datei, iar fiecare e prezis de un model care a învățat doar din meciurile jucate înaintea lui, ca scorul să fie cinstit. „Inițial” înseamnă valorile de pornire, potrivite pe peste 6.000 de meciuri din campionatele mari; la goluri, calibrarea se mută încet de la ele, așa că cele două coloane ies apropiate. La log loss, Brier și erori, mai mic e mai bine. Varianta mai bună e scrisă îngroșat.</p>
+    ${O ? `<p class="note">Modelul de dinainte (media atacului și a apărării din forma scurtă), pe aceleași meciuri: log loss ${nf3.format(O.ll)}${fin(C.g.ll) ? ` față de ${nf3.format(C.g.ll)} acum` : ''}, rezultat ghicit ${pct(O.acc)}${fin(C.g.acc) ? ` față de ${pct(C.g.acc)}` : ''}.</p>` : ''}
     ${m.rel?.filter(b => b.n >= REL_MIN).length >= 2 ? relHTML(m.rel) : ''}`;
 }
 const REL_MIN = 10;
@@ -4264,7 +4491,7 @@ function parsHTML(f) {
   if (!f?.p) return '';
   const P = f.p, par = p => P[p] || { ...DEF[p], n: 0 };
   const cell = (part, val, ini) => par(part).n < MIN_FIT ? `<span class="v lo">${val}<small>puține date</small></span>` : `<span class="v">${val}${ini != null ? `<small>inițial ${ini}</small>` : ''}</span>`;
-  const ratio = q => `${Math.round(q.w * 100)}/${100 - Math.round(q.w * 100)}`;
+  const ratio = q => { const a = fin(q.e1) && fin(q.e2) && q.e1 + q.e2 > 0 ? q.e1 / (q.e1 + q.e2) : q.w; return `${Math.round(a * 100)}/${100 - Math.round(a * 100)}`; };
   const tbl = (parts, heads, cls) => {
     const row = (label, fn, ini) => `<div class="mrw${cls}"><span>${label}</span>${parts.map(p => cell(p, fn(par(p)), ini ? ini(DEF[p]) : null)).join('')}</div>`;
     return `<div class="grp mt"><div class="mrw${cls} hd"><span></span>${heads.map(h => `<span class="v">${h}</span>`).join('')}</div>
@@ -4279,6 +4506,7 @@ function parsHTML(f) {
     <div style="height:10px"></div>
     ${tbl(['s', 't'], ['Șuturi', 'Pe poartă'], '')}
     <p class="note">Gazde și oaspeți: cât adaugă sau scade terenul față de forma echipei. Atac față de apărare: cât contează ce produce o echipă față de ce cedează adversarul. Tragerea spre medie spune câte meciuri „obișnuite” se adaugă la forma recentă; mai mult înseamnă că forma contează mai puțin. Corecția pentru scorurile mici (Dixon–Coles): ${minus(nf2.format(P.g.rho))}, inițial ${minus(nf2.format(DEF.g.rho))}.</p>
+    <p class="note">La goluri, forma vine din ultimele ${GW} de meciuri, iar atacul unei echipe se înmulțește cu apărarea adversarului. Calibrarea rezultatului: diferențele dintre echipe ×${nf2.format(P.g.T ?? DEF.g.T)} (inițial ×${nf2.format(DEF.g.T)}), egaluri ${sgnPct(P.g.dl ?? DEF.g.dl)} (inițial ${sgnPct(DEF.g.dl)}). Peste 1 înseamnă că modelul simplu ieșea prea prudent și diferențele trebuiau mărite.</p>
     ${slugsHTML(f)}`;
 }
 const minus = s => s.replace('-', '−');
@@ -4292,18 +4520,19 @@ function slugsHTML(f) {
     ${own.length ? `<div class="grp plain">${own.sort((a, b) => b[1].g.n - a[1].g.n).map(([sl, q]) => `<div class="row"><span class="grow"><b>${esc(compLabel(sl))}</b><small>${plural(q.g.n, 'meci', 'meciuri')}</small></span><span class="pp" style="text-align:right">gazde ${sgnPct(q.g.hH - 1)}<small>oaspeți ${sgnPct(q.g.hA - 1)}</small></span></div>`).join('')}</div>` : ''}
     <p class="note">O competiție primește calibrare proprie de la ${SLUG_MIN} de meciuri învățate, trasă spre cea generală cât timp are puține meciuri.${rest.length ? ` Încă pe calibrarea generală: ${rest.slice(0, 6).map(([sl, n]) => `${esc(compLabel(sl))} (${n})`).join(', ')}.` : ''}</p>`;
 }
-function mkCompareHTML() {
-  const c = marketCompare(), w = (params().m || DEF.m).g, fm = LEARN.on ? LEARN.fit?.p?.m : null;
-  const head = `<div class="sec"><h2>Cote față de model</h2>${c.n >= 10 ? `<span class="aside">${plural(c.n, 'meci', 'meciuri')}</span>` : ''}</div>`;
-  const wl = `La goluri, cotele contează acum ${pct(w)}, iar forma echipelor ${pct(1 - w)}${fm && fm.n >= MIN_FIT ? ` (pondere învățată din ${plural(fm.n, 'meci', 'meciuri')} cu cote, inițial ${pct(DEF.m.g)})` : `. Ponderea se ajustează singură după ${MIN_FIT} de meciuri terminate care au avut cote (acum ${c.n})`}.`;
-  if (c.n < 10) return `${head}<p class="note">${wl} Comparația dintre model și cote apare după 10 astfel de meciuri.</p>`;
+function mkCompareHTML(c, wait = false) {
+  const w = (params().m || DEF.m).g, fm = LEARN.on ? LEARN.fit?.p?.m : null, nK = learned().filter(hasK).length;
+  const head = `<div class="sec"><h2>Cote față de model</h2>${c?.n >= 10 ? `<span class="aside">${plural(c.n, 'meci testat', 'meciuri testate')}</span>` : ''}</div>`;
+  const wl = `La goluri, cotele contează acum ${pct(w)}, iar forma echipelor ${pct(1 - w)}${fm && fm.n >= MIN_FIT ? ` (pondere învățată din ${plural(fm.n, 'meci', 'meciuri')} cu cote, inițial ${pct(DEF.m.g)})` : `. Ponderea se ajustează singură după ${MIN_FIT} de meciuri terminate care au avut cote (acum ${nK})`}.`;
+  if (!c) return `${head}<p class="note">${wl}${wait && nK >= 10 ? ' Calculez comparația…' : ' Comparația dintre model și cote apare după 30 de meciuri învățate, dintre care 10 cu cote.'}</p>`;
+  if (c.n < 10) return `${head}<p class="note">${wl} Comparația dintre model și cote apare după 10 astfel de meciuri testate (acum ${c.n}).</p>`;
   const row = (label, key, fmt, hi) => {
     const v = [c.mdl[key], c.mkt[key], c.mix[key]], top = hi ? Math.max(...v) : Math.min(...v);
     return `<div class="mrw q"><span>${label}</span>${v.map(x => `<span class="v${Math.abs(x - top) < 1e-9 ? ' b' : ''}">${fmt(x)}</span>`).join('')}</div>`;
   };
   return `${head}<div class="grp mt"><div class="mrw q hd"><span></span><span class="v">Model</span><span class="v">Cote</span><span class="v">Împreună</span></div>
     ${row('Rezultat ghicit', 'acc', pct, true)}${row('Log loss', 'll', v => nf3.format(v))}</div>
-    <p class="note">Pe meciurile terminate pentru care existau cote: cât de bine ar fi prezis doar modelul, doar cotele și amestecul folosit acum. La log loss, mai mic e mai bine. ${wl}</p>`;
+    <p class="note">Pe meciurile terminate pentru care existau cote, cu aceeași validare cronologică: cât de bine ar fi prezis doar modelul, doar cotele și amestecul. La log loss, mai mic e mai bine. ${wl}</p>`;
 }
 function histHTML() {
   const L = Object.entries(LEARN.s).filter(([, s]) => s.src === 'live' && s.P).sort((a, b) => new Date(b[1].d) - new Date(a[1].d)).slice(0, 15);
@@ -4317,21 +4546,31 @@ function histHTML() {
     return `<a class="row" href="#/m/${esc(s.sl || 'x')}/${esc(id)}"><span class="grow"><b>${esc(s.hn)} – ${esc(s.an)}</b><small>${esc(s.hn)} ${a}%, egal ${d}%, ${esc(s.an)} ${b}%</small></span>${res}</a>`;
   }).join('')}</div>`;
 }
+const trainNote = sl => sl === 'all'
+  ? `Iau toate cele ${TRAIN_SLUGS.length} competiții din listă: meciurile jucate în sezonul acesta și, unde nu ajung, cele mai recente din sezonul trecut, cam ${ALL_QUOTA} din fiecare (aproape 1.800 în total). Durează câteva minute și descarcă destule date, așa că e mai bine pe Wi-Fi. Ține aplicația deschisă până termină; ce a învățat se salvează după fiecare competiție.`
+  : `Iau toate meciurile jucate în sezonul acesta în ${compLabel(sl)}.`;
 function trainPanel() {
-  const busy = !!TRAIN;
+  const busy = !!TRAIN, sel = busy ? TRAIN.slug : trainSel, off = busy || BT === 'fail';
   return `<div class="sec"><h2>Antrenează pe meciuri jucate</h2></div>
     <div class="panel">
-      <p class="note">Refac pronosticul fiecărui meci deja jucat dintr-o competiție, doar cu ce se știa înainte de meci, și îl compar cu rezultatul. Așa modelul învață din sute de meciuri dintr-odată.</p>
-      <label class="field"><span>Competiția</span><select id="tsl"${busy ? ' disabled' : ''}>${TRAIN_SLUGS.map(s => `<option value="${s}"${s === (busy ? TRAIN.slug : trainSel) ? ' selected' : ''}>${esc(compLabel(s))}</option>`).join('')}</select></label>
-      <label class="field"><span>Cu cornere, cartonașe și șuturi<small>mai lent: citesc statisticile fiecărui meci</small></span><input type="checkbox" id="tst"${trainStats ? ' checked' : ''}${busy ? ' disabled' : ''}></label>
-      <div class="acts" style="padding:2px 16px 0"><button class="btn pri" type="button" id="tgo"${busy ? ' disabled' : ''}>${busy ? 'Se antrenează…' : 'Antrenează'}</button></div>
+      <p class="note">Refac pronosticul fiecărui meci deja jucat, doar cu ce se știa înainte de meci, și îl compar cu rezultatul. Așa modelul învață din sute de meciuri dintr-odată.</p>
+      <label class="field"><span>Competiția</span><select id="tsl"${off ? ' disabled' : ''}><option value="all"${sel === 'all' ? ' selected' : ''}>Toate competițiile (${TRAIN_SLUGS.length})</option>${TRAIN_SLUGS.map(s => `<option value="${s}"${s === sel ? ' selected' : ''}>${esc(compLabel(s))}</option>`).join('')}</select></label>
+      <p class="note" id="tnote" style="margin:0 16px 10px">${esc(trainNote(sel))}</p>
+      <label class="field"><span>Cu cornere, cartonașe și șuturi<small>mai lent: citesc statisticile fiecărui meci. Pentru goluri și rezultat nu e nevoie.</small></span><input type="checkbox" id="tst"${trainStats ? ' checked' : ''}${off ? ' disabled' : ''}></label>
+      <div class="acts" style="padding:2px 16px 0"><button class="btn pri" type="button" id="tgo"${off ? ' disabled' : ''}>${busy ? 'Se antrenează…' : 'Antrenează'}</button></div>
       <div class="prog" style="margin:14px 16px 0"><i id="tpg" style="width:${busy ? Math.round(TRAIN.p * 100) : 0}%"></i></div>
       <p class="note" id="tmsg" role="status" style="margin:8px 16px 14px">${esc(busy ? TRAIN.msg : flash.c === 'train' ? flash.t : '')}</p>
     </div>`;
 }
 function viewModel(live) {
+  // meciurile învățate stau în IndexedDB: le aștept (de obicei o fracțiune de secundă), ca cifrele să fie complete
+  if (BT === 'load') {
+    V.innerHTML = `${hero('Model', gearBtn())}<p class="note">Încarc meciurile învățate…</p>`;
+    btReady.then(() => { if (live()) route({ keep: true }); });
+    return;
+  }
   const ents = Object.entries(LEARN.s);
-  const S = learned();
+  const S = learned(), SG = S.filter(hasG), oldN = S.length - SG.length;
   if (S.length && (!LEARN.fit || LEARN.fit.n !== S.length)) refit();
   const f = LEARN.fit;
   const liveN = ents.filter(([, s]) => s.src === 'live').length;
@@ -4340,7 +4579,7 @@ function viewModel(live) {
   const tile = (l, v, sub = '') => `<div class="tile"><span>${l}</span><b>${v}${sub ? `<small>${sub}</small>` : ''}</b></div>`;
   const state = !LEARN.on ? 'Oprită: pronosticurile folosesc valorile inițiale.'
     : calibrated() ? `Pornită: pronosticurile folosesc ce a învățat din ${plural(f.p.g.n, 'meci', 'meciuri')}.`
-    : `Pornește de la ${MIN_FIT} de meciuri cu rezultat (acum ${S.length}). Până atunci folosesc valorile inițiale.`;
+    : `Pornește de la ${MIN_FIT} de meciuri cu rezultat calculate cu modelul nou (acum ${SG.length}). Până atunci folosesc valorile inițiale.`;
   const msg = flash.c === 'chk' ? flash.t : '';
   V.innerHTML = `${hero('Model', gearBtn())}
     <p class="lead">Fiecare pronostic se salvează pe telefon, împreună cu datele din care a fost calculat și cu ce spuneau cotele. După fluier aplicația citește rezultatul, îl compară cu estimarea și își reajustează calculele.</p>
@@ -4350,19 +4589,22 @@ function viewModel(live) {
       <label class="field" style="padding-top:0"><span>Ține cont de cote<small>${LEARN.mk ? 'Pornit: unde casele de pariuri au cote pentru meci, ele intră în calcul alături de model.' : 'Oprit: estimările vin doar din forma echipelor.'}</small></span><input type="checkbox" id="mko"${LEARN.mk ? ' checked' : ''}></label>
       <div class="field" style="padding-top:0"><button class="btn" type="button" id="chk"${pend ? '' : ' disabled'}>Verifică rezultatele</button><span class="note" id="cmsg" role="status" style="margin:0;text-align:right">${esc(msg)}</span></div>
     </div>
-    <div id="perf">${S.length >= 30 ? '<p class="note">Calculez scorurile…</p>' : perfHTML(null, S.length)}</div>
-    <div id="mkc">${mkCompareHTML()}</div>
+    ${BT === 'fail' ? '<p class="note">Nu am putut citi meciurile învățate din stocarea browserului, așa că acum folosesc parametrii salvați data trecută. Închide și redeschide aplicația; antrenamentul și ștergerea sunt oprite până atunci, ca să nu se piardă nimic.</p>' : ''}
+    ${oldN ? `<p class="note">${plural(oldN, 'meci învățat e calculat', 'meciuri învățate sunt calculate')} cu modelul de dinainte (doar forma scurtă), așa că nu intră în modelul de goluri. Antrenează pe toate competițiile, mai jos, ca să le refac cu modelul nou.</p>` : ''}
+    <div id="perf">${SG.length >= 30 ? '<p class="note">Calculez scorurile…</p>' : perfHTML(null, SG.length)}</div>
+    <div id="mkc">${mkCompareHTML(null, SG.length >= 30)}</div>
     <div id="pars">${parsHTML(f)}</div>
     ${trainPanel()}
     <div id="hist">${histHTML()}</div>
-    <div class="acts" style="padding:24px 12px 0"><button class="btn" type="button" id="rst"${ents.length ? '' : ' disabled'}>Șterge ce a învățat</button></div>
-    <p class="method"><b>Ce se ajustează.</b> Avantajul de teren (separat pentru gazde și oaspeți), cât contează atacul unei echipe față de apărarea adversarului, cât de tare trag valorile spre media obișnuită când sunt puține meciuri, corecția pentru scorurile mici și cât contează cotele față de model. Parametrii se aleg prin verosimilitate maximă pe meciurile terminate; cât timp sunt puține meciuri, rămân aproape de valorile inițiale. Totul se calculează și se păstrează doar pe acest dispozitiv.</p>`;
+    <div class="acts" style="padding:24px 12px 0"><button class="btn" type="button" id="rst"${ents.length && BT !== 'fail' ? '' : ' disabled'}>Șterge ce a învățat</button></div>
+    <p class="method"><b>Ce se ajustează.</b> Avantajul de teren (separat pentru gazde și oaspeți), cât contează atacul unei echipe față de apărarea adversarului, cât de tare trag valorile spre media obișnuită când sunt puține meciuri, corecția pentru scorurile mici, calibrarea rezultatului (cât de mari ies diferențele dintre echipe și cât de des ies egaluri) și cât contează cotele față de model. La goluri, forma vine din ultimele ${GW} de meciuri ale fiecărei echipe, iar atacul se înmulțește cu apărarea adversarului: pe peste 6.000 de meciuri din campionatele mari (2024–2026) așa a prezis clar mai bine decât media ultimelor 5 meciuri. Valorile de pornire vin din meciurile acelea, așa că la goluri calibrarea pe meciurile tale se mută încet: acolo, o potrivire rapidă pe câteva sute de meciuri a prezis mai prost. Parametrii se aleg prin verosimilitate maximă pe meciurile terminate; cât timp sunt puține meciuri, rămân aproape de valorile inițiale. Totul se calculează și se păstrează doar pe acest dispozitiv.</p>`;
   flash = { t: '', c: '' };
-  if (S.length >= 30) later(() => {
+  if (SG.length >= 30) later(() => {
     if (!live()) return;
     const F = LEARN.fit;
-    if (F && (!F.m || F.mn !== S.length)) { F.m = evaluateCV(S); F.mn = S.length; learnDirty = true; }
+    if (F && (!F.m || F.mn !== SG.length)) { F.m = evaluateCV(SG); F.mn = SG.length; learnDirty = true; }
     $('#perf').innerHTML = perfHTML(F?.m, S.length);
+    $('#mkc').innerHTML = mkCompareHTML(F?.m?.mk || null);
     if (F?.m?.rel) wireRel(F.m.rel);
   }, 40);
   $('#lon').addEventListener('change', e => { LEARN.on = e.target.checked; saveLearn(); route({ keep: true }); });
@@ -4373,7 +4615,7 @@ function viewModel(live) {
     flash = { c: 'chk', t: got ? `Am găsit ${plural(got, 'rezultat nou', 'rezultate noi')}.` : 'Niciun rezultat nou încă.' };
     if (live()) route({ keep: true });
   });
-  $('#tsl').addEventListener('change', e => { trainSel = e.target.value; });
+  $('#tsl').addEventListener('change', e => { trainSel = e.target.value; const t = $('#tnote'); if (t) t.textContent = trainNote(trainSel); });
   $('#tst').addEventListener('change', e => { trainStats = e.target.checked; });
   $('#tgo').addEventListener('click', async () => {
     if (TRAIN) return;
@@ -4388,9 +4630,16 @@ function viewModel(live) {
     };
     upd();
     let out;
+    const cb = (p, m) => { TRAIN.p = p; if (m) TRAIN.msg = m; upd(); };
     try {
-      const n = await trainOn(TRAIN.slug, trainStats, (p, m) => { TRAIN.p = p; if (m) TRAIN.msg = m; upd(); });
-      out = `Gata: am învățat din ${plural(n, 'meci', 'meciuri')} din ${compLabel(TRAIN.slug)}.`;
+      if (TRAIN.slug === 'all') {
+        const r = await trainAll(trainStats, cb), okN = TRAIN_SLUGS.length - r.bad.length;
+        out = r.made ? `Gata: am învățat din ${plural(r.made, 'meci', 'meciuri')} din ${plural(okN, 'competiție', 'competiții')}.${r.bad.length ? ` Nu am putut citi ${listRo(r.bad)}; încearcă-le separat mai târziu.` : ''}`
+          : 'Antrenamentul s-a oprit: datele nu s-au încărcat. Încearcă din nou.';
+      } else {
+        const n = await trainOn(TRAIN.slug, trainStats, cb);
+        out = `Gata: am învățat din ${plural(n, 'meci', 'meciuri')} din ${compLabel(TRAIN.slug)}.`;
+      }
     } catch (e) { out = e?.ro ? e.message : 'Antrenamentul s-a oprit: datele nu s-au încărcat. Încearcă din nou.'; }
     TRAIN = null;
     flash = { c: 'train', t: out };
