@@ -301,9 +301,6 @@ details.mkt .mrw.q{grid-template-columns:1fr 58px 58px 58px}
 /* fila Jucători */
 .mtabs{position:sticky;top:calc(env(safe-area-inset-top) + 47px);z-index:9;padding:8px 12px;background:var(--page);background:color-mix(in srgb,var(--page) 84%,transparent);-webkit-backdrop-filter:saturate(1.5) blur(18px);backdrop-filter:saturate(1.5) blur(18px)}
 .lu{padding:2px 12px 12px}
-.lu-f{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px 4px 0;font:700 22px/1 var(--fc);font-variant-numeric:tabular-nums}
-.lu-f span:last-child{text-align:right}
-.lu-g{margin:12px 4px 5px;font-size:12px;font-weight:600;color:var(--muted);text-align:center}
 .lu-r{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 4px}
 .lu-c{display:flex;flex-direction:column;gap:6px;min-width:0}
 .lu-c.r{align-items:flex-end}
@@ -311,6 +308,7 @@ details.mkt .mrw.q{grid-template-columns:1fr 58px 58px 58px}
 .lu-c.r .lu-p{flex-direction:row-reverse}
 .lu-p b{min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lu-p i{flex:none;min-width:17px;font:700 14px/1 var(--fc);font-style:normal;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.lu-p em{flex:none;font-style:normal;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 details.mkt .lu{padding-top:0}
 .pks{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin:0 12px;border-radius:16px;overflow:hidden;background:var(--line)}
 .pk{display:flex;flex-direction:column;min-width:0;padding:12px 14px;background:var(--surface)}
@@ -341,6 +339,110 @@ details.mkt .lu{padding-top:0}
 .prow .ms small{display:block;margin-bottom:1px;font:500 11.5px/1.2 var(--fa);color:var(--muted)}
 .prow .ms em{grid-column:1/-1;margin-top:3px;font:600 11.5px/1.2 var(--fa);font-style:normal;color:var(--ink-2)}
 .sb.w{grid-template-columns:auto 1fr auto}
+/* terenul cu formațiile */
+.pmc{display:flex;gap:6px;overflow-x:auto;padding:0 12px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pmc::-webkit-scrollbar{display:none}
+.pmc button{flex:none;border:0;padding:8px 13px;border-radius:999px;background:var(--surface);color:var(--ink-2);font:600 14px var(--fa)}
+.pmc button[aria-pressed=true]{background:var(--ink);color:var(--surface)}
+.lnote{margin:0 12px 10px;padding:10px 13px;border-radius:12px;background:var(--surface);color:var(--ink-2);font-size:14px;line-height:1.4}
+.pitch{position:relative;margin:0 12px;border-radius:16px;overflow:hidden;background-color:#2c7548;background-image:repeating-linear-gradient(180deg,rgba(255,255,255,.045) 0 46px,transparent 46px 92px);color:#fff}
+.pitch .pl{position:absolute;display:block;border:1.5px solid rgba(255,255,255,.3);pointer-events:none}
+.pitch .pf{inset:7px;border-radius:3px}
+.pitch .pmid{left:7px;right:7px;top:50%;height:0;border-width:1.5px 0 0}
+.pitch .pcc{left:50%;top:50%;width:92px;height:92px;margin:-46px 0 0 -46px;border-radius:50%}
+.pitch .pcs{left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border:0;border-radius:50%;background:rgba(255,255,255,.4)}
+.pitch .pa{left:22%;right:22%;height:88px}.pitch .pa.t{top:7px;border-top:0}.pitch .pa.b{bottom:7px;border-bottom:0}
+.pitch .ga{left:37%;right:37%;height:30px}.pitch .ga.t{top:7px;border-top:0}.pitch .ga.b{bottom:7px;border-bottom:0}
+.pitch .parc{left:50%;width:70px;height:16px;margin-left:-35px}
+.pitch .parc.t{top:95px;border-top:0;border-radius:0 0 35px 35px/0 0 16px 16px}
+.pitch .parc.b{bottom:95px;border-bottom:0;border-radius:35px 35px 0 0/16px 16px 0 0}
+.pt{position:absolute;z-index:1;display:flex;flex-direction:column;align-items:center;gap:4px;max-width:96px;padding:0;border:0;background:none;color:#fff;font:inherit;transform:translateX(-50%);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pt .ph{position:relative;width:44px;height:44px;border-radius:50%;background:#E3E8ED;box-shadow:0 0 0 2px var(--ring,#fff)}
+.pt .ph img,.pt .ph .mono{display:grid;width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:50% 20%}
+.pt .ph .mono{place-items:center;background:#E3E8ED;color:#3B4654;font:800 13px/1 var(--fa)}
+.pt .bd{position:absolute;left:24px;bottom:-5px}
+.pt .nm{max-width:100%;padding:1px 5px 2px;border-radius:6px;background:rgba(5,14,9,.62);font:600 12px/1.3 var(--fa);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt .nm i{margin-right:3px;font-style:normal;font-weight:500;opacity:.75;font-variant-numeric:tabular-nums}
+.pt.on .ph{box-shadow:0 0 0 2px #fff,0 0 0 5px var(--ring,#fff)}
+.pt.on .nm{background:#fff;color:#0E1620}
+.pt:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:8px}
+.bd{display:inline-block;padding:1px 5px;border-radius:6px;background:rgba(5,14,9,.8);box-shadow:0 0 0 1px rgba(255,255,255,.28);color:#fff;font:700 11.5px/1.3 var(--fa);white-space:nowrap;font-variant-numeric:tabular-nums}
+.bd.r1{background:#C8372D}.bd.r2{background:#EE8A19;color:#111}.bd.r3{background:#A9C23C;color:#111}.bd.r4{background:#15873E}.bd.r5{background:#1C6FD1}
+.ptm{position:absolute;left:12px;z-index:1;display:flex;align-items:center;gap:7px;padding:4px 6px 4px 5px;border-radius:12px;background:rgba(5,14,9,.5);font:700 13px var(--fa)}
+.ptm.t{top:12px}.ptm.b{bottom:12px}
+.ptm .cr{width:20px;height:20px}
+.ptf{position:absolute;right:14px;z-index:1;color:rgba(255,255,255,.9);font:700 17px/1 var(--fc);letter-spacing:.4px;font-variant-numeric:tabular-nums}
+.ptf.t{top:17px}.ptf.b{bottom:17px}
+.ptm .bd{font-size:12.5px}
+.pinfo{margin:10px 16px 12px;color:var(--ink-2);font-size:14px;line-height:1.45}
+.pinfo b{color:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .pitch{background-color:#1B4A31}}
+:root[data-theme=dark] .pitch{background-color:#1B4A31}
+/* meciurile arbitrului din sezon */
+.rml{padding:0 0 6px}
+.rm{display:flex;align-items:center;gap:10px;padding:8px 16px;font-size:14px}
+.rm+.rm{border-top:1px solid var(--line)}
+.rm .d{flex:none;width:50px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rm .t{flex:1;min-width:0;line-height:1.25}
+.rm .t b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm .t small{display:block;margin:1px 0 0;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm .c{flex:none;display:flex;align-items:center;gap:4px;font:700 14px/1 var(--fc);font-variant-numeric:tabular-nums}
+.rm .c i{display:inline-block;width:9px;height:12px;border-radius:2px;background:#E8B400}
+.rm .c i.r{margin-left:5px;background:#D93A2F}
+.rm .c.q{color:var(--muted);font-weight:500}
+/* fila Clasament */
+.tbs{margin:0 12px 10px}
+.ctab{margin:0 12px;border-radius:16px;background:var(--surface);overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.ctab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.ctab+.gname,.ctab+.tbo{margin-top:18px}
+.stt{width:100%;border-collapse:separate;border-spacing:0;font-size:14.5px;font-variant-numeric:tabular-nums}
+.stt th,.stt td{height:46px;padding:0 5px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:center;font-weight:400}
+.stt tbody tr:last-child>*{border-bottom:0}
+.stt thead th{height:34px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.stt .c0{position:sticky;left:0;z-index:1;padding:0 8px 0 0;background:var(--surface);text-align:left;box-shadow:inset -1px 0 0 var(--line)}
+.stt thead .c0{padding-left:10px}
+.stt tbody .c0::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:4px;border-radius:0 3px 3px 0;background:var(--nc,transparent)}
+.stt .c0 a{display:flex;align-items:center;gap:8px;height:46px;padding-left:9px;color:inherit;text-decoration:none}
+.stt .ps{flex:none;display:inline-block;width:20px;margin-right:2px;text-align:right;color:var(--ink-2)}
+.stt thead .ps{margin-right:10px}
+.stt .cr{width:22px;height:22px}
+.stt .tn{display:block;max-width:116px;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.stt td{min-width:25px;color:var(--ink-2)}
+.stt td.gg{min-width:42px}
+.stt td.tpt b{color:var(--ink);font-weight:700}
+.stt .fm{padding:0 12px 0 8px;text-align:left}
+.stt thead .fm{text-align:left;padding-left:10px}
+.stt tr.me>*{background:color-mix(in srgb,var(--mc) 13%,var(--surface))}
+.stt tr.me .tn{font-weight:700}
+@media (min-width:560px){.stt .tn{max-width:220px}}
+.fis{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}
+.fis.none{color:var(--muted)}
+.fi{display:inline-grid;place-items:center;flex:none;width:20px;height:20px;padding:0;border:0;border-radius:50%;color:#fff;cursor:pointer}
+.fi svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.fi.W{background:var(--v)}.fi.D{background:var(--e)}.fi.L{background:var(--i)}
+.fi.last{margin-left:3px;outline:2px solid;outline-offset:2px}
+.fi.W.last{outline-color:var(--v)}.fi.D.last{outline-color:var(--e)}.fi.L.last{outline-color:var(--i)}
+.fi:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+details.tbo{margin:18px 0 0}
+details.tbo>summary{margin:0 16px 4px;padding:8px 0;font-weight:600;color:var(--ink-2)}
+#tb-fi:empty{display:none}
+.tleg{margin:12px 12px 0;padding:6px 16px 10px;border-radius:16px;background:var(--surface)}
+.tleg h3{margin:10px 0 6px;font-size:14.5px}
+.tleg p{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:14px;color:var(--ink-2)}
+.tleg p.sm{display:block;font-size:13px;color:var(--muted)}
+.tleg .zq{width:12px;height:12px;border-radius:3px;flex:none}
+.tleg .fi{cursor:default}
+.sb .v small{display:block;margin-top:4px;font:500 11.5px/1 var(--fa);color:var(--muted)}
+.lb .lbh{margin:0;padding:12px 16px 4px;font-size:13px;font-weight:600;color:var(--muted)}
+.lb .lr{display:grid;grid-template-columns:22px 24px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px 16px;color:inherit;text-decoration:none}
+.lb .lr+.lr,.lb .gap+.lr{border-top:1px solid var(--line)}
+.lb .lr .k{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.lb .lr .cr{width:24px;height:24px}
+.lb .lr .n b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb .lr .n small{display:block;margin:2px 0 0;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb .lr .v{font:700 19px/1 var(--fc);font-variant-numeric:tabular-nums}
+.lb .lr.me{background:color-mix(in srgb,var(--mc) 13%,var(--surface))}
+.lb .gap{margin:0;padding:0 16px 2px;border-top:1px solid var(--line);color:var(--muted);text-align:center;letter-spacing:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -365,7 +467,8 @@ function e(e){return Array.isArray?Array.isArray(e):u(e)===`[object Array]`}func
    Surse open-source: Fuse.js (căutare), i18n-iso-countries (nume de țări în română),
    documentația comunitară a API-ului public ESPN (github.com/pseudo-r/Public-ESPN-API),
    modelul Dixon–Coles (1997) pentru scoruri; pentru foile de joc și jucători: soccerdata (citirea foilor ESPN)
-   și descrierea câmpurilor 365Scores din docs.sportsapipro.com. */
+   și descrierea câmpurilor 365Scores din docs.sportsapipro.com; Sofascore (github.com/apdmatos/sofascore-api) și
+   Transfermarkt (github.com/felipeall/transfermarkt-api) pentru arbitri și valori de piață. */
 
 /* ---------- utilitare ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -776,6 +879,16 @@ async function stats365(ev) {
 const DEST_RO = [[/relegation play-?offs?/i, 'Baraj de menținere'], [/promotion play-?offs?/i, 'Baraj de promovare'], [/championship (round|group|play-?offs?)|^play-?offs?$/i, 'Play-off'],
   [/relegation (round|group)|play-?outs?/i, 'Play-out'], [/^relegation$/i, 'Retrogradare'], [/^promotion$/i, 'Promovare'], [/conference league/i, 'Conference League'], [/europa league/i, 'Europa League'], [/champions league/i, 'Liga Campionilor']];
 const destRo = n => (DEST_RO.find(([r]) => r.test(String(n || ''))) || [0, n || ''])[1];
+// forma recentă din clasamentul 365Scores: meciurile cu scorul, de la cel mai vechi la cel mai recent
+function form365(r) {
+  const me = r?.competitor?.id;
+  return (Array.isArray(r?.detailedRecentForm) ? r.detailedRecentForm : []).map(g => {
+    const h = g?.homeCompetitor, a = g?.awayCompetitor;
+    if (!h || !a || me == null || !fin(h.score) || !fin(a.score) || (h.id !== me && a.id !== me)) return null;
+    const home = h.id === me, gf = home ? h.score : a.score, ga = home ? a.score : h.score;
+    return { m: 's' + g.id, t: Date.parse(g.startTime) || 0, home, gf, ga, opp: 's' + (home ? a.id : h.id), oppName: String((home ? a.name : h.name) || ''), r: gf > ga ? 'W' : gf < ga ? 'L' : 'D' };
+  }).filter(Boolean).sort((x, y) => x.t - y.t).slice(-5);
+}
 async function standings365(slug) {
   const d = await w365(`standings/?competitions=${RO_CID[slug]}`, 30 * 60e3);
   const S = d?.standings || [];
@@ -785,8 +898,8 @@ async function standings365(slug) {
     name: s.groupName || (S.length > 1 ? s.displayName : '') || '',
     rows: (s.rows || []).map(r => ({
       team: remember(team365(r.competitor), slug), rank: fin(r.position) ? r.position : null, gp: r.gamePlayed,
-      gd: fin(r.for) && fin(r.against) ? r.for - r.against : r.ratio, pts: r.points,
-      note: destRo(dest[r.destinationNum]?.name), nc: dest[r.destinationNum]?.color || ''
+      gd: fin(r.for) && fin(r.against) ? r.for - r.against : r.ratio, pts: r.points, w: r.gamesWon, d: r.gamesEven, l: r.gamesLost, gf: r.for, ga: r.against,
+      note: destRo(dest[r.destinationNum]?.name), nc: dest[r.destinationNum]?.color || '', rf: form365(r)
     })).filter(r => r.team)
   })).filter(g => g.rows.length);
 }
@@ -852,7 +965,7 @@ async function standings(slug) {
 function stRow(e, slug) {
   const s = {};
   for (const x of e.stats || []) { const k = x.name || x.type; if (k) s[k] = fin(x.value) ? x.value : parseFloat(x.displayValue); }
-  return { team: remember(teamOf(e.team), slug), rank: fin(s.rank) ? s.rank : null, gp: s.gamesPlayed, gd: s.pointDifferential, pts: s.points, note: e.note?.description || '', nc: hex6(e.note?.color) };
+  return { team: remember(teamOf(e.team), slug), rank: fin(s.rank) ? s.rank : null, gp: s.gamesPlayed, gd: s.pointDifferential, pts: s.points, w: s.wins, d: s.ties, l: s.losses, gf: s.pointsFor, ga: s.pointsAgainst, note: e.note?.description || '', nc: hex6(e.note?.color) };
 }
 const sortRows = rows => rows.every(r => fin(r.rank)) ? rows.sort((a, b) => a.rank - b.rank) : rows.sort((a, b) => (b.pts ?? 0) - (a.pts ?? 0) || (b.gd ?? 0) - (a.gd ?? 0));
 async function compTeams(slug) {
@@ -1927,9 +2040,9 @@ function headHTML(ev, opt = {}) {
 }
 async function viewMatch(slug, id, tab, live) {
   let ev = EV.get(id);
-  const ro = is365(id), pl = tab === 'jucatori', base = `#/m/${esc(slug)}/${esc(id)}`;
+  const ro = is365(id), pl = tab === 'jucatori', cl = tab === 'clasament', base = `#/m/${esc(slug)}/${esc(id)}`;
   V.innerHTML = `${topBar(ev ? `${ev.home.short || ev.home.name} – ${ev.away.short || ev.away.name}` : 'Meci')}<div id="mh">${ev ? headHTML(ev) : '<p class="note">Se încarcă meciul…</p>'}</div>
-    <div class="mtabs"><div class="seg wide" role="tablist" aria-label="Secțiunile meciului"><a role="tab" data-mtab href="${base}" aria-selected="${!pl}">Analiză</a><a role="tab" data-mtab href="${base}/jucatori" aria-selected="${pl}">Jucători</a></div></div><div id="mb"></div>`;
+    <div class="mtabs"><div class="seg wide" role="tablist" aria-label="Secțiunile meciului"><a role="tab" data-mtab href="${base}" aria-selected="${!pl && !cl}">Analiză</a><a role="tab" data-mtab href="${base}/jucatori" aria-selected="${pl}">Jucători</a><a role="tab" data-mtab href="${base}/clasament" aria-selected="${cl}">Clasament</a></div></div><div id="mb"></div>`;
   let sum = null, st = null, g3 = null;
   const fresh = async () => { if (ro) { g3 = await game365(id); return ev365(g3); } const r = await summary(id, [slug !== 'x' ? slug : null, ev?.slug]); sum = r.d; return evFromSummary(r.d, r.slug); };
   try { ev = await fresh() || ev; }
@@ -1953,6 +2066,7 @@ async function viewMatch(slug, id, tab, live) {
     tick();
   }
   if (pl) await players(ev, sum, live, { g: g3 });
+  else if (cl) await tables(ev, sum, live);
   else await analysis(ev, sum, live, { st });
 }
 async function viewVs(a, b, neutral, live) {
@@ -2126,7 +2240,11 @@ async function analysis(ev, sum, live, opt = {}) {
 // De unde vin datele:
 //  - foile de joc din rezumatul ESPN: titulari, schimbări și statistici pe fiecare jucător (șuturi, faulturi, cartonașe, goluri, pase de gol);
 //  - lotul ESPN al echipei: vârstă, înălțime, post;
-//  - 365Scores: formațiile probabile sau confirmate, indisponibilii, antrenorii, arbitrul și valoarea de piață.
+//  - 365Scores: formațiile probabile sau confirmate (cu poziția fiecărui jucător pe teren), indisponibilii, antrenorii, arbitrul,
+//    iar din fișa jucătorului valoarea de piață, notele din ultimele meciuri și înălțimea;
+//  - pozele jucătorilor se încarcă de la 365Scores (altfel ESPN), la fel ca emblemele echipelor;
+//  - Sofascore: arbitrul meciului, totalurile lui din carieră și fiecare meci arbitrat în sezon (cu cartonașele), plus valori de piață;
+//  - Transfermarkt: valorile de piață (și înălțimea, vârsta unde lipsesc), din lotul echipei.
 // Pentru Liga 1, Liga 2 și Cupa României totul vine de la 365Scores (structura răspunsurilor: docs.sportsapipro.com, care documentează aceleași câmpuri).
 // răspunsurile vin din afară: o listă lipsă sau de alt tip se tratează ca listă goală
 const arr = v => (Array.isArray(v) ? v : []);
@@ -2174,6 +2292,26 @@ const posOf = s => {
   s = String(s || '').toLowerCase().trim();
   return /goal|keeper|^gk?$/.test(s) ? 'G' : /mid|^(m|cm|dm|am|lm|rm)\b/.test(s) ? 'M' : /back|defen|sweeper|^(d|cd|cb|lb|rb|lwb|rwb)\b/.test(s) ? 'D' : /forw|strik|attack|wing|^(f|cf|lf|rf|st|lw|rw)\b/.test(s) ? 'F' : '';
 };
+// partea terenului din perspectiva echipei (0 = stânga, 100 = dreapta), după numele sau prescurtarea postului; null dacă nu se știe
+function sideHint(...ss) {
+  for (const s0 of ss) {
+    const s = String(s0 || '').trim().toLowerCase();
+    if (!s || /^(sub|substitute|bench|management|coach)$/.test(s)) continue;
+    const l = /\bleft\b|-l$|^l(b|wb|cb|m|cm|dm|am|w|f|s)$/.test(s), r = /\bright\b|-r$|^r(b|wb|cb|m|cm|dm|am|w|f|s)$/.test(s);
+    if (l === r) return 50;
+    const inner = /cent|-[lr]$|^[lr](cb|cm|dm|am)$/.test(s);
+    return l ? (inner ? 35 : 12) : (inner ? 65 : 88);
+  }
+  return null;
+}
+// cât de avansat joacă un post (0 portar … 3 vârf), pentru ordinea liniilor când sursa nu dă poziția pe teren
+function subDepth(pos, pn) {
+  const s = String(pn || '').toLowerCase(), r = { G: 0, D: 1, M: 2, F: 3 }[pos] ?? 2;
+  if (r === 1) return /wing ?back|wb\b/.test(s) ? 1.25 : 1;
+  if (r === 2) return /defensive|holding|\bdm\b|^dm/.test(s) ? 1.7 : /attacking|\bam\b|^am/.test(s) ? 2.4 : /wing|\b[lr]w\b/.test(s) ? 2.6 : 2;
+  if (r === 3) return /wing|\b[lr]w\b|\b[lr]f\b/.test(s) ? 2.9 : 3;
+  return r;
+}
 const fmtForm = f => { f = String(f ?? '').trim(); return /^\d{3,5}$/.test(f) ? f.split('').join('-') : /^\d(-\d){2,4}$/.test(f) ? f : ''; };
 const ONCE = new Map();
 function once(key, ttl, fn) {
@@ -2185,22 +2323,32 @@ function once(key, ttl, fn) {
   return p;
 }
 
-/* foile de joc, arbitrii și valorile de piață se păstrează compact pe telefon */
+/* foile de joc, arbitrii și fișele jucătorilor (valoare de piață, note recente, înălțime, vârstă) se păstrează compact pe telefon */
 const BOX = store.get('box', {});
-const REFS = Object.assign({ m: {}, n: {} }, store.get('refs', {}));
-const MV = store.get('mv', {});
-let boxDirty = false, refDirty = false, mvDirty = false;
+const REFS = Object.assign({ m: {}, n: {}, d: {} }, store.get('refs', {}));
+const AP = store.get('ap', {});
+try { localStorage.removeItem('careu.mv'); } catch (e) {}
+let boxDirty = false, refDirty = false, apDirty = false;
 function flushPlayers() {
   const trim = (o, max, keep, at) => { const ks = Object.keys(o); if (ks.length > max) ks.sort((a, b) => at(o[a]) - at(o[b])).slice(0, ks.length - keep).forEach(k => delete o[k]); };
   if (boxDirty) { boxDirty = false; trim(BOX, 120, 96, v => v.t); store.cache('box', BOX); }
-  if (refDirty) { refDirty = false; trim(REFS.m, 900, 750, v => v[4]); store.cache('refs', REFS); }
-  if (mvDirty) { mvDirty = false; trim(MV, 900, 700, v => v[2]); store.cache('mv', MV); }
+  if (refDirty) {
+    // notele arbitrilor pe un sezon întreg: până la 5000 de meciuri; dacă se șterg unele, lunile se recitesc
+    refDirty = false;
+    const n0 = Object.keys(REFS.m).length;
+    trim(REFS.m, 5000, 4200, v => v?.[4] ?? 0);
+    if (Object.keys(REFS.m).length < n0) REFS.d = {};
+    store.cache('refs', REFS);
+  }
+  if (apDirty) { apDirty = false; trim(AP, 900, 700, v => v.t); store.cache('ap', AP); }
+  if (sofaDirty) { sofaDirty = false; trim(SOFA.e, 400, 300, v => v?.[2] ?? 0); trim(SOFA.c, 3000, 2400, v => v?.[3] ?? 0); trim(SOFA.u, 300, 200, v => v?.[2] ?? 0); trim(SOFA.t, 24, 16, v => v?.t ?? 0); store.cache('sofa', SOFA); }
+  if (tmDirty) { tmDirty = false; trim(TMC, 40, 30, v => v?.t ?? 0); store.cache('tmv', TMC); }
 }
 setInterval(flushPlayers, 6000);
 addEventListener('pagehide', flushPlayers);
 
 // Foaia de joc a unui meci: pe fiecare echipă formația (f), antrenorul (c), dacă se cunosc golurile și cartonașele (e) și statisticile detaliate (s), și jucătorii care au jucat (p).
-// Un jucător: [id, nume, post, titular, minute, goluri, pase de gol, șuturi, pe poartă, faulturi, faulturi suferite, galbene, roșii, notă, număr]
+// Un jucător: [id, nume, post, titular, minute, goluri, pase de gol, șuturi, pe poartă, faulturi, faulturi suferite, galbene, roșii, notă, număr, partea terenului]
 const numv = x => { const v = fin(x?.value) ? x.value : parseFloat(String(x?.displayValue ?? '').replace(',', '.')); return fin(v) && v > 0 ? v : 0; };
 const clockMin = c => { const m = /(\d{1,3})/.exec(String(c?.clock?.displayValue ?? '')); return m ? Math.min(120, +m[1]) : null; };
 function refOfSummary(d) {
@@ -2241,7 +2389,7 @@ function boxFromSummary(d) {
       const min = Math.max(1, (off ? tOff ?? 68 : 90) - (x.starter ? 0 : tIn ?? 68));
       T.p.push([String(a.id), String(a.displayName || a.fullName || a.shortName || '').trim(), posOf(x.position?.name) || posOf(x.position?.abbreviation), x.starter ? 1 : 0, min,
         s.totalGoals || 0, s.goalAssists || 0, s.totalShots || 0, s.shotsOnTarget || 0, s.foulsCommitted || 0, s.foulsSuffered || 0, s.yellowCards || 0, s.redCards || 0, null,
-        x.jersey != null && x.jersey !== '' ? String(x.jersey) : null]);
+        x.jersey != null && x.jersey !== '' ? String(x.jersey) : null, sideHint(x.position?.abbreviation, x.position?.name)]);
     }
     if (det > 0) T.s = 1;
     if (T.p.length) out.T[tid] = T;
@@ -2252,7 +2400,9 @@ function boxFromSummary(d) {
 const isStaff365 = m => m?.status === 4 || /manag|coach/i.test(String(m.statusText || '')) || /coach|manager/i.test(String(m.formation?.name || ''));
 // rolul unui om din foaia 365Scores: titular, rezervă, indisponibil sau antrenor (după cod, apoi după text)
 const role365 = m => { const t = String(m?.statusText || ''); return isStaff365(m) ? 'staff' : m.status === 1 || /^start/i.test(t) ? 'xi' : m.status === 2 || /^(sub|bench)/i.test(t) ? 'bench' : m.status == null && !t ? '' : 'out'; };
-const ref365 = g => String(arr(g?.officials).find(o => o?.name)?.name || '').trim();
+// arbitrul la 365Scores: numele fără țară; țara (la meciurile internaționale) separat
+const ref365 = g => refSplit(arr(g?.officials).find(o => o?.name)?.name)[0];
+const refC365 = g => refSplit(arr(g?.officials).find(o => o?.name)?.name)[1];
 const aid365 = (i, m) => i?.athleteId > 0 ? String(i.athleteId) : m?.athleteId > 0 ? String(m.athleteId) : 'm' + m.id;
 function boxFrom365(g) {
   const out = { t: Date.now(), ref: ref365(g), T: {} };
@@ -2297,7 +2447,7 @@ function boxFrom365(g) {
       const cd = cards.get(m.id) || [0, 0];
       T.p.push([aid365(i, m), nm, P365[m.position?.id] || posOf(m.position?.name) || posOf(m.formation?.name), rl === 'xi' ? 1 : 0, Math.min(120, Math.round(min)),
         gl ?? goals.get(m.id) ?? 0, st(26, 'assists') || 0, sh || 0, sot || 0, fc || 0, fs || 0, cd[0], cd[1],
-        fin(m.ranking) && m.ranking > 0 ? Math.round(m.ranking * 10) / 10 : null, (i.jerseyNumber ?? m.jerseyNumber) != null ? String(i.jerseyNumber ?? m.jerseyNumber) : null]);
+        fin(m.ranking) && m.ranking > 0 ? Math.round(m.ranking * 10) / 10 : null, (i.jerseyNumber ?? m.jerseyNumber) != null ? String(i.jerseyNumber ?? m.jerseyNumber) : null, sideHint(m.formation?.name)]);
     }
     if (T.p.length) out.T['s' + c.id] = T;
   }
@@ -2329,6 +2479,11 @@ async function playerBox(ev) {
 
 /* arbitri: fiecare meci citit lasă o notă [arbitru, galbene, roșii, faulturi, ziua, competiția] */
 const dayNo = iso => Math.round(new Date(iso).getTime() / 864e5);
+// „Amin Omar (Egypt)” → numele și țara din paranteză (365Scores adaugă țara la meciurile internaționale)
+function refSplit(s) {
+  const t = String(s || '').replace(/\s+/g, ' ').trim(), m = /^(.*?)\s*\(([^()]{2,40})\)$/.exec(t);
+  return m && m[1] ? [m[1].trim(), m[2].trim()] : [t, ''];
+}
 function noteRef(ev, b) {
   if (!ev?.done || !b) return false;
   let y = null, r = null, f = null;
@@ -2336,68 +2491,199 @@ function noteRef(ev, b) {
   const st = STATS[ev.id]?.[1], Ts = Object.values(b.T || {});
   if (st?.ok) { const ts = Object.values(st.t); if (ts.length === 2) { if (ts.every(t => fin(t.y))) { y = ts[0].y + ts[1].y; r = (ts[0].r || 0) + (ts[1].r || 0); } if (ts.every(t => fin(t.f))) f = ts[0].f + ts[1].f; } }
   if (y == null && Array.isArray(b.k)) [y, r] = b.k;
-  if (y == null && Ts.length === 2) { y = 0; r = 0; for (const T of Ts) for (const p of T.p) { y += p[11] || 0; r += p[12] || 0; } }
+  if (y == null && Ts.length === 2 && Ts.every(T => T.e ?? T.s)) { y = 0; r = 0; for (const T of Ts) for (const p of T.p) { y += p[11] || 0; r += p[12] || 0; } }
   if (f == null && Ts.length === 2 && Ts.every(T => T.s)) { f = 0; for (const T of Ts) for (const p of T.p) f += p[9] || 0; }
-  if (y == null) return false;
-  const key = pnorm(b.ref);
+  const name = refSplit(b.ref)[0], key = pnorm(name);
+  if (y == null && !key) return false;
   REFS.m[ev.id] = [key, y, r, f, dayNo(ev.date), ev.slug || ''];
-  if (key) REFS.n[key] = b.ref;
+  if (key) REFS.n[key] = name;
   refDirty = true;
   return !!key;
 }
 // același arbitru poate apărea scris puțin diferit în cele două surse (de exemplu cu prenumele prescurtat)
 function refKey(name) {
-  const k = pnorm(name);
+  const k = pnorm(refSplit(name)[0]);
   if (!k || REFS.n[k]) return k;
   let best = '', bs = 0;
   for (const q of Object.keys(REFS.n)) { const v = psim(k, q); if (v > bs) { bs = v; best = q; } }
   return bs >= 0.85 ? best : k;
 }
-function refStats(name, slug) {
-  const key = refKey(name), all = Object.values(REFS.m).filter(x => fin(x[1]));
-  const mine = key ? all.filter(x => x[0] === key) : [], same = all.filter(x => x[5] === slug);
-  const base = same.length >= 12 ? same : all.length >= 40 ? all : null;
-  const k = L => mean(L.map(x => x[1] + (x[2] || 0)));
-  const fl = mine.filter(x => fin(x[3]));
-  return { n: mine.length, y: mean(mine.map(x => x[1])), r: mean(mine.map(x => x[2] || 0)), k: mine.length ? k(mine) : null, f: fl.length ? mean(fl.map(x => x[3])) : null,
-    baseN: base ? base.length : 0, baseK: base ? k(base) : 4.4, own: base === same };
+// toate cheile sub care apare același arbitru
+function refKeys(name) {
+  const k = pnorm(refSplit(name)[0]), out = new Set();
+  if (!k) return out;
+  out.add(k);
+  for (const q of Object.keys(REFS.n)) if (q !== k && psim(k, q) >= 0.85) out.add(q);
+  return out;
 }
 // cât schimbă arbitrul cartonașele așteptate; cu puține meciuri, efectul e tras spre zero
 const refFactor = rs => rs && rs.n && rs.baseK > 0 ? clamp((rs.n * (rs.k / rs.baseK) + 6) / (rs.n + 6), 0.75, 1.35) : 1;
-// citește arbitrii ultimelor meciuri din competiție (cele mai recente întâi), ca media arbitrului să se sprijine pe mai multe meciuri
-function leagueDone(slug) {
-  return once('lg:' + slug, 3600e3, async () => {
-    if (RO_CID[slug]) {
-      const d = await w365(`games/results/?competitions=${RO_CID[slug]}`, 3600e3);
-      return arr(d?.games).filter(g => g && g.competitionId === RO_CID[slug]).map(ev365).filter(e => e?.done);
-    }
-    const path = `/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymdOf(new Date(Date.now() - 100 * 864e5))}-${ymdOf(new Date())}&limit=300`;
-    const d = await espn(path, { ttl: 60000, ok: d => Array.isArray(d?.events) });
-    const out = [];
-    for (const e of d.events) {
-      const v = evOf(e, slug);
-      if (!v?.done) continue;
-      if (!STATS[v.id]) { const st = sbStats(e); if (st?.ok) { STATS[v.id] = [Date.now(), st]; statsDirty = true; } }
-      out.push(v);
-    }
-    MEM.delete(path);
-    return out;
-  });
+
+/* sezonul arbitrului: toate meciurile lui de la începutul sezonului, din competițiile în care arbitrează de obicei */
+// competițiile interne pe țări (ESPN; România prin 365Scores) și numele țărilor în română
+const REF_HOME = {
+  england: ['eng.1', 'eng.fa', 'eng.league_cup'], spain: ['esp.1', 'esp.copa_del_rey'], italy: ['ita.1', 'ita.coppa_italia'], germany: ['ger.1', 'ger.dfb_pokal'],
+  france: ['fra.1', 'fra.coupe_de_france'], portugal: ['por.1', 'por.taca.portugal'], netherlands: ['ned.1', 'ned.cup'], belgium: ['bel.1'], turkey: ['tur.1'], greece: ['gre.1'],
+  romania: ['rou.1', 'rou.cup'], scotland: ['sco.1', 'sco.tennents', 'sco.cis'], austria: ['aut.1'], denmark: ['den.1'], switzerland: ['sui.1'], norway: ['nor.1'], sweden: ['swe.1'],
+  russia: ['rus.1'], ukraine: ['ukr.1'], poland: ['pol.1'], czechia: ['cze.1'], croatia: ['cro.1'], serbia: ['srb.1'], cyprus: ['cyp.1'], israel: ['isr.1'], ireland: ['irl.1'],
+  'saudi arabia': ['ksa.1'], usa: ['usa.1'], brazil: ['bra.1'], argentina: ['arg.1']
+};
+const REF_CTRY_RO = {
+  england: 'Anglia', spain: 'Spania', italy: 'Italia', germany: 'Germania', france: 'Franța', portugal: 'Portugalia', netherlands: 'Țările de Jos', belgium: 'Belgia', turkey: 'Turcia',
+  greece: 'Grecia', romania: 'România', scotland: 'Scoția', austria: 'Austria', denmark: 'Danemarca', switzerland: 'Elveția', norway: 'Norvegia', sweden: 'Suedia', russia: 'Rusia',
+  ukraine: 'Ucraina', poland: 'Polonia', czechia: 'Cehia', croatia: 'Croația', serbia: 'Serbia', cyprus: 'Cipru', israel: 'Israel', ireland: 'Irlanda', wales: 'Țara Galilor',
+  'northern ireland': 'Irlanda de Nord', slovakia: 'Slovacia', slovenia: 'Slovenia', hungary: 'Ungaria', bulgaria: 'Bulgaria', finland: 'Finlanda', iceland: 'Islanda', georgia: 'Georgia',
+  armenia: 'Armenia', azerbaijan: 'Azerbaidjan', kazakhstan: 'Kazahstan', lithuania: 'Lituania', latvia: 'Letonia', estonia: 'Estonia', belarus: 'Belarus', moldova: 'Moldova',
+  albania: 'Albania', 'north macedonia': 'Macedonia de Nord', montenegro: 'Muntenegru', 'bosnia and herzegovina': 'Bosnia și Herțegovina', kosovo: 'Kosovo', malta: 'Malta',
+  luxembourg: 'Luxemburg', 'faroe islands': 'Insulele Feroe', andorra: 'Andorra', 'san marino': 'San Marino', liechtenstein: 'Liechtenstein', gibraltar: 'Gibraltar',
+  'saudi arabia': 'Arabia Saudită', usa: 'SUA', brazil: 'Brazilia', argentina: 'Argentina'
+};
+const REF_ALIAS = { 'turkiye': 'turkey', 'czech republic': 'czechia', 'republic of ireland': 'ireland', 'eire': 'ireland', 'united states': 'usa', 'usa': 'usa', 'holland': 'netherlands', 'bosnia': 'bosnia and herzegovina', 'bosnia herzegovina': 'bosnia and herzegovina', 'macedonia': 'north macedonia', 'ksa': 'saudi arabia' };
+const UEFA_CTRY = new Set(Object.keys(REF_CTRY_RO).filter(c => !['saudi arabia', 'usa', 'brazil', 'argentina'].includes(c)));
+const SLUG_CTRY = { eng: 'england', esp: 'spain', ita: 'italy', ger: 'germany', fra: 'france', por: 'portugal', ned: 'netherlands', bel: 'belgium', tur: 'turkey', gre: 'greece', rou: 'romania', sco: 'scotland', aut: 'austria', den: 'denmark', sui: 'switzerland', nor: 'norway', swe: 'sweden', rus: 'russia', ukr: 'ukraine', pol: 'poland', cze: 'czechia', cro: 'croatia', srb: 'serbia', cyp: 'cyprus', isr: 'israel', irl: 'ireland', ksa: 'saudi arabia', usa: 'usa', bra: 'brazil', arg: 'argentina' };
+const CAL_YEAR = new Set(['usa', 'brazil', 'argentina']);
+const UEFA_MAIN = ['uefa.champions', 'uefa.europa', 'uefa.europa.conf', 'uefa.nations', 'fifa.worldq.uefa', 'uefa.euroq', 'uefa.super_cup'];
+const UEFA_QUAL = ['uefa.champions_qual', 'uefa.europa_qual', 'uefa.europa.conf_qual'];
+// țara arbitrului: a competiției, dacă e una internă; altfel cea scrisă de 365Scores lângă nume
+function refCountry(slug, said) {
+  const own = SLUG_CTRY[String(slug || '').split('.')[0]];
+  if (own) return own;
+  const c = norm(String(said || '')).replace(/\s+/g, ' ').trim();
+  return REF_ALIAS[c] || (REF_CTRY_RO[c] ? c : c || '');
 }
-async function refScan(ev, max, onProg) {
-  if (!ev.slug) return 0;
-  const evs = await leagueDone(ev.slug);
-  const todo = evs.filter(e => e.id !== ev.id && !REFS.m[e.id]).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, max);
-  let k = 0, got = 0;
-  await Promise.all(todo.map(e => (is365(e.id) ? lim365 : lim)(async () => {
+// unde caut: competiția meciului, competițiile interne ale țării lui, apoi cupele europene și meciurile echipelor naționale (UEFA)
+function refScope(slug, country) {
+  const uefa = country ? UEFA_CTRY.has(country) : /^uefa\./.test(slug) || slug === 'fifa.worldq.uefa';
+  const home = (REF_HOME[country] || []).filter(s => s !== slug);
+  return [[slug], home, uefa ? UEFA_MAIN.filter(s => s !== slug) : [], uefa ? UEFA_QUAL.filter(s => s !== slug) : []];
+}
+// sezonul: de la 1 iulie (în ligile pe an calendaristic, de la 1 ianuarie)
+function seasonFrom(date, country) {
+  const d = new Date(date || Date.now());
+  return CAL_YEAR.has(country) ? new Date(d.getFullYear(), 0, 1) : new Date(d.getMonth() >= 6 ? d.getFullYear() : d.getFullYear() - 1, 6, 1);
+}
+const seasonName = (from, country) => (CAL_YEAR.has(country) ? String(from.getFullYear()) : `${from.getFullYear()}-${String(from.getFullYear() + 1).slice(2)}`);
+const dmy365 = d => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+// cartonașele și faulturile unui meci din lista ESPN (fără să citesc foaia lui)
+function sbCards(e) {
+  const c = e?.competitions?.[0];
+  if (!c || !Array.isArray(c.details)) return null;
+  let y = 0, r = 0, f = 0, n = 0;
+  for (const d of c.details) { if (d?.redCard) r++; else if (d?.yellowCard) y++; }
+  for (const cp of arr(c.competitors)) for (const s of arr(cp?.statistics)) if (s?.name === 'foulsCommitted') { const v = parseFloat(s.displayValue ?? s.value); if (fin(v)) { f += v; n++; } }
+  return { y, r, f: n === 2 ? f : null };
+}
+// meciurile terminate dintr-o lună a unei competiții: ESPN printr-o singură listă, 365Scores pe bucăți de două săptămâni
+async function monthGames(slug, a, b) {
+  if (RO_CID[slug]) {
+    const L = [];
+    for (let x = new Date(a); x <= b; x = new Date(x.getTime() + 15 * 864e5)) {
+      const y = new Date(Math.min(b.getTime(), x.getTime() + 14 * 864e5));
+      const g = await w365(`games/?competitions=${RO_CID[slug]}&startDate=${dmy365(x)}&endDate=${dmy365(y)}`, 3600e3, d => arr(d?.games).filter(q => q && q.competitionId === RO_CID[slug]).map(ev365).filter(e => e?.done).map(e => ({ e, k: null })));
+      L.push(...(g || []));
+    }
+    return L;
+  }
+  const path = `/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymdOf(a)}-${ymdOf(b)}&limit=500`;
+  const d = await espn(path, { ttl: 3600e3, ok: d => Array.isArray(d?.events) });
+  MEM.delete(path);
+  const L = [];
+  for (const e of d.events) {
+    const v = evOf(e, slug);
+    if (!v?.done) continue;
+    if (!STATS[v.id]) { const st = sbStats(e); if (st?.ok) { STATS[v.id] = [Date.now(), st]; statsDirty = true; } }
+    L.push({ e: v, k: sbCards(e) });
+  }
+  return L;
+}
+// toate lunile sezonului, mai puțin cele deja citite complet; o lună încheiată de 3 zile nu se mai schimbă
+async function seasonGames(slug, from, to) {
+  const list = [], months = [];
+  let ok = 0, bad = 0;
+  for (let a = new Date(from.getFullYear(), from.getMonth(), 1); a <= to; a = new Date(a.getFullYear(), a.getMonth() + 1, 1)) {
+    const mk = `${a.getFullYear()}-${a.getMonth() + 1}`, end = new Date(a.getFullYear(), a.getMonth() + 1, 0, 23, 59);
+    if (REFS.d[slug]?.[mk]) { ok++; continue; }
+    const b = end < to ? end : to;
     try {
-      const b = await fetchBox(e);
-      if (b && noteRef(e, b)) got++;
-      else if (!REFS.m[e.id]) { REFS.m[e.id] = ['', null, null, null, dayNo(e.date), e.slug || '']; refDirty = true; }
-    } catch (err) {}
-    onProg?.(++k, todo.length);
-  })));
-  return got;
+      const L = await once(`mg:${slug}:${mk}:${ymdOf(b)}`, 3600e3, () => monthGames(slug, a < from ? from : a, b));
+      list.push(...L); ok++;
+      months.push([mk, end.getTime() < Date.now() - 3 * 864e5 ? L.map(g => g.e.id) : null]);
+    } catch (e) { bad++; }
+  }
+  return { list, months, ok, bad };
+}
+// arbitrul unui meci ESPN dintr-o cerere mică (API-ul „core”); undefined dacă nu se poate afla așa
+const CORE = { ok: null, fail: 0 };
+async function coreRef(slug, id) {
+  if (CORE.ok === false) return undefined;
+  try {
+    const d = await getJSON(`https://sports.core.api.espn.com/v2/sports/soccer/leagues/${slug}/events/${id}/competitions/${id}/officials?lang=en&region=us`, 12000);
+    CORE.ok = true;
+    const items = arr(d?.items).filter(Boolean);
+    if (!items.length) return '';
+    if (!items.some(x => x.fullName || x.displayName)) return undefined;
+    return refOfSummary({ gameInfo: { officials: items } });
+  } catch (e) {
+    if (e.status === 404) { CORE.ok = true; return ''; }
+    if (!e.status && ++CORE.fail >= 3 && CORE.ok !== true) CORE.ok = false;
+    return undefined;
+  }
+}
+// un meci din sezon: arbitrul și cartonașele, cât mai ieftin; heavy: am voie să citesc foaia întreagă
+async function noteSeason(g, heavy) {
+  const e = g.e, mark = (name, k) => { const key = pnorm(name); REFS.m[e.id] = [key, k ? k.y : null, k ? k.r : null, k ? k.f : null, dayNo(e.date), e.slug || '']; if (key) REFS.n[key] = name; refDirty = true; };
+  if (!is365(e.id)) {
+    const name = await coreRef(e.slug, e.id);
+    if (name === '') return mark('', g.k);
+    if (name !== undefined && (g.k || !heavy)) return mark(name, g.k);
+  }
+  if (!heavy && !is365(e.id)) return;
+  const b = await fetchBox(e);
+  if (!(b && noteRef(e, b)) && !REFS.m[e.id]) mark(refSplit(b?.ref)[0] || '', g.k);
+}
+// citește pe rând competițiile din sfera arbitrului; cele grele (foaia întreagă) doar pentru competiția meciului și cele interne
+async function refSeasonScan(R, exclId, onProg) {
+  const st = { done: 0, total: 0, listed: [], failed: [], skipped: [] };
+  for (const [ti, comps] of R.tiers.entries()) {
+    if (!comps.length) continue;
+    const heavy = ti <= 1;
+    // fără API-ul mic, cupele europene ar cere sute de foi întregi: le las deoparte
+    if (!heavy && CORE.ok === false) { st.skipped.push(...comps); continue; }
+    const res = await Promise.all(comps.map(slug => seasonGames(slug, R.from, R.to).then(x => [slug, x], () => [slug, null])));
+    const todo = [];
+    for (const [slug, x] of res) {
+      if (!x || (!x.ok && x.bad)) { st.failed.push(slug); continue; }
+      st.listed.push(slug);
+      for (const g of x.list) if (g.e.id !== String(exclId) && !REFS.m[g.e.id]) todo.push(g);
+    }
+    st.total += todo.length;
+    onProg?.(st);
+    await Promise.all(todo.map(g => (is365(g.e.id) ? lim365 : lim)(async () => {
+      try { await noteSeason(g, heavy); } catch (err) {}
+      st.done++;
+      if (st.done % 12 === 0) onProg?.(st);
+    })));
+    for (const [slug, x] of res) if (x) for (const [mk, ids] of x.months) if (ids && ids.every(id => REFS.m[id] || id === String(exclId))) { (REFS.d[slug] ||= {})[mk] = 1; refDirty = true; }
+    // cererile scurte au căzut pe parcurs: competițiile cu meciuri rămase necitite nu se socotesc citite
+    if (!heavy && CORE.ok === false) for (const [slug, x] of res) if (x && x.list.some(g => g.e.id !== String(exclId) && !REFS.m[g.e.id])) { st.listed = st.listed.filter(q => q !== slug); st.skipped.push(slug); }
+    onProg?.(st, true);
+  }
+  return st;
+}
+// media arbitrului în sezon, pe toate competițiile citite; comparată cu media acelorași competiții
+function refSeason(name, from, to, exclId) {
+  const keys = refKeys(name), d0 = dayNo(from), d1 = dayNo(to), ex = String(exclId ?? '');
+  const all = Object.entries(REFS.m).filter(([id, x]) => Array.isArray(x) && x[4] >= d0 && x[4] <= d1 && id !== ex);
+  const mine = all.filter(([, x]) => keys.has(x[0])), wc = mine.filter(([, x]) => fin(x[1]));
+  const by = new Map();
+  for (const [, x] of mine) by.set(x[5], (by.get(x[5]) || 0) + 1);
+  const cards = x => x[1] + (x[2] || 0), avgIn = new Map(), allK = all.filter(([, x]) => fin(x[1])).map(([, x]) => cards(x)), allAvg = mean(allK);
+  const compAvg = slug => { if (!avgIn.has(slug)) { const L = all.filter(([, x]) => x[5] === slug && fin(x[1])).map(([, x]) => cards(x)); avgIn.set(slug, L.length >= 8 ? mean(L) : null); } return avgIn.get(slug); };
+  let bs = 0, bn = 0;
+  for (const [, x] of wc) { const a = compAvg(x[5]) ?? allAvg; if (fin(a)) { bs += a; bn++; } }
+  const fl = wc.filter(([, x]) => fin(x[3]));
+  return { n: wc.length, all: mine.length, y: mean(wc.map(([, x]) => x[1])), r: mean(wc.map(([, x]) => x[2] || 0)), k: wc.length ? mean(wc.map(([, x]) => cards(x))) : null,
+    f: fl.length ? mean(fl.map(([, x]) => x[3])) : null, baseK: bn ? bs / bn : 4.4, baseN: allK.length, comps: [...by].sort((a, b) => b[1] - a[1]) };
 }
 
 /* statisticile fiecărui jucător în meciurile recente ale echipei */
@@ -2414,7 +2700,7 @@ function squadAgg(teamId, list, boxes) {
     for (const p of T.p) {
       if (!(p[4] > 0)) continue;
       let a = P.get(p[0]);
-      if (!a) P.set(p[0], a = { id: p[0], name: p[1], j: null, pc: {}, apps: 0, st: 0, min: 0, minSt: 0, eapps: 0, em: 0, g: 0, y: 0, r: 0, sapps: 0, sm: 0, a: 0, sh: 0, sot: 0, fc: 0, fs: 0, rtS: 0, rtN: 0, log: [], last: idx });
+      if (!a) P.set(p[0], a = { id: p[0], name: p[1], j: null, pc: {}, apps: 0, st: 0, min: 0, minSt: 0, eapps: 0, em: 0, g: 0, y: 0, r: 0, sapps: 0, sm: 0, a: 0, sh: 0, sot: 0, fc: 0, fs: 0, rtS: 0, rtN: 0, sdS: 0, sdN: 0, log: [], last: idx });
       if (a.j == null && p[14] != null) a.j = p[14];
       if (p[2]) a.pc[p[2]] = (a.pc[p[2]] || 0) + (p[3] ? 2 : 1);
       a.apps++; a.min += p[4];
@@ -2423,11 +2709,12 @@ function squadAgg(teamId, list, boxes) {
       if (e) { a.eapps++; a.em += p[4]; a.g += p[5]; a.y += p[11]; a.r += p[12]; }
       if (T.s) { a.sapps++; a.sm += p[4]; a.a += p[6]; a.sh += p[7]; a.sot += p[8]; a.fc += p[9]; a.fs += p[10]; }
       if (fin(p[13])) { a.rtS += p[13]; a.rtN++; }
+      if (p[3] && fin(p[15])) { a.sdS += p[15]; a.sdN++; }
       a.log.push([idx, p[3], p[4], e ? p[5] : 0, T.s ? p[6] : 0, T.s ? p[8] : 0, T.s ? p[7] : 0]);
     }
   });
   const players = [...P.values()];
-  players.forEach(a => { a.pos = Object.entries(a.pc).sort((x, y) => y[1] - x[1])[0]?.[0] || ''; a.rt = a.rtN ? a.rtS / a.rtN : null; });
+  players.forEach(a => { a.pos = Object.entries(a.pc).sort((x, y) => y[1] - x[1])[0]?.[0] || ''; a.rt = a.rtN ? a.rtS / a.rtN : null; a.sd = a.sdN ? a.sdS / a.sdN : null; });
   return { n, ns, ne, players, forms: [...forms].sort((x, y) => y[1] - x[1]), coach, subs: n ? subs / n : null, starters: starters.size };
 }
 
@@ -2449,7 +2736,8 @@ function squadEspn(id, slugs) {
           age: fin(a.age) && a.age > 0 ? a.age : fin(born) ? Math.floor((Date.now() - born) / (365.25 * 864e5)) : null,
           // ESPN dă înălțimea în inci
           h: fin(a.height) && a.height > 0 ? Math.round(a.height < 100 ? a.height * 2.54 : a.height) : null,
-          pos: posOf(a.position?.name) || posOf(a.position?.abbreviation), j: a.jersey != null && a.jersey !== '' ? String(a.jersey) : null, inj
+          pos: posOf(a.position?.name) || posOf(a.position?.abbreviation), j: a.jersey != null && a.jersey !== '' ? String(a.jersey) : null, inj,
+          ph: String(a.headshot?.href || '')
         });
       }
       if (m.size) return { src: 'ESPN', m, coach: null };
@@ -2459,14 +2747,14 @@ function squadEspn(id, slugs) {
 }
 function squad365(cid) {
   return once('sq3:' + cid, 12 * 3600e3, async () => {
-    const L = await w365(`squads/?competitors=${cid}`, 60000, x => arr(x?.squads).flatMap(s => arr(s?.athletes)).filter(Boolean).map(a => ({ id: a.id, name: a.name, short: a.shortName, age: a.age, h: a.height, j: a.jerseyNum, p: a.position?.id, pn: a.position?.name, fp: a.formationPosition?.name })));
+    const L = await w365(`squads/?competitors=${cid}`, 60000, x => arr(x?.squads).flatMap(s => arr(s?.athletes)).filter(Boolean).map(a => ({ id: a.id, name: a.name, short: a.shortName, age: a.age, h: a.height, j: a.jerseyNum, p: a.position?.id, pn: a.position?.name, fp: a.formationPosition?.name, iv: a.imageVersion })));
     const m = new Map();
     let coach = null;
     for (const a of L || []) {
       if (a.id == null || !a.name) continue;
       const fp = String(a.fp || '');
       if (a.p === 0 || /coach|manager/i.test(fp)) { if (!coach && /coach|manager/i.test(fp) && !/assist|goalkeep|fitness|youth/i.test(fp)) coach = { name: a.name, age: fin(a.age) && a.age > 0 ? a.age : null }; continue; }
-      m.set(String(a.id), { id: String(a.id), name: String(a.name).trim(), short: a.short || '', age: fin(a.age) && a.age > 0 ? a.age : null, h: fin(a.h) && a.h > 100 ? Math.round(a.h) : null, pos: P365[a.p] || posOf(a.pn) || posOf(fp), j: a.j != null ? String(a.j) : null });
+      m.set(String(a.id), { id: String(a.id), name: String(a.name).trim(), short: a.short || '', age: fin(a.age) && a.age > 0 ? a.age : null, h: fin(a.h) && a.h > 100 ? Math.round(a.h) : null, pos: P365[a.p] || posOf(a.pn) || posOf(fp), j: a.j != null ? String(a.j) : null, iv: a.iv ?? null });
     }
     return m.size || coach ? { src: '365Scores', m, coach } : null;
   });
@@ -2501,28 +2789,57 @@ function mvOf(a) {
   }
   return null;
 }
-const mvFresh = id => MV[id] && Date.now() - MV[id][2] < 14 * 864e5;
-async function marketValues(ids) {
-  const need = uniq(ids.map(String)).filter(id => /^\d+$/.test(id) && !mvFresh(id)).slice(0, 44);
+// tot ce folosesc din fișa unui jucător: valoarea de piață, notele din ultimele meciuri (cele mai recente întâi), înălțimea, vârsta
+const htCm = v => { const n = typeof v === 'number' ? v : parseFloat(String(v ?? '').replace(',', '.')); return n > 1.4 && n < 2.3 ? Math.round(n * 100) : n > 140 && n < 230 ? Math.round(n) : null; };
+function apOf(a) {
+  const mv = mvOf(a);
+  const G = arr(Array.isArray(a?.lastMatches) ? a.lastMatches : a?.lastMatches?.games);
+  const r = G.map(e => {
+    const st = arr(e?.athleteStats ?? e?.stats).find(x => x && (x.type === 0 || /^rating$/i.test(String(x.name || ''))));
+    return { t: Date.parse(e?.game?.startTime || e?.startTime || '') || 0, v: parseFloat(String(st?.value ?? '').replace(',', '.')), pl: e?.played !== false };
+  }).filter(x => x.pl && fin(x.v) && x.v > 0 && x.v <= 10).sort((x, y) => y.t - x.t).slice(0, 10).map(x => x.v);
+  let h = htCm(a?.height);
+  for (const d of arr(a?.playerDetails)) {
+    if (h) break;
+    const t = String(d?.title ?? d?.name ?? ''), v = String(d?.value ?? '');
+    if (/height|înălțime|altura|größe|taille/i.test(t)) h = htCm(v);
+    else if (/height|înălțime|altura/i.test(v)) h = htCm(t);
+  }
+  return { t: Date.now(), v: mv ? mv[0] : 0, c: mv ? mv[1] : '', r, h, ag: fin(a?.age) && a.age > 0 && a.age < 60 ? a.age : null };
+}
+const apFresh = id => AP[id] && Date.now() - AP[id].t < 4 * 864e5;
+async function profiles(ids) {
+  const need = uniq(ids.map(String)).filter(id => /^\d+$/.test(id) && !apFresh(id)).slice(0, 56);
   if (!need.length) return 0;
   // keep: la citirea câte unul rezultatul se păstrează oricum, ca să nu cer aceeași fișă la fiecare vizită
   const read = async (chunk, keep) => {
-    const L = await w365(`athletes/?athletes=${chunk.join(',')}&fullDetails=true`, 60000, x => arr(x?.athletes).filter(Boolean).map(a => ({ id: String(a.id), mv: mvOf(a), det: Array.isArray(a.playerDetails) })));
-    for (const a of L || []) if (chunk.includes(a.id) && (keep || a.det || a.mv)) { MV[a.id] = [a.mv ? a.mv[0] : 0, a.mv ? a.mv[1] : '', Date.now()]; mvDirty = true; }
+    const L = await w365(`athletes/?athletes=${chunk.join(',')}&fullDetails=true`, 60000, x => arr(x?.athletes).filter(Boolean).map(a => ({ id: String(a.id), ap: apOf(a), det: Array.isArray(a.playerDetails) || Array.isArray(a.lastMatches?.games) })));
+    for (const a of L || []) if (chunk.includes(a.id) && (keep || a.det || a.ap.v > 0)) { AP[a.id] = a.ap; apDirty = true; }
     return L || [];
   };
   // întâi mai mulți jucători într-o cerere; dacă 365Scores nu răspunde așa, câte unul
   const first = need.slice(0, 6);
   let group = false;
   try { const L = await read(first, first.length === 1); group = first.length === 1 || L.filter(a => first.includes(a.id) && a.det).length >= 2; } catch (e) {}
-  const rest = need.filter(id => !mvFresh(id));
+  const rest = need.filter(id => !apFresh(id));
   if (group) {
     const chunks = [];
     for (let i = 0; i < rest.length; i += 6) chunks.push(rest.slice(i, i + 6));
     await Promise.all(chunks.map(c => lim365(() => read(c, false).catch(() => []))));
-  } else await Promise.all(rest.slice(0, 26).map(id => lim365(() => read([id], true).catch(() => []))));
-  return need.filter(id => MV[id]?.[0] > 0).length;
+  } else await Promise.all(rest.slice(0, 30).map(id => lim365(() => read([id], true).catch(() => []))));
+  return need.filter(id => AP[id]).length;
 }
+const apP = p => (p?.x ? AP[p.x] || null : null);
+// nota medie: din foile de joc 365Scores ale echipei, altfel din ultimele meciuri ale jucătorului (fișa 365Scores)
+function rateOf(p, N) {
+  if (p.a && p.a.rtN >= 2) return p.a.rt;
+  const r = apP(p)?.r;
+  return r && r.length ? mean(r.slice(0, N)) : null;
+}
+// valoarea de piață: [sumă, monedă, sursă]; Transfermarkt întâi, apoi Sofascore, apoi fișa 365Scores
+const mvP = p => (p?.tm?.v > 0 ? [p.tm.v, p.tm.c || '€', 'Transfermarkt'] : p?.sf?.v > 0 ? [p.sf.v, p.sf.c || '€', 'Sofascore'] : (a => (a && a.v > 0 ? [a.v, a.c || '€', '365Scores'] : null))(apP(p)));
+const ageP = p => (fin(p.age) ? p.age : fin(apP(p)?.ag) ? apP(p).ag : fin(p.tm?.ag) ? p.tm.ag : fin(p.sf?.b) ? (Date.now() / 1e3 - p.sf.b) / 31557600 : null);
+const hP = p => (fin(p.h) ? p.h : fin(apP(p)?.h) ? apP(p).h : fin(p.tm?.h) ? p.tm.h : fin(p.sf?.h) ? p.sf.h : null);
 function fmtMV(m) {
   if (!m || !(m[0] > 0)) return '';
   const v = m[0], [n, u] = v >= 1e9 ? [v / 1e9, 'mld.'] : v >= 1e6 ? [v / 1e6, 'mil.'] : [v / 1e3, 'mii'];
@@ -2576,16 +2893,22 @@ function sides365(g, swap) {
       if (!name || !rl) continue;
       if (rl === 'staff') { if (!S.coach) S.coach = name; continue; }
       const jn = i.jerseyNumber ?? m.jerseyNumber;
-      const p = { id: aid365(i, m), name, short: i.shortName || m.shortName || '', j: jn != null && jn >= 0 ? String(jn) : null, pos: P365[m.position?.id] || posOf(m.position?.name) || posOf(m.formation?.name), line: m.yardFormation?.line ?? 9, x: m.yardFormation?.fieldSide ?? 50 };
+      const yf = m.yardFormation || {}, nb = v => (v == null || v === '' ? null : fin(+v) ? +v : null);
+      const p = { id: aid365(i, m), name, short: i.shortName || m.shortName || '', j: jn != null && jn >= 0 ? String(jn) : null, pos: P365[m.position?.id] || posOf(m.position?.name) || posOf(m.formation?.name),
+        iv: i.imageVersion ?? m.imageVersion ?? null, fl: nb(yf.fieldLine), fs: nb(yf.fieldSide), pn: String(m.formation?.name || m.formation?.shortName || '') };
       if (rl === 'xi') S.xi.push(p);
       else if (rl === 'bench') S.bench.push(p);
       else S.out.push({ ...p, why: whyRo(m), ret: retRo(m.injury?.expectedReturn), doubt: /doubt|question/i.test(`${m.statusText || ''} ${m.injury?.reason || ''} ${m.injury?.expectedReturn || ''}`) });
     }
-    S.xi.sort((a, b) => a.line - b.line || a.x - b.x);
+    // partea terenului: 365Scores dă un procent; sensul lui îl aflu din posturile cu stânga/dreapta în nume
+    const named = S.xi.filter(p => fin(p.fs)).map(p => [p.fs, sideHint(p.pn)]).filter(x => x[1] != null && x[1] !== 50);
+    const lm = mean(named.filter(x => x[1] < 50).map(x => x[0])), rm = mean(named.filter(x => x[1] > 50).map(x => x[0]));
+    const flip = fin(lm) && fin(rm) && lm > rm;
+    S.xi.forEach(p => { p.sd = fin(p.fs) ? (flip ? 100 - p.fs : p.fs) : sideHint(p.pn); });
     return S;
   };
   const h = mk(g?.homeCompetitor), a = mk(g?.awayCompetitor);
-  return { home: swap ? a : h, away: swap ? h : a, ref: ref365(g) };
+  return { home: swap ? a : h, away: swap ? h : a, ref: ref365(g), refC: refC365(g) };
 }
 function sidesEspn(sum, ev) {
   const out = {}, ids = rosterTeams(sum);
@@ -2596,7 +2919,8 @@ function sidesEspn(sum, ev) {
     for (const x of r.roster) {
       const a = x?.athlete || {};
       if (a.id == null) continue;
-      const p = { id: String(a.id), name: String(a.displayName || a.fullName || '').trim(), short: a.shortName || '', j: x.jersey != null && x.jersey !== '' ? String(x.jersey) : null, pos: posOf(x.position?.name) || posOf(x.position?.abbreviation), place: +x.formationPlace || 99 };
+      const p = { id: String(a.id), name: String(a.displayName || a.fullName || '').trim(), short: a.shortName || '', j: x.jersey != null && x.jersey !== '' ? String(x.jersey) : null, pos: posOf(x.position?.name) || posOf(x.position?.abbreviation), place: +x.formationPlace || 99,
+        pn: [x.position?.name, x.position?.abbreviation].filter(Boolean).join(' '), sd: x.starter ? sideHint(x.position?.abbreviation, x.position?.name) : null, ph: String(a.headshot?.href || '') };
       (x.starter ? S.xi : S.bench).push(p);
     }
     S.xi.sort((a, b) => a.place - b.place);
@@ -2605,7 +2929,7 @@ function sidesEspn(sum, ev) {
   return out;
 }
 async function matchSources(ev, sum, g0, A, B) {
-  const ro = is365(ev.id), out = { e: {}, s: null, ref: '', refSrc: '', bio: [null, null], sq: [null, null], notes: [] };
+  const ro = is365(ev.id), out = { e: {}, s: null, ref: '', refSrc: '', refC: '', bio: [null, null], sq: [null, null], notes: [] };
   if (sum) { out.e = sidesEspn(sum, ev); const r = refOfSummary(sum); if (r) { out.ref = r; out.refSrc = 'ESPN'; } }
   const jobs = [];
   if (ro) [A, B].forEach((t, i) => jobs.push(squad365(String(t.id).slice(1)).then(q => { out.sq[i] = q; }, () => { out.notes.push(`lotul echipei ${t.name} nu s-a încărcat (365Scores)`); })));
@@ -2621,6 +2945,8 @@ async function matchSources(ev, sum, g0, A, B) {
     }
     out.s = sides365(g, swap);
     if (!out.ref && out.s.ref) { out.ref = out.s.ref; out.refSrc = '365Scores'; }
+    // țara arbitrului, dacă 365Scores o scrie și e același om
+    if (out.s.refC && (!out.ref || psim(pnorm(out.ref), pnorm(out.s.ref)) >= 0.85)) out.refC = out.s.refC;
     if (!ro) await Promise.all([out.s.home.cid, out.s.away.cid].map((cid, i) => (cid == null ? null : squad365(cid).then(q => { out.sq[i] = q; }, () => {}))));
   })());
   await Promise.all(jobs);
@@ -2630,8 +2956,8 @@ async function matchSources(ev, sum, g0, A, B) {
 /* lotul unei echipe, cu tot ce se știe despre fiecare jucător adunat la un loc */
 function buildTeam(agg, bio, sq, s3, ro) {
   const M = new Map();
-  const add = (id, name) => { let p = M.get(id); if (!p) M.set(id, p = { id, name: name || '', short: '', j: null, pos: '', age: null, h: null, x: null, a: null, inj: '' }); return p; };
-  const fill = (p, b) => { if (!p.name) p.name = b.name || ''; p.short = p.short || b.short || ''; p.age = p.age ?? b.age ?? null; p.h = p.h ?? b.h ?? null; p.j = p.j ?? b.j ?? null; p.pos = p.pos || b.pos || ''; if (b.inj) p.inj = b.inj; return p; };
+  const add = (id, name) => { let p = M.get(id); if (!p) M.set(id, p = { id, name: name || '', short: '', j: null, pos: '', age: null, h: null, x: null, a: null, inj: '', iv: null, ph: '' }); return p; };
+  const fill = (p, b) => { if (!p.name) p.name = b.name || ''; p.short = p.short || b.short || ''; p.age = p.age ?? b.age ?? null; p.h = p.h ?? b.h ?? null; p.j = p.j ?? b.j ?? null; p.pos = p.pos || b.pos || ''; if (b.inj) p.inj = b.inj; if (p.iv == null && b.iv != null) p.iv = b.iv; if (!p.ph && b.ph) p.ph = b.ph; return p; };
   const xid = id => (/^\d+$/.test(String(id)) ? String(id) : null);
   for (const a of agg.players) { const p = add(a.id, a.name); p.a = a; p.pos = a.pos; p.j = a.j; }
   if (bio) for (const b of bio.m.values()) fill(add(b.id, b.name), b);
@@ -2662,13 +2988,18 @@ function guessXI(team, out) {
   const score = a => { let s = 0; for (const l of a.log) s += (l[1] ? 1 : 0.2) * (1 - 0.06 * l[0]); return a.last > 2 ? s * 0.35 : s; };
   const pool = [...team.M.values()].filter(p => p.a && !out.has(p.id)).map(p => ({ p, pos: p.pos || 'M', s: score(p.a) })).sort((x, y) => y.s - x.s);
   const xi = [], used = new Set();
-  for (const [g] of POS_GRP) for (const c of pool.filter(c => c.pos === g).slice(0, need[g])) { xi.push({ p: c.p, pos: g }); used.add(c.p.id); }
-  for (const c of pool) { if (xi.length >= 11) break; if (!used.has(c.p.id) && c.pos !== 'G') { xi.push({ p: c.p, pos: c.pos }); used.add(c.p.id); } }
+  for (const [g] of POS_GRP) for (const c of pool.filter(c => c.pos === g).slice(0, need[g])) { xi.push({ p: c.p, pos: g, sd: c.p.a.sd }); used.add(c.p.id); }
+  for (const c of pool) { if (xi.length >= 11) break; if (!used.has(c.p.id) && c.pos !== 'G') { xi.push({ p: c.p, pos: c.pos, sd: c.p.a.sd }); used.add(c.p.id); } }
   return { form: ok ? form : '', xi: sortXI(xi), bench: pool.filter(c => !used.has(c.p.id)).slice(0, 9).map(c => ({ p: c.p, pos: c.pos })) };
 }
 function sideOf(team, eS, s3, ro) {
-  const wrap = (L, f) => L.map(b => { const p = f(b); return { p, pos: b.pos || p.pos || 'M' }; });
-  if (eS) return { src: 'ESPN', conf: true, form: eS.form, xi: sortXI(wrap(eS.xi, b => team.M.get(b.id) || team.put(b))), bench: wrap(eS.bench, b => team.M.get(b.id) || team.put(b)) };
+  const wrap = (L, f) => L.map(b => { const p = f(b); return { p, pos: b.pos || p.pos || 'M', pn: b.pn || '', sd: fin(b.sd) ? b.sd : null, fl: fin(b.fl) ? b.fl : null }; });
+  if (eS) {
+    // foaia ESPN nu are poziții pe teren: le iau din formația 365Scores, unde aceiași jucători apar acolo
+    const at = new Map((s3?.xi || []).map(b => [team.of(b).id, b]));
+    const xi = wrap(eS.xi, b => team.M.get(b.id) || team.put(b)).map(e => { const q = at.get(e.p.id); return q && fin(q.fl) ? { ...e, fl: q.fl, sd: fin(q.sd) ? q.sd : e.sd } : e; });
+    return { src: 'ESPN', conf: true, form: eS.form, xi: sortXI(xi), bench: wrap(eS.bench, b => team.M.get(b.id) || team.put(b)) };
+  }
   if (s3 && s3.xi.length >= 10) return { src: '365Scores', conf: s3.conf, form: s3.form, xi: sortXI(wrap(s3.xi, team.of)), bench: wrap(s3.bench, team.of) };
   const out = new Set((s3?.out || []).filter(o => !o.doubt).map(o => team.of(o).id));
   team.M.forEach(p => { if (p.inj) out.add(p.id); });
@@ -2732,42 +3063,410 @@ function formIdx(a) {
   return pts / Math.max(den, 1.5) + (a.rt ? (a.rt - 6.7) * 0.8 : 0);
 }
 
+/* ---------- surse în plus: Sofascore (arbitrul și meciurile lui din sezon, valori de piață) și Transfermarkt (valori de piață) ---------- */
+// Amândouă se citesc direct din browser, fără cont sau cheie. Structura răspunsurilor: github.com/apdmatos/sofascore-api
+// și github.com/felipeall/transfermarkt-api (care folosește același API JSON ca site-ul Transfermarkt).
+// Dacă un site refuză cererile venite din altă pagină (CORS) sau cere o verificare anti-robot, cererea cade repede:
+// aplicația ține minte asta 15 minute și rămâne la sursele obișnuite (ESPN și 365Scores).
+const XS = { sofa: { ok: null, err: '', until: 0, n: 0, to: 0 }, tm: { ok: null, err: '', until: 0, n: 0, to: 0 } };
+const limX = { sofa: limiter(3), tm: limiter(3) };
+const SOFA_B = ['https://api.sofascore.com/api/v1', 'https://www.sofascore.com/api/v1'], TM_B = 'https://tmapi.transfermarkt.technology';
+let sofaPref = store.get('sofab', 0) === 1 ? 1 : 0;
+const xErr = e => (fin(e?.status) ? 'a răspuns cu eroarea HTTP ' + e.status : e?.name === 'AbortError' ? 'nu a răspuns la timp' : e instanceof SyntaxError ? 'a cerut o verificare anti-robot' : 'browserul a blocat cererea (CORS) sau site-ul a refuzat-o');
+const xOff = k => XS[k].ok === false && Date.now() < XS[k].until;
+const xBlocked = k => Object.assign(new Error(`${k === 'tm' ? 'Transfermarkt' : 'Sofascore'} indisponibil: ${XS[k].err}`), { blocked: true });
+// o sursă care a mai răspuns în sesiunea asta nu se oprește pentru o singură cerere căzută; nici pentru un răspuns lent (doar după trei)
+const xFail = (k, e) => { const s = XS[k]; if (e?.name === 'AbortError' && ++s.to < 3) return; if (s.ok !== true) { s.ok = false; s.err = xErr(e); s.until = Date.now() + 15 * 60e3; } };
+function xReset() { for (const s of Object.values(XS)) { s.to = 0; if (s.ok === false) { s.ok = null; s.until = 0; } } }
+const xName = k => (k === 'tm' ? 'Transfermarkt' : 'Sofascore');
+const xState = k => { const s = XS[k]; return s.ok === true ? `merge (${plural(s.n, 'răspuns', 'răspunsuri')}${k === 'sofa' ? ', ' + SOFA_B[sofaPref].replace(/^https:\/\/|\/api\/v1$/g, '') : ''})` : s.ok === false ? `indisponibil: ${s.err}` : 'neîncercat încă'; };
+// de ce lipsesc datele din sursele noi, într-o propoziție
+const xWhy = () => { const L = ['tm', 'sofa'].filter(k => XS[k].ok === false).map(k => `${xName(k)} ${XS[k].err}`); return L.length ? ` ${L.join('; ')}.` : ''; };
+// o cerere, cu rezultatul (redus prin pick, dacă e dat) ținut în memorie ttl milisecunde
+async function xfetch(url, ttl, L, pick, timeout = 12000) {
+  const key = 'x:' + url, hit = MEM.get(key);
+  if (hit && Date.now() - hit.t < ttl) return hit.d;
+  if (INFLIGHT.has(key)) return INFLIGHT.get(key);
+  const job = L(async () => { const raw = await getJSON(url, timeout), d = pick ? pick(raw) : raw; MEM.set(key, { t: Date.now(), d }); return d; }).catch(e => { logErr(url, e); throw e; });
+  INFLIGHT.set(key, job);
+  try { return await job; } finally { INFLIGHT.delete(key); }
+}
+// Sofascore are două adrese pentru același API; o folosesc pe cea care a răspuns ultima dată
+async function sofa(path, ttl = 10 * 60e3, pick = null, timeout = 12000) {
+  const s = XS.sofa;
+  if (xOff('sofa')) throw xBlocked('sofa');
+  let err = null, nf = false;
+  for (const i of sofaPref ? [1, 0] : [0, 1]) {
+    try {
+      const d = await xfetch(SOFA_B[i] + path, ttl, limX.sofa, pick, timeout);
+      s.ok = true; s.err = ''; s.n++;
+      if (i !== sofaPref) { sofaPref = i; store.set('sofab', i); }
+      return d;
+    } catch (e) {
+      err = e;
+      // „nu există” de la o adresă care a mai răspuns: cealaltă ar spune la fel
+      if (e.status === 404) { nf = true; if (s.ok === true) break; }
+    }
+  }
+  if (!nf) xFail('sofa', err);
+  throw err;
+}
+async function tm(path, ttl = 6 * 3600e3) {
+  if (xOff('tm')) throw xBlocked('tm');
+  let d;
+  try { d = await xfetch(TM_B + path, ttl, limX.tm); }
+  catch (e) { if (e.status !== 404) xFail('tm', e); throw e; }
+  XS.tm.ok = true; XS.tm.err = ''; XS.tm.n++;
+  if (!d || typeof d !== 'object' || d.success === false || !('data' in d)) throw Object.assign(new Error('Transfermarkt: răspuns fără date'), { status: 'gol' });
+  return d.data;
+}
+
+// ce se păstrează pe telefon: meciul găsit la Sofascore (e), cartonașele meciurilor arbitrilor (c), media de cartonașe a competițiilor (u),
+// loturile Sofascore (t) și loturile Transfermarkt cu valorile de piață (TMC)
+const SOFA = Object.assign({ e: {}, c: {}, u: {}, t: {} }, store.get('sofa', {}));
+const TMC = store.get('tmv', {});
+let sofaDirty = false, tmDirty = false;
+
+/* meciul de azi la Sofascore: după numele echipelor și ora de start, la fel ca la 365Scores */
+const sfNames = t => uniq([t?.name, t?.shortName, String(t?.slug || '').replace(/-/g, ' ')].map(x => (x == null ? '' : String(x))));
+const slimSofa = d => arr(Array.isArray(d?.events) ? d.events : arr(d?.results).map(r => r?.entity))
+  .filter(e => e && e.id != null && e.homeTeam && e.awayTeam && fin(e.startTimestamp))
+  .map(e => ({ id: String(e.id), t: e.startTimestamp * 1000, h: { n: sfNames(e.homeTeam) }, a: { n: sfNames(e.awayTeam) }, f: e.homeTeam.gender === 'F' || e.awayTeam.gender === 'F' }))
+  .filter(g => g.h.n.length && g.a.n.length);
+async function sofaFind(ev) {
+  const hit = SOFA.e[ev.id];
+  if (hit) return { id: String(hit[0]), swap: !!hit[1] };
+  const t0 = new Date(ev?.date).getTime();
+  if (!fin(t0) || !ev.home || !ev.away) return null;
+  const fem = /(^|,)(w|women|feminin|femenino)(,|$)/.test(squadOf(ev.home.en || ev.home.name));
+  const day = t => new Date(t).toISOString().slice(0, 10), h = new Date(t0).getUTCHours();
+  // întâi căutarea după nume (răspuns mic), apoi toate meciurile zilei (și ziua vecină, dacă meciul e aproape de miezul nopții)
+  const paths = [`/search/events/?q=${encodeURIComponent(`${ev.home.en || ev.home.name} ${ev.away.en || ev.away.name}`)}&page=0`, `/sport/football/scheduled-events/${day(t0)}`,
+    h < 3 ? `/sport/football/scheduled-events/${day(t0 - 864e5)}` : h >= 21 ? `/sport/football/scheduled-events/${day(t0 + 864e5)}` : null].filter(Boolean);
+  let err = null, any = false;
+  for (const p of paths) {
+    let L;
+    try { L = await sofa(p, 15 * 60e3, slimSofa, p.includes('scheduled') ? 30000 : 12000); any = true; }
+    catch (e) { err = e; if (xOff('sofa')) throw e; continue; }
+    const g = pick365(ev, L.filter(x => !x.f || fem));
+    if (!g) continue;
+    SOFA.e[ev.id] = [g.id, g.swap ? 1 : 0, Date.now()]; sofaDirty = true;
+    return { id: g.id, swap: g.swap };
+  }
+  if (!any && err) throw err;
+  return null;
+}
+const sofaEvent = id => sofa(`/event/${id}`, 10 * 60e3, x => (x?.event && typeof x.event === 'object' ? x.event : null));
+
+/* arbitrul: totalurile din carieră și meciurile lui din sezon, fiecare cu cartonașele lui */
+const sameRef = (a, b) => { const x = pnorm(refSplit(a)[0]), y = pnorm(refSplit(b)[0]); return !!x && !!y && psim(x, y) >= 0.8; };
+function sofaRefOf(e) {
+  const r = e?.referee;
+  if (!r || typeof r !== 'object' || !r.name || r.id == null) return null;
+  const g = +r.games;
+  return { id: String(r.id), name: String(r.name), ctry: String(r.country?.name || ''), car: fin(g) && g > 0 ? { g, y: +r.yellowCards || 0, r: (+r.redCards || 0) + (+r.yellowRedCards || 0) } : null };
+}
+// arbitrul căutat după nume, când meciul de la Sofascore nu îl are (încă) sau meciul nu a fost găsit
+async function sofaRefSearch(name, country) {
+  const L = await sofa(`/search/all/?q=${encodeURIComponent(refSplit(name)[0])}&page=0`, 6 * 3600e3, x => arr(x?.results).filter(r => r && /referee/i.test(String(r.type || '')) && r.entity && r.entity.id != null && r.entity.name).map(r => r.entity));
+  const C = L.filter(e => sameRef(name, e.name));
+  // același nume la doi arbitri: îl prefer pe cel din țara știută
+  const e = (country && C.find(x => refCountry('', x.country?.name) === country)) || C[0];
+  if (!e) return null;
+  let r = sofaRefOf({ referee: e });
+  if (r && !r.car) { try { const r2 = sofaRefOf({ referee: await sofa(`/referee/${e.id}`, 6 * 3600e3, x => x?.referee || null) }); if (r2?.car) r = { ...r, car: r2.car }; } catch (err) { if (xOff('sofa')) throw err; } }
+  return r;
+}
+const slimRefEv = x => ({ more: !!x?.hasNextPage, L: arr(x?.events).filter(e => e && e.id != null && fin(e.startTimestamp)).map(e => ({
+  id: String(e.id), t: e.startTimestamp * 1000, fin: e.status?.type === 'finished', h: String(e.homeTeam?.name || e.homeTeam?.shortName || ''), a: String(e.awayTeam?.name || e.awayTeam?.shortName || ''),
+  ut: e.tournament?.uniqueTournament?.id ?? null, un: String(e.tournament?.uniqueTournament?.name || e.tournament?.name || ''), s: e.season?.id ?? null })) });
+// statisticile unui meci (tot meciul): galbene, roșii și faulturi, adunate pe cele două echipe
+function sfStats(x) {
+  const P = arr(x?.statistics).filter(p => p && typeof p === 'object'), all = P.find(p => p.period === 'ALL') || P[0];
+  const items = arr(all?.groups).flatMap(g => arr(g?.statisticsItems)).filter(i => i && typeof i === 'object');
+  const v = k => { const it = items.find(i => i.key === k); if (!it) return null; const a = parseFloat(it.homeValue ?? it.home), b = parseFloat(it.awayValue ?? it.away); return fin(a) && fin(b) ? a + b : null; };
+  return items.length ? { y: v('yellowCards'), r: v('redCards'), f: v('fouls') } : null;
+}
+// incidentele unui meci: pentru fiecare, clasa cartonașului sau „-” dacă nu e cartonaș
+const sfInc = x => arr(x?.incidents).filter(i => i && typeof i === 'object').map(i => (i.incidentType === 'card' ? String(i.incidentClass || '') : '-'));
+// cartonașele (galbene, roșii) și faulturile unui meci: din statistici, altfel numărate din incidente
+async function sofaCards(id) {
+  let st = null;
+  try { st = await sofa(`/event/${id}/statistics`, 864e5, sfStats); } catch (e) { if (xOff('sofa')) throw e; }
+  if (st && fin(st.y)) return [st.y, fin(st.r) ? st.r : 0, fin(st.f) ? st.f : null];
+  const inc = await sofa(`/event/${id}/incidents`, 864e5, sfInc);
+  // fără niciun incident (nici măcar pauza sau finalul), sursa nu are meciul acoperit
+  if (!inc.length) return null;
+  const c = inc.filter(x => x !== '-');
+  return [c.filter(x => /^yellow$/i.test(x)).length, c.filter(x => /red/i.test(x)).length, st && fin(st.f) ? st.f : null];
+}
+// media de cartonașe pe meci într-o competiție și un sezon (toate meciurile jucate)
+async function sofaCompAvg(k) {
+  const hit = SOFA.u[k];
+  if (hit && Date.now() - hit[2] < 2 * 864e5) return hit[0];
+  const [ut, s] = k.split('/');
+  let avg = null, n = 0;
+  try {
+    const d = await sofa(`/unique-tournament/${ut}/season/${s}/info`, 6 * 3600e3, x => (x?.info && typeof x.info === 'object' ? x.info : null));
+    n = ['homeTeamWins', 'awayTeamWins', 'draws'].reduce((t, q) => t + (+d?.[q] || 0), 0);
+    const kk = (+d?.yellowCards || 0) + (+d?.redCards || 0);
+    avg = n >= 8 && kk > 0 ? kk / n : null;
+  } catch (e) { if (e.status !== 404) throw e; }
+  SOFA.u[k] = [avg, n, Date.now()]; sofaDirty = true;
+  return avg;
+}
+// statisticile sezonului, în aceeași formă ca cele adunate din ESPN și 365Scores (refSeason)
+function sofaSt(list, avg) {
+  const wc = list.filter(e => e.c && fin(e.c[0])), by = new Map();
+  for (const e of list) { const k = e.un || 'alte meciuri'; by.set(k, (by.get(k) || 0) + 1); }
+  let bs = 0, bn = 0;
+  for (const e of wc) { const a = avg.get(`${e.ut}/${e.s}`); if (fin(a)) { bs += a; bn++; } }
+  const fl = wc.filter(e => fin(e.c[2]));
+  return { src: 'Sofascore', lbl: true, list, n: wc.length, all: list.length, y: mean(wc.map(e => e.c[0])), r: mean(wc.map(e => e.c[1] || 0)), k: wc.length ? mean(wc.map(e => e.c[0] + (e.c[1] || 0))) : null,
+    f: fl.length ? mean(fl.map(e => e.c[2])) : null, baseK: bn && bn >= wc.length / 2 ? bs / bn : null, baseN: bn, comps: [...by].sort((a, b) => b[1] - a[1]) };
+}
+async function sofaRefSeason(rid, from, to, exclId, onProg) {
+  const t0 = from.getTime(), t1 = to.getTime(), all = [];
+  // lista meciurilor lui, de la cel mai recent; pagini până trec de începutul sezonului
+  for (let pg = 0; pg < 3; pg++) {
+    const d = await sofa(`/referee/${rid}/events/last/${pg}`, 30 * 60e3, slimRefEv);
+    all.push(...d.L);
+    if (!d.more || !d.L.length || Math.min(...d.L.map(e => e.t)) < t0) break;
+  }
+  const seen = new Set(), list = all.filter(e => e.fin && e.t >= t0 && e.t < t1 && e.id !== String(exclId) && !seen.has(e.id) && seen.add(e.id)).sort((a, b) => b.t - a.t).slice(0, 60);
+  let done = 0;
+  onProg?.(0, list.length);
+  await Promise.all(list.map(async e => {
+    if (!SOFA.c[e.id]) { try { const c = await sofaCards(e.id); if (c) { SOFA.c[e.id] = [...c, Date.now()]; sofaDirty = true; } } catch (err) { if (xOff('sofa')) throw err; } }
+    onProg?.(++done, list.length);
+  }));
+  const keys = uniq(list.filter(e => e.ut != null && e.s != null).map(e => `${e.ut}/${e.s}`)), avg = new Map();
+  await Promise.all(keys.map(k => sofaCompAvg(k).then(v => avg.set(k, v), () => avg.set(k, null))));
+  return sofaSt(list.map(e => ({ ...e, c: SOFA.c[e.id] || null })), avg);
+}
+
+/* valorile de piață: Transfermarkt întâi, Sofascore (estimarea lor) unde lipsește */
+const curSym = c => (!c || c === 'EUR' ? '€' : c === 'GBP' ? '£' : c === 'USD' ? '$' : String(c));
+function sfPl(x) {
+  const p = x?.player && typeof x.player === 'object' ? x.player : x;
+  if (!p || typeof p !== 'object' || p.id == null || !p.name) return null;
+  const mv = p.proposedMarketValueRaw, v = +mv?.value, j = x?.shirtNumber ?? x?.jerseyNumber ?? p.jerseyNumber ?? p.shirtNumber, dob = p.dateOfBirthTimestamp;
+  return { id: 'sf' + p.id, name: String(p.name), short: String(p.shortName || ''), j: j != null && j !== '' ? String(j) : null, v: fin(v) && v > 0 ? v : 0, c: curSym(mv?.currency), h: htCm(p.height), b: dob != null && fin(+dob) ? +dob : null };
+}
+async function sofaTeam(tid) {
+  const hit = SOFA.t[tid];
+  if (hit && Date.now() - hit.t < 3 * 864e5) return hit.L;
+  const L = await sofa(`/team/${tid}/players`, 6 * 3600e3, x => arr(x?.players).map(sfPl).filter(Boolean));
+  SOFA.t[tid] = { t: Date.now(), L }; sofaDirty = true;
+  return L;
+}
+// formația de la Sofascore (probabilă sau confirmată) și loturile celor două echipe; pe partea aplicației (gazde, oaspeți)
+async function sofaValues(m) {
+  const out = [[], []], put = (k, L) => out[m.swap ? 1 - k : k].push(...L);
+  try {
+    const d = await sofa(`/event/${m.id}/lineups`, 10 * 60e3, x => [arr(x?.home?.players).map(sfPl).filter(Boolean), arr(x?.away?.players).map(sfPl).filter(Boolean)]);
+    put(0, d[0]); put(1, d[1]);
+  } catch (e) { if (xOff('sofa')) throw e; }
+  await Promise.all([m.e?.homeTeam?.id, m.e?.awayTeam?.id].map((tid, k) => (tid == null ? null : sofaTeam(tid).then(L => put(k, L), () => {}))));
+  return out.map(L => { const seen = new Set(); return L.filter(p => !seen.has(p.id) && seen.add(p.id)); });
+}
+// dintre cluburile găsite, cel cu numele cel mai apropiat; echipa națională nu se confundă cu un club (și invers),
+// iar tineretul și echipele feminine le exclude potrivirea numelor
+function tmPick(L, names, nat) {
+  let best = null;
+  for (const c of arr(L)) {
+    if (!c || typeof c !== 'object' || c.id == null || !c.name) continue;
+    let s = Math.max(0, ...names.flatMap(a => uniq([c.name, c.baseDetails?.shortName].map(x => (typeof x === 'string' ? x : ''))).map(b => nameSim(a, b))));
+    if (!!c.baseDetails?.isNationalTeam !== !!nat) s -= 0.5;
+    if (!best || s > best.s) best = { s, c };
+  }
+  return best && best.s >= 0.75 ? best.c : null;
+}
+// un jucător: [id, nume, număr, valoare, înălțime cm, vârstă, monedă]
+function tmRow(p, num) {
+  if (!p || typeof p !== 'object' || p.id == null || !p.name) return null;
+  const mv = p.marketValueDetails?.current, v = +mv?.value, j = num?.get?.(String(p.id)), ag = +p.lifeDates?.age;
+  return [String(p.id), String(p.name), j != null && j !== '' ? String(j) : null, fin(v) && v > 0 ? v : 0, htCm(p.attributes?.height), fin(ag) && ag > 0 && ag < 60 ? ag : null, curSym(mv?.currency)];
+}
+// echipa la Transfermarkt: căutarea după nume, apoi lotul și fișele jucătorilor (valoare, înălțime, vârstă)
+async function tmTeam(T, nat) {
+  const key = (nat ? 'n:' : 'c:') + norm(T.en || T.name), hit = TMC[key];
+  if (hit && Date.now() - hit.t < (hit.id ? 3 : 1) * 864e5) return hit;
+  const names = uniq([T.en, T.name, T.short]);
+  let club = null;
+  for (const q of uniq([T.en || T.name, T.short])) {
+    let ids = [];
+    try { ids = arr((await tm(`/quick-search?term=${encodeURIComponent(q)}&page=1`, 864e5))?.result?.clubIds).slice(0, 10).map(String); }
+    catch (e) { if (xOff('tm')) throw e; continue; }
+    if (!ids.length) continue;
+    club = tmPick(await tm(`/clubs?${ids.map(i => 'ids%5B%5D=' + encodeURIComponent(i)).join('&')}`, 864e5), names, nat);
+    if (club) break;
+  }
+  const out = { t: Date.now(), id: club ? String(club.id) : null, n: club ? String(club.name) : '', L: [] };
+  if (club) {
+    const sq = await tm(`/club/${encodeURIComponent(out.id)}/squad`, 6 * 3600e3);
+    const num = new Map(arr(sq?.squad).filter(x => x && x.playerId != null).map(x => [String(x.playerId), x.shirtNumber]));
+    const pids = uniq([...arr(sq?.playerIds).map(String), ...num.keys()]).slice(0, 100);
+    const P = pids.length ? arr(await tm(`/players?${pids.map(i => 'ids%5B%5D=' + encodeURIComponent(i)).join('&')}`, 6 * 3600e3)) : [];
+    out.L = P.map(p => tmRow(p, num)).filter(Boolean);
+  }
+  TMC[key] = out; tmDirty = true;
+  return out;
+}
+// leagă jucătorii fiecărei echipe de fișele din Transfermarkt și Sofascore (după nume; numărul de pe tricou departajează)
+function attachExt(S) {
+  const X = S.ext;
+  if (!X || !S.team) return;
+  [0, 1].forEach(i => {
+    const T = S.team[i], ps = [...T.M.values()];
+    for (const p of ps) { p.tm = null; p.sf = null; }
+    const tmL = arr(X.tm[i]?.L).map(r => ({ id: 'tm' + r[0], name: r[1], short: '', j: r[2], v: r[3], h: r[4], ag: r[5], c: r[6] || '€' }));
+    if (tmL.length) pmatch(ps, tmL).x2y.forEach((y, id) => { const p = T.M.get(id); if (p) p.tm = y; });
+    const sfL = arr(X.sf[i]);
+    if (sfL.length) pmatch(ps, sfL).x2y.forEach((y, id) => { const p = T.M.get(id); if (p) p.sf = y; });
+  });
+}
+
 /* afișare */
 const shortNm = p => (p.name.length <= 17 ? p.name : p.short && p.short.length < p.name.length ? p.short : p.name.replace(/^(\S)\S+\s+(?=\S)/, '$1. '));
 const dotOf = ti => `<i class="dot" style="background:var(--c${ti ? 'b' : 'a'})"></i>`;
 const luWord = s => (s.src === 'ESPN' ? 'confirmată' : s.src === '365Scores' ? (s.conf ? 'confirmată' : 'probabilă') : 'estimată');
 function bioLine(p) {
-  return [p.pos ? POS_RO[p.pos] : '', fin(p.age) ? plural(p.age, 'an', 'ani') : '', fmtH(p.h), fmtMV(p.x ? MV[p.x] : null)].filter(Boolean).join(' · ');
+  const ag = ageP(p);
+  return [p.pos ? POS_RO[p.pos] : '', fin(ag) ? plural(Math.floor(ag), 'an', 'ani') : '', fmtH(hP(p)), fmtMV(mvP(p))].filter(Boolean).join(' · ');
+}
+/* formațiile pe teren: ambele echipe, cu poza, numărul și numele fiecărui titular, plus valoarea aleasă (notă, valoare de piață, vârstă, înălțime) */
+const PM = [['rt', 'Rating mediu'], ['mv', 'Valoare de piață'], ['age', 'Vârstă'], ['h', 'Înălțime']];
+// alegerea se păstrează în setări, ca să nu dispară la golirea memoriei
+let plMetric = PM.some(m => m[0] === settings.plm) ? settings.plm : 'rt';
+const metricOf = (p, k, N) => (k === 'rt' ? rateOf(p, N) : k === 'mv' ? mvP(p)?.[0] ?? null : k === 'age' ? ageP(p) : hP(p));
+function mvShort(v, c) {
+  if (!(v > 0)) return '';
+  const [n, u] = v >= 1e9 ? [v / 1e9, 'mld'] : v >= 1e6 ? [v / 1e6, 'm'] : [v / 1e3, 'k'];
+  return `${c || '€'}${nf1.format(n).replace(/,0$/, '')}${u}`;
+}
+function metricTxt(v, k, cur, team) {
+  if (!fin(v)) return '';
+  if (k === 'rt') return 'Ø ' + nf1.format(v);
+  if (k === 'mv') return mvShort(v, cur);
+  if (k === 'age') return team ? 'Ø ' + nf1.format(v) : String(Math.floor(v));
+  return (team ? 'Ø ' : '') + nf2.format(v / 100) + ' m';
+}
+const rtCls = v => (v >= 8 ? 'r5' : v >= 7 ? 'r4' : v >= 6.5 ? 'r3' : v >= 6 ? 'r2' : 'r1');
+const badge = (v, k, cur, team) => (fin(v) ? `<span class="bd${k === 'rt' ? ' ' + rtCls(v) : ''}">${metricTxt(v, k, cur, team)}</span>` : '');
+// numele de pe teren: numele de familie, cu particulele lui (van Dijk, De Bruyne, Mac Allister)
+const PART = new Set(['van', 'von', 'de', 'da', 'di', 'do', 'dos', 'das', 'del', 'della', 'der', 'den', 'le', 'la', 'mac', 'mc', 'ter', 'ten', 'el', 'al', 'bin', 'ben', 'st', 'st.']);
+function surname(p) {
+  const s = String(p.short || '').trim();
+  if (s && !/^\S{1,2}\.\s/.test(s) && s.length <= 16) return s;
+  const w = String(p.name || '').trim().split(/\s+/).filter(Boolean);
+  if (w.length < 2) return w[0] || s;
+  let i = w.length - 1;
+  while (i > 1 && PART.has(w[i - 1].toLowerCase())) i--;
+  return w.slice(i).join(' ');
+}
+// poza: 365Scores, unde jucătorul e cunoscut acolo (la meciurile echipelor naționale, poza cu echipa națională); altfel poza din lotul ESPN
+function photoOf(p, nat) {
+  if (p.x) return `https://imagecache.365scores.com/image/upload/f_png,w_48,h_48,c_limit,q_auto:eco,dpr_3,d_Athletes:default.png,r_max,c_thumb,g_face,z_0.65/v${+p.iv > 0 ? +p.iv : 1}/Athletes/${nat ? 'NationalTeam/' : ''}${p.x}`;
+  return p.ph ? small(p.ph, 96) : '';
+}
+// liniile unei echipe pe teren: portarul, apoi liniile formației de la apărare spre atac; fiecare linie de la stânga la dreapta echipei
+function linesOf(side) {
+  // același jucător de două ori (date stricate) apare o singură dată
+  const seen = new Set(), xi = side.xi.filter(e => e && e.p && !seen.has(e.p.id) && seen.add(e.p.id));
+  if (!xi.length) return [];
+  const rk = e => subDepth(e.pos, e.pn), withFl = xi.filter(e => fin(e.fl));
+  let depth = rk;
+  if (withFl.length >= xi.length - 1) {
+    // adâncimea din 365Scores (0–100); sensul îl dau fundașii față de atacanți
+    const D = mean(withFl.filter(e => e.pos === 'D').map(e => e.fl)), F = mean(withFl.filter(e => e.pos === 'F').map(e => e.fl)), G = withFl.find(e => e.pos === 'G')?.fl;
+    const flip = fin(D) && fin(F) ? D > F : fin(G) ? G > 50 : false;
+    depth = e => (fin(e.fl) ? (flip ? 100 - e.fl : e.fl) / 25 : rk(e));
+  }
+  const gk = xi.find(e => e.pos === 'G') || xi.slice().sort((a, b) => depth(a) - depth(b))[0];
+  const rest = xi.filter(e => e !== gk).map((e, i) => ({ e, i, d: depth(e) })).sort((a, b) => a.d - b.d || a.i - b.i).map(x => x.e);
+  const nums = String(side.form || '').split('-').map(Number), rows = [];
+  if (nums.length >= 2 && nums.every(n => n > 0) && nums.reduce((t, n) => t + n, 0) === rest.length) {
+    let k = 0;
+    for (const n of nums) { rows.push(rest.slice(k, k + n)); k += n; }
+  } else {
+    // fără formație care să se potrivească: o linie nouă unde adâncimea crește vizibil
+    let cur = [];
+    rest.forEach((e, i) => { if (i && depth(e) - depth(rest[i - 1]) > 0.3) { rows.push(cur); cur = []; } cur.push(e); });
+    if (cur.length) rows.push(cur);
+  }
+  const sd = e => (fin(e.sd) ? e.sd : fin(e.p.a?.sd) ? e.p.a.sd : 50);
+  return [[gk], ...rows.map(r => r.map((e, i) => ({ e, i })).sort((a, b) => sd(a.e) - sd(b.e) || a.i - b.i).map(x => x.e))];
+}
+function pitchHTML(S) {
+  const k = plMetric, N = S.N, nat = NAT.has(S.ev.slug);
+  const L = S.side.map(linesOf), rows = Math.max(L[0].length, L[1].length, 4);
+  // gazdele sus (atacă în jos), oaspeții jos (atacă în sus)
+  const PAD = 14, TOK = 66, MID = 16, STEP = 72, half = PAD + (rows - 1) * STEP + TOK + MID, H = 2 * half;
+  const tok = (e, ti, x, y, w) => {
+    const p = e.p, v = metricOf(p, k, N), src = photoOf(p, nat), ini = esc(mono(p.name)), cur = mvP(p)?.[1];
+    const img = src ? `<img src="${esc(src)}" alt="" decoding="async" data-fb="${ini}" data-fbc="mono">` : `<span class="mono" aria-hidden="true">${ini}</span>`;
+    const lab = [p.j != null ? p.j : '', p.name, POS_RO[e.pos] || '', fin(v) ? `${PM.find(m => m[0] === k)[1].toLowerCase()} ${metricTxt(v, k, cur).replace('Ø ', '')}` : ''].filter(Boolean).join(', ');
+    return `<button type="button" class="pt${S.sel === p.id ? ' on' : ''}" data-pp="${esc(p.id)}" aria-pressed="${S.sel === p.id}" aria-label="${esc(lab)}" style="left:${x.toFixed(2)}%;top:${y.toFixed(1)}px;width:${w}">`
+      + `<span class="ph" style="--ring:var(--c${ti ? 'b' : 'a'})">${img}${badge(v, k, cur)}</span><span class="nm">${p.j != null ? `<i>${esc(p.j)}</i>` : ''}${esc(surname(p))}</span></button>`;
+  };
+  let toks = '';
+  L.forEach((rws, ti) => {
+    const n = rws.length, span = half - PAD - MID - TOK, step = n > 1 ? span / (n - 1) : 0;
+    rws.forEach((row, r) => {
+      const y = ti ? H - PAD - TOK - r * step : PAD + r * step, seq = ti ? row : row.slice().reverse();
+      // marginile rămân libere, ca eticheta jucătorului din capăt să nu iasă de pe teren
+      seq.forEach((e, i) => { toks += tok(e, ti, 5 + (i + 0.5) / seq.length * 90, y, `calc(${(90 / seq.length).toFixed(3)}% - 2px)`); });
+    });
+  });
+  const team = ti => {
+    const T = ti ? S.B : S.A, side = S.side[ti], xi = side.xi.map(e => e.p), vals = xi.map(p => metricOf(p, k, N)).filter(fin);
+    const agg = vals.length >= 3 ? (k === 'mv' ? vals.reduce((t, v) => t + v, 0) : mean(vals)) : null;
+    const cur = xi.map(p => mvP(p)?.[1]).find(Boolean) || '€';
+    // emblema și valoarea echipei în colțul din stânga, formația în dreapta, ca portarul din mijloc să rămână liber
+    return `<div class="ptm ${ti ? 'b' : 't'}">${crest(T)}${badge(agg, k, cur, true) || '<span class="bd">–</span>'}</div>${side.form ? `<div class="ptf ${ti ? 'b' : 't'}">${esc(side.form)}</div>` : ''}`;
+  };
+  const marks = ['pf', 'pmid', 'pcc', 'pcs', 'pa t', 'pa b', 'ga t', 'ga b', 'parc t', 'parc b'].map(c => `<i class="pl ${c}"></i>`).join('');
+  return `<div class="pitch" style="height:${H}px">${marks}${toks}${team(0)}${team(1)}</div>`;
+}
+function pinfoHTML(S) {
+  const e = S.sel && S.side.flatMap(sd => [...sd.xi, ...sd.bench]).find(x => x.p.id === S.sel);
+  if (!e) return 'Atinge un jucător pentru detalii.';
+  const p = e.p, a = p.a, rt = rateOf(p, S.N), ag = ageP(p);
+  const bits = [POS_RO[e.pos || p.pos] || '', fin(ag) ? plural(Math.floor(ag), 'an', 'ani') : '', fmtH(hP(p)), (m => (m ? `${fmtMV(m)} (${m[2]})` : ''))(mvP(p)), fin(rt) ? `notă medie ${nf1.format(rt)}` : ''].filter(Boolean);
+  const got = a ? [a.eapps && a.g ? plural(a.g, 'gol', 'goluri') : '', a.sapps && a.a ? plural(a.a, 'pasă de gol', 'pase de gol') : ''].filter(Boolean) : [];
+  const none = a && !got.length && (a.eapps || a.sapps) ? ', fără gol sau pasă de gol' : '';
+  const last = a ? `În ultimele ${S.N} meciuri ale echipei: ${plural(a.apps, 'meci jucat', 'meciuri jucate')}${got.length ? ', ' + listRo(got) : none}.` : `Nu a jucat în ultimele ${S.N} meciuri ale echipei.`;
+  return `<b>${esc(p.name)}</b>${bits.length ? ' · ' + esc(bits.join(' · ')) : ''}<br>${esc(last)}`;
 }
 function luHTML(S) {
-  const [sa, sb] = S.side, played = S.ev.state !== 'pre';
+  const [sa, sb] = S.side, played = S.ev.state !== 'pre', k = plMetric;
   if (!sa.xi.length && !sb.xi.length) return `<div class="sec"><h2>Formații</h2></div><p class="empty">Nu am găsit formații și nici foi de joc din meciurile recente din care să le estimez.</p>`;
-  const cell = e => `<span class="lu-p"><i>${e.p.j != null ? esc(e.p.j) : ''}</i><b>${esc(shortNm(e.p))}</b></span>`;
-  const col = (L, r) => `<div class="lu-c${r ? ' r' : ''}">${L.map(cell).join('')}</div>`;
-  const rows = POS_GRP.map(([g, l]) => `<div class="lu-g">${l}</div><div class="lu-r">${col(sa.xi.filter(e => e.pos === g))}${col(sb.xi.filter(e => e.pos === g), 1)}</div>`).join('');
   const both = w => sa.src === w && sb.src === w, any = w => sa.src === w || sb.src === w;
-  const head = played ? 'Echipele de start' : sa.conf && sb.conf ? 'Echipele de start' : any('est') && !any('365Scores') && !any('ESPN') ? 'Formații estimate' : 'Formații probabile';
+  const conf = sa.conf && sb.conf;
+  const head = played || conf ? 'Echipele de start' : both('est') ? 'Formații estimate' : 'Formații probabile';
   const note = played ? `Echipele care au început meciul (sursa: ${any('ESPN') ? 'ESPN' : '365Scores'}).`
-    : sa.conf && sb.conf ? `Echipele de start au fost anunțate oficial (sursa: ${both('ESPN') ? 'ESPN' : both('365Scores') ? '365Scores' : 'ESPN și 365Scores'}).`
-    : both('est') ? `Nu există încă formații anunțate sau probabile, așa că am ales cei mai folosiți titulari din ultimele ${S.N} meciuri, în formația folosită cel mai des. Echipele oficiale apar cu aproximativ o oră înainte de meci.`
-    : `${S.A.short || S.A.name}: formație ${luWord(sa)}${sa.src === 'est' ? ' de aplicație din meciurile recente' : ` (${sa.src})`}. ${S.B.short || S.B.name}: formație ${luWord(sb)}${sb.src === 'est' ? ' de aplicație din meciurile recente' : ` (${sb.src})`}. Formațiile probabile se pot schimba până la anunțul oficial, cu aproximativ o oră înainte de meci.`;
+    : conf ? `Echipele de start au fost anunțate oficial (sursa: ${both('ESPN') ? 'ESPN' : both('365Scores') ? '365Scores' : 'ESPN și 365Scores'}).`
+    : both('est') ? `Nu există încă formații anunțate sau probabile, așa că am ales cei mai folosiți titulari din ultimele ${S.N} meciuri, în formația folosită cel mai des.`
+    : `${S.A.short || S.A.name}: formație ${luWord(sa)}${sa.src === 'est' ? ' de aplicație din meciurile recente' : ` (${sa.src})`}. ${S.B.short || S.B.name}: formație ${luWord(sb)}${sb.src === 'est' ? ' de aplicație din meciurile recente' : ` (${sb.src})`}.`;
   // titulari obișnuiți care nu sunt în primul 11
   const miss = (side, team) => { const ids = new Set(side.xi.map(e => e.p.id)); return [...team.M.values()].filter(p => p.a && team.agg.n >= 3 && p.a.st / team.agg.n >= 0.6 && !ids.has(p.id)).map(p => p.name); };
   const ch = played || both('est') ? [] : [[S.A, miss(sa, S.team[0])], [S.B, miss(sb, S.team[1])]].filter(x => x[1].length);
+  const xi = S.side.flatMap(sd => sd.xi.map(e => e.p)), have = xi.filter(p => fin(metricOf(p, k, S.N))).length;
+  const mvS = k === 'mv' ? (() => { const c = new Map(); for (const p of xi) { const m = mvP(p); if (m) c.set(m[2], (c.get(m[2]) || 0) + 1); } return [...c].sort((a, b) => b[1] - a[1]).map(x => x[0]); })() : [];
+  const what = { rt: `Rating mediu: nota medie din ultimele ${S.N} meciuri, după 365Scores; la echipă, media titularilor`, mv: `Valoarea de piață: după ${mvS.length ? listRo(mvS) : 'Transfermarkt, completată din Sofascore și 365Scores'}; la echipă, suma titularilor`,
+    age: `Vârsta: după ${S.ro ? '365Scores' : 'ESPN și 365Scores'}, completată din Transfermarkt și Sofascore; la echipă, media`, h: `Înălțimea: după ${S.ro ? '365Scores' : 'ESPN și 365Scores'}, completată din Transfermarkt și Sofascore; la echipă, media` }[k];
+  const loading = k === 'mv' ? S.mvState === 'load' || S.apState === 'load' : S.apState === 'load' && k !== 'age';
+  const cov = `${what}. ${loading && have < xi.length ? (k === 'mv' ? 'Caut valorile de piață pe Transfermarkt și Sofascore…' : 'Se încarcă fișele jucătorilor…') : have === xi.length ? 'Există pentru toți titularii.' : have ? `Există pentru ${have} din ${xi.length} titulari${k === 'mv' ? ', iar totalul echipei adună doar valorile cunoscute' : ''}.` : `${k === 'rt' ? '365Scores nu are note' : k === 'mv' ? 'Nu am găsit valori de piață' : 'Nu am găsit date'} pentru acești jucători.${k === 'mv' ? xWhy() : ''}`}`;
+  const cell = e => { const v = metricOf(e.p, k, S.N); return `<span class="lu-p"><i>${e.p.j != null ? esc(e.p.j) : ''}</i><b>${esc(shortNm(e.p))}</b>${fin(v) ? `<em>${esc(metricTxt(v, k, mvP(e.p)?.[1]).replace('Ø ', ''))}</em>` : ''}</span>`; };
+  const col = (Lc, r) => `<div class="lu-c${r ? ' r' : ''}">${Lc.map(cell).join('')}</div>`;
   const bench = sa.bench.length || sb.bench.length ? `<details class="mkt"><summary>${any('est') && !played ? 'Rezerve și alți jucători folosiți recent' : 'Rezerve'}</summary><div class="lu"><div class="lu-r">${col(sa.bench)}${col(sb.bench, 1)}</div></div></details>` : '';
-  return `<div class="sec"><h2>${head}</h2></div><div class="panel">${legend(S.A, S.B, false)}
-    <div class="lu"><div class="lu-f"><span>${esc(sa.form || '–')}</span><span>${esc(sb.form || '–')}</span></div>${rows}</div>
-    <p class="note">${esc(note)}${ch.length ? ' ' + esc(ch.map(([t, L]) => `Titulari obișnuiți care lipsesc din primul 11 la ${t.short || t.name}: ${listRo(L)}.`).join(' ')) : ''}</p>${bench}</div>${profileHTML(S)}`;
-}
-function profileHTML(S) {
-  const xi = S.side.map(s => s.xi.map(e => e.p));
-  const avg = (L, f) => { const v = L.map(f).filter(x => fin(x) && x > 0); return v.length >= 6 ? mean(v) : null; };
-  const val = L => { const v = L.map(p => (p.x ? MV[p.x]?.[0] : 0)).filter(x => x > 0); return v.length >= 6 ? v.reduce((s, x) => s + x, 0) : null; };
-  const cur = xi.flat().map(p => (p.x && MV[p.x]?.[0] > 0 ? MV[p.x][1] : '')).find(Boolean) || '€';
-  const rows = [['Vârsta medie (ani)', avg(xi[0], p => p.age), avg(xi[1], p => p.age), v => nf1.format(v)], ['Înălțimea medie', avg(xi[0], p => p.h), avg(xi[1], p => p.h), fmtH], ['Valoarea de piață', val(xi[0]), val(xi[1]), v => fmtMV([v, cur])]].filter(r => fin(r[1]) || fin(r[2]));
-  if (!rows.length) return '';
-  return `<div class="sec"><h2>Profilul primului 11</h2></div><div class="panel">${legend(S.A, S.B, false)}${rows.map(r => splitRow(r[0], r[1], r[2], r[3]).replace('class="sb', 'class="sb w')).join('')}
-    <p class="note">Vârsta și înălțimea: ${S.ro ? '365Scores' : 'ESPN, completate din 365Scores'}. Valoarea de piață: ${S.mvState === 'load' ? 'se încarcă…' : rows.some(r => r[0] === 'Valoarea de piață') ? 'suma valorilor afișate de 365Scores pentru titulari' : !xi.flat().some(p => p.x) ? 'lipsește, pentru că jucătorii nu au putut fi găsiți la 365Scores' : '365Scores nu afișează valori pentru destui dintre acești jucători'}.</p></div>`;
+  return `<div class="sec"><h2>${head}</h2></div>
+    <div class="pmc" role="group" aria-label="Ce arăt la fiecare jucător">${PM.map(([key, l]) => `<button type="button" data-pm="${key}" aria-pressed="${k === key}">${l}</button>`).join('')}</div>
+    ${!played && !conf ? '<p class="lnote">Echipele de start oficiale se anunță cu aproximativ o oră înainte de meci.</p>' : ''}
+    ${pitchHTML(S)}
+    <p class="pinfo" id="pinfo" aria-live="polite">${pinfoHTML(S)}</p>
+    <div class="panel"><p class="note">${esc(note)}${ch.length ? ' ' + esc(ch.map(([t, Lm]) => `Titulari obișnuiți care lipsesc din primul 11 la ${t.short || t.name}: ${listRo(Lm)}.`).join(' ')) : ''}</p><p class="note">${esc(cov)}</p>${bench}</div>`;
 }
 function outHTML(S) {
   if (S.ev.state !== 'pre') return '';
@@ -2818,7 +3517,7 @@ function pstatsHTML(S) {
   const cell = (l, v) => `<span><small>${l}</small>${v}</span>`;
   const row = p => {
     const a = p.a, pm = v => (a.sapps ? f1(v / a.sapps) : '–');
-    return `<div class="prow"><div class="p1"><b>${esc(p.name)}</b>${a.rt ? `<span class="tg">notă ${nf1.format(a.rt)}</span>` : ''}</div><div class="p2">${esc(bioLine(p) || '–')}</div>
+    return `<div class="prow"><div class="p1"><b>${esc(p.name)}</b>${fin(rateOf(p, S.N)) ? `<span class="tg">notă ${nf1.format(rateOf(p, S.N))}</span>` : ''}</div><div class="p2">${esc(bioLine(p) || '–')}</div>
       <div class="ms">${cell('Meciuri', a.apps)}${cell('Titular', a.st)}${cell('Minute', a.min)}${cell('Goluri', a.eapps ? a.g : '–')}${cell('Pase gol', a.sapps ? a.a : '–')}
         <em>Medii pe meci jucat</em>${cell('Șuturi', pm(a.sh))}${cell('Pe poartă', pm(a.sot))}${cell('Faulturi', pm(a.fc))}${cell('Faultat', pm(a.fs))}${cell('Cartonașe', a.eapps ? f1((a.y + a.r) / a.eapps) : '–')}</div></div>`;
   };
@@ -2828,21 +3527,44 @@ function pstatsHTML(S) {
       <p class="note">Goluri, pase de gol și minute: totalul din ultimele ${n} meciuri cu foaie de joc${n < S.N ? ` (din ${S.N} căutate)` : ''}. Șuturi, șuturi pe poartă, faulturi comise, faulturi suferite și cartonașe: media pe meci jucat${team.agg.ns < n ? `; statistici detaliate există pentru ${team.agg.ns} din ${n} meciuri` : ''}. Sursa: ${srcOf(T.id)}.</p>`;
   return `<div class="sec"><h2>Statistici</h2>${nSeg()}</div>${seg}${body}`;
 }
+// numele competițiilor interne care nu sunt în lista aplicației
+const REF_LBL = { 'sui.1': 'Super League (Elveția)', 'nor.1': 'Eliteserien (Norvegia)', 'swe.1': 'Allsvenskan (Suedia)', 'rus.1': 'Prima ligă (Rusia)', 'ukr.1': 'Prima ligă (Ucraina)', 'pol.1': 'Ekstraklasa (Polonia)', 'cze.1': 'Prima ligă (Cehia)', 'cro.1': 'HNL (Croația)', 'srb.1': 'SuperLiga (Serbia)', 'cyp.1': 'Prima ligă (Cipru)', 'isr.1': 'Prima ligă (Israel)', 'irl.1': 'Premier Division (Irlanda)' };
+const refLbl = sl => REF_LBL[sl] || compLabel(sl);
 function refHTML(S) {
-  const R = S.ref, head = `<div class="sec"><h2>Arbitru</h2>${R.name ? `<span class="aside">sursa: ${R.src}</span>` : ''}</div>`;
-  if (!R.name) return `${head}<p class="note">${S.ev.state === 'pre' ? 'Arbitrul nu a fost anunțat încă (apare de obicei cu câteva zile înainte de meci)' : 'Nu am găsit arbitrul acestui meci'}. Cartonașele sunt estimate fără el.</p>`;
-  const st = R.st, tile = (l, v, sub = '') => `<div class="tile"><span>${l}</span><b>${v}${sub ? `<small>${sub}</small>` : ''}</b></div>`;
-  const cmp = st.n ? `Media ${st.own ? 'competiției' : 'meciurilor citite'}: ${f1(st.baseK)} cartonașe pe meci${st.baseN ? ` (${plural(st.baseN, 'meci', 'meciuri')})` : ' (valoare obișnuită)'}.` : '';
+  const R = S.ref, sf = R.sf, head = `<div class="sec"><h2>Arbitru</h2>${R.name ? `<span class="aside">sursa: ${esc(uniq([R.src, sf ? 'Sofascore' : '']).join(', '))}</span>` : ''}</div>`;
+  const off = ['sofa', 'tm'].filter(k => XS[k].ok === false).map(xName), xr = !R.sfBusy && S.mvState !== 'load' && off.length ? `<button class="btn" type="button" data-xretry>Încearcă din nou ${listRo(off)}</button>` : '';
+  if (!R.name) {
+    const more = R.sfBusy ? 'Caut arbitrul pe Sofascore…' : R.sfNote;
+    return `${head}<p class="note">${S.ev.state === 'pre' ? 'Arbitrul nu a fost anunțat încă (apare de obicei cu câteva zile înainte de meci)' : 'Nu am găsit arbitrul acestui meci'}. Cartonașele sunt estimate fără el.${more ? ' ' + esc(more) : ''}</p>${xr ? `<div class="acts" style="padding:0 16px 14px">${xr}</div>` : ''}`;
+  }
+  const st = R.st || { n: 0, all: 0, comps: [] }, sn = seasonName(R.from, R.country), tile = (l, v) => `<div class="tile"><span>${l}</span><b>${v}</b></div>`;
+  const ctry = REF_CTRY_RO[R.country] || (R.country ? R.country.replace(/\b\w/g, c => c.toUpperCase()) : '');
+  const busy = R.busy || R.sfBusy, lbl = sl => (st.lbl ? sl : refLbl(sl));
+  const found = st.all ? `${plural(st.all, 'meci arbitrat', 'meciuri arbitrate')} în sezonul ${sn} (de la ${fFull.format(R.from)}): ${listRo(st.comps.map(([sl, n]) => `${n} în ${lbl(sl)}`))}.${st.all > st.n ? ` La ${st.all - st.n} dintre ele sursa nu are cartonașele, așa că nu intră în medie.` : ''}${st.src === 'Sofascore' ? ' Sursa: Sofascore, meci cu meci.' : ''}`
+    : busy ? '' : `Nu am găsit meciuri arbitrate de el în sezonul ${sn}${st.src === 'Sofascore' ? ' (Sofascore)' : ' în competițiile citite'}.`;
+  const car = sf?.car ? `În toată cariera, după Sofascore: ${plural(sf.car.g, 'meci', 'meciuri')}, cu ${f1(sf.car.y / sf.car.g)} galbene și ${nf2.format(sf.car.r / sf.car.g)} roșii pe meci.` : '';
   const E = S.P?.cards ? S.P.cards.la + S.P.cards.lb : null;
-  const eff = !st.n ? 'Aplicația nu a citit încă meciuri arbitrate de el, așa că nu ajustez cartonașele.'
+  const eff = !st.n ? (busy ? 'Ajustez estimarea de cartonașe după ce termin de citit.' : 'Fără meciuri cu cartonașe cunoscute în acest sezon, nu ajustez estimarea de cartonașe.')
     : S.P?.cards?.mkT ? 'Pentru acest meci există cote la cartonașe, care țin deja cont de arbitru, așa că nu mai ajustez.'
-    : Math.abs(R.fac - 1) < 0.015 ? 'E aproape de medie, așa că estimarea de cartonașe rămâne practic neschimbată.'
-    : `Cu acest arbitru, estimarea de cartonașe ${R.fac > 1 ? 'crește' : 'scade'} cu ${Math.round(Math.abs(R.fac - 1) * 100)}%${fin(E) ? `: ${f1(E * R.fac)} în loc de ${f1(E)}` : ''}. Cu cât are mai puține meciuri citite, cu atât ajustarea e mai mică.`;
-  return `${head}<div class="panel"><div class="formline"><b style="font-size:17px">${esc(R.name)}</b><span style="font-size:13px;color:var(--muted)">${plural(st.n, 'meci citit', 'meciuri citite')}</span></div>
+    : !(st.baseK > 0) ? 'Nu am media de cartonașe a competițiilor lui, așa că nu ajustez estimarea de cartonașe.'
+    : Math.abs(R.fac - 1) < 0.015 ? 'E aproape de media acestor competiții, așa că estimarea de cartonașe rămâne practic neschimbată.'
+    : `Cu acest arbitru, estimarea de cartonașe ${R.fac > 1 ? 'crește' : 'scade'} cu ${Math.round(Math.abs(R.fac - 1) * 100)}%${fin(E) ? `: ${f1(E * R.fac)} în loc de ${f1(E)}` : ''}. Cu cât are mai puține meciuri, cu atât ajustarea e mai mică.`;
+  const cmp = st.n && st.baseK > 0 ? `În aceleași competiții, un meci are în medie ${f1(st.baseK)} cartonașe.` : '';
+  const sc = R.scan, retry = sc && !R.busy && st.src !== 'Sofascore' && (sc.failed.length || sc.skipped.length);
+  // meciurile lui din sezon, fiecare cu cartonașele arătate (lista vine de la Sofascore)
+  const kc = c => (c ? `<span class="c" aria-label="${c[0]} galbene${c[1] ? `, ${c[1]} roșii` : ''}"><i aria-hidden="true"></i>${c[0]}${c[1] ? `<i class="r" aria-hidden="true"></i>${c[1]}` : ''}</span>` : '<span class="c q" aria-label="cartonașe necunoscute">–</span>');
+  const list = st.list?.length ? `<details class="mkt"><summary>Meciurile lui din sezon (${st.list.length})</summary><div class="rml">${st.list.map(e => `<div class="rm"><span class="d">${esc(fDM.format(new Date(e.t)))}</span><span class="t"><b>${esc(e.h)} – ${esc(e.a)}</b>${e.un ? `<small>${esc(e.un)}</small>` : ''}</span>${kc(e.c)}</div>`).join('')}</div></details>` : '';
+  const note = st.src !== 'Sofascore' && R.sfNote ? R.sfNote : '';
+  const btns = [retry ? '<button class="btn" type="button" data-refmore>Încearcă din nou</button>' : '', xr].filter(Boolean);
+  return `${head}<div class="panel"><div class="formline"><b style="font-size:17px">${esc(R.name)}</b><span style="font-size:13px;color:var(--muted)">${esc(ctry)}</span></div>
     ${st.n ? `<div class="tiles" style="margin:8px 12px 0">${tile('Galbene pe meci', f1(st.y))}${tile('Roșii pe meci', st.r > 0 ? nf2.format(st.r) : '0')}${tile('Cartonașe pe meci', f1(st.k))}${tile('Faulturi pe meci', fin(st.f) ? f1(st.f) : '–')}</div>` : ''}
+    ${found ? `<p class="note">${esc(found)}</p>` : ''}
+    ${car ? `<p class="note">${esc(car)}</p>` : ''}
     <p class="note">${esc([cmp, eff].filter(Boolean).join(' '))}</p>
-    <p class="note" id="refp" role="status">${esc(R.msg || '')}</p>
-    ${S.ev.slug ? `<div class="acts" style="padding:0 16px 14px"><button class="btn" type="button" data-refmore${R.busy ? ' disabled' : ''}>Citește mai multe meciuri din competiție</button></div>` : ''}</div>`;
+    ${note ? `<p class="note">${esc(note)}</p>` : ''}
+    <p class="note" id="refp" role="status">${esc(R.sfBusy ? R.sfMsg : st.src === 'Sofascore' ? '' : R.msg || '')}</p>
+    ${list}
+    ${btns.length ? `<div class="acts" style="padding:0 16px 14px">${btns.join('')}</div>` : ''}</div>`;
 }
 function coachHTML(S) {
   const blk = (T, ti) => {
@@ -2861,8 +3583,13 @@ function diagHTML(S) {
     s ? `365Scores, meciul de azi: ${s.s ? `găsit; stare formații „${s.s.home.status || '–'}” / „${s.s.away.status || '–'}”; titulari ${s.s.home.xi.length} + ${s.s.away.xi.length}; indisponibili ${s.s.home.out.length} + ${s.s.away.out.length}` : 'negăsit'}` : 'Sursele meciului de azi încă se încarcă',
     s ? `Loturi: ESPN ${s.bio.map(b => (b ? b.m.size : 0)).join(' + ')} jucători, 365Scores ${s.sq.map(q => (q ? q.m.size : 0)).join(' + ')} jucători` : '',
     `Jucători legați între surse: ${t[0].matched} + ${t[1].matched}`,
-    `Valoare de piață: ${S.mvState === 'load' ? 'se încarcă' : `găsită la ${[...t[0].M.values(), ...t[1].M.values()].filter(p => p.x && MV[p.x]?.[0] > 0).length} jucători`}`,
-    `Arbitru: ${S.ref.name || 'necunoscut'}${S.ref.src ? ` (${S.ref.src})` : ''}; meciuri cu arbitru în memorie: ${Object.values(REFS.m).filter(x => x[0]).length}`,
+    (() => { const all = [...t[0].M.values(), ...t[1].M.values()], xi = S.side.flatMap(sd => sd.xi.map(e => e.p));
+      return `Fișe 365Scores: ${S.apState === 'load' ? 'se încarcă' : `${all.filter(p => apP(p)).length} citite; valoare de piață la ${all.filter(p => apP(p)?.v > 0).length}, note la ${all.filter(p => apP(p)?.r?.length).length} jucători`}. Poze la titulari: 365Scores ${xi.filter(p => p.x).length}, ESPN ${xi.filter(p => !p.x && p.ph).length}, fără poză ${xi.filter(p => !p.x && !p.ph).length}`; })(),
+    `Arbitru: ${S.ref.name || 'necunoscut'}${S.ref.src ? ` (${S.ref.src})` : ''}${S.ref.country ? `, țara: ${S.ref.country}` : ''}; meciuri cu arbitru în memorie: ${Object.values(REFS.m).filter(x => x?.[0]).length}; cereri scurte ESPN: ${CORE.ok === true ? 'merg' : CORE.ok === false ? 'blocate' : 'neîncercate'}`,
+    (() => { const tl = [S.A, S.B].map((T, i) => { const x = S.ext?.tm?.[i], n = T.short || T.name; return !x ? `${n}: se caută` : x.fail ? `${n}: nu s-a putut citi` : x.id ? `${n} → ${x.n} (${plural(x.L.length, 'jucător', 'jucători')})` : `${n}: echipa negăsită`; });
+      return `Transfermarkt: ${xState('tm')}; ${tl.join(', ')}; valori de piață legate la ${[...t[0].M.values(), ...t[1].M.values()].filter(p => p.tm?.v > 0).length} jucători`; })(),
+    `Sofascore: ${xState('sofa')}; meciul ${S.sfId ? `găsit (id ${S.sfId})` : 'negăsit încă'}; valori de piață legate la ${[...t[0].M.values(), ...t[1].M.values()].filter(p => p.sf?.v > 0).length} jucători${S.ref.sf ? `; arbitrul ${S.ref.sf.name} (id ${S.ref.sf.id})${S.ref.sfSt ? `, ${S.ref.sfSt.all} meciuri în sezon, ${S.ref.sfSt.n} cu cartonașe` : ''}` : ''}${S.ref.sfNote ? '. ' + S.ref.sfNote : ''}`,
+    S.ref.scan ? `Sezonul arbitrului: citite ${S.ref.scan.listed.map(refLbl).join(', ') || '–'}${S.ref.scan.failed.length ? `; nereușite ${S.ref.scan.failed.map(refLbl).join(', ')}` : ''}${S.ref.scan.skipped.length ? `; lăsate deoparte ${S.ref.scan.skipped.map(refLbl).join(', ')}` : ''}` : '',
     ...(s?.notes || [])
   ].filter(Boolean);
   return `<details><summary>Detalii tehnice</summary><div class="log">${L.map(esc).join('\n')}</div></details>`;
@@ -2906,11 +3633,12 @@ async function playersRun(ev, sum, live, opt) {
   if (mk?.fail) mk = null;
   if (!live()) return;
   const S = {
-    ev, N, A, B, ro, lists: [ha.list, hb.list], which: 0, mvState: '', src: null,
+    ev, N, A, B, ro, lists: [ha.list, hb.list], which: 0, apState: '', sel: null, src: null,
     P: SA.n && SB.n ? predict(SA, SB, ev.neutral, params(ev.slug), mk) : null,
     aggs: [squadAgg(A.id, ha.list, boxes), squadAgg(B.id, hb.list, boxes)],
     fouls: [foulsOf(ha.list, A.id, stats), foulsOf(hb.list, B.id, stats)],
-    ref: { name: '', src: '', st: refStats('', ev.slug), fac: 1, msg: '', busy: false }, act: null
+    ref: { name: '', src: '', country: '', from: seasonFrom(ev.date), to: new Date(), tiers: [], st: null, fac: 1, msg: '', busy: false, scan: null, sf: null, sfSt: null, sfNote: '', sfMsg: '', sfBusy: false }, act: null,
+    ext: { tm: [null, null], sf: [null, null] }, mvState: '', sfId: null
   };
   // ce au făcut jucătorii în meciul acesta, dacă s-a jucat
   if (ev.state !== 'pre') {
@@ -2922,17 +3650,24 @@ async function playersRun(ev, sum, live, opt) {
     S.src = src;
     const s3 = src?.s ? [src.s.home, src.s.away] : [null, null], eS = src ? [src.e.home, src.e.away] : [null, null];
     S.team = [0, 1].map(i => buildTeam(S.aggs[i], src?.bio[i] || null, src?.sq[i] || null, s3[i], ro));
+    attachExt(S);
     S.side = [0, 1].map(i => sideOf(S.team[i], eS[i], s3[i], ro));
     S.out = [0, 1].map(i => (s3[i]?.out || []).map(o => ({ ...o, p: S.team[i].of(o) })));
     S.outSrc = src?.s ? '365Scores' : '';
     if (!S.outSrc) { S.out = [0, 1].map(i => [...S.team[i].M.values()].filter(p => p.inj).map(p => ({ p, why: whyTxt(p.inj), ret: '', doubt: false }))); if (src?.bio.some(Boolean)) S.outSrc = S.out.some(L => L.length) ? 'ESPN' : ''; }
     S.coach = [0, 1].map(i => { const n = s3[i]?.coach || src?.sq[i]?.coach?.name || S.aggs[i].coach || ''; return n ? { name: n, age: src?.sq[i]?.coach && pnorm(src.sq[i].coach.name) === pnorm(n) ? src.sq[i].coach.age : null } : null; });
-    if (src?.ref) { S.ref.name = src.ref; S.ref.src = src.refSrc; }
+    if (src?.ref) {
+      const R = S.ref;
+      R.name = src.ref; R.src = src.refSrc; R.country = refCountry(ev.slug, src.refC);
+      // sezonul meciului; la un meci jucat, doar meciurile de dinaintea lui
+      R.from = seasonFrom(ev.date, R.country); R.to = ev.state === 'pre' ? new Date() : new Date(new Date(ev.date).getTime() - 3600e3);
+      R.tiers = refScope(ev.slug || '', R.country);
+    }
     odds();
   };
   const odds = () => {
     const P = S.P, R = S.ref;
-    R.st = refStats(R.name, ev.slug);
+    R.st = R.sfSt || (R.name ? refSeason(R.name, R.from, R.to, ev.id) : null);
     R.fac = P?.cards?.mkT ? 1 : refFactor(R.st);
     const casts = [0, 1].map(i => castOf(S.side[i], S.aggs[i].n));
     const ar = i => { const L = S.aggs[i].players; return clamp((L.reduce((s, a) => s + a.a, 0) + 2.8) / (L.reduce((s, a) => s + a.g, 0) + 4), 0.5, 0.9); };
@@ -2963,28 +3698,106 @@ async function playersRun(ev, sum, live, opt) {
     draw();
   }
   mb.onclick = e => {
+    const pm = e.target.closest('[data-pm]');
+    if (pm) { plMetric = settings.plm = pm.dataset.pm; saveSettings(); draw('lu'); return; }
+    const pp = e.target.closest('[data-pp]');
+    if (pp) {
+      S.sel = S.sel === pp.dataset.pp ? null : pp.dataset.pp;
+      $$('.pt', mb).forEach(x => { x.classList.toggle('on', x.dataset.pp === S.sel); x.setAttribute('aria-pressed', String(x.dataset.pp === S.sel)); });
+      const el = $('#pinfo');
+      if (el) el.innerHTML = pinfoHTML(S);
+      return;
+    }
     const b = e.target.closest('[data-pt]');
     if (b) { S.which = +b.dataset.pt; draw('st'); return; }
-    if (e.target.closest('[data-refmore]')) scan(60);
+    if (e.target.closest('[data-xretry]')) { xReset(); sfM = null; S.ref.sfSt = null; S.ref.sf = null; refRun(); vals(); return; }
+    if (e.target.closest('[data-refmore]')) { CORE.ok = CORE.ok === false ? null : CORE.ok; CORE.fail = 0; season(); }
   };
   restoreScroll();
-  // după prima afișare: valorile de piață și arbitrul se completează pe parcurs
-  const after = () => {
-    const ids = S.side.flatMap(s => [...s.xi, ...s.bench].map(e => e.p.x)).concat(S.team.flatMap(t => [...t.M.values()].filter(p => p.a).map(p => p.x))).filter(Boolean);
-    if (ids.some(id => !mvFresh(id))) {
-      S.mvState = 'load'; draw('lu', 'dg');
-      marketValues(ids).catch(() => 0).then(() => { S.mvState = ''; draw('lu', 'st', 'dg'); });
-    }
-    if (S.ref.name && S.ref.st.n < 6) scan(30);
-  };
-  const scan = async max => {
+  // Sofascore: meciul de azi se caută o singură dată, pentru arbitru și pentru valori
+  let sfM = null;
+  const sofaMatch = () => (sfM ||= (async () => {
+    const f = await sofaFind(ev);
+    if (!f) return null;
+    S.sfId = f.id;
+    return { ...f, e: await sofaEvent(f.id) };
+  })());
+  // arbitrul: întâi Sofascore (cariera și fiecare meci din sezon); dacă nu se poate, căutarea prin ESPN și 365Scores
+  const refRun = async () => {
     const R = S.ref;
-    if (R.busy || !ev.slug) return;
-    R.busy = true; R.msg = 'Caut meciurile arbitrului în competiție…'; draw('rf');
-    let got = 0;
-    try { got = await refScan(ev, max, (k, n) => { const el = $('#refp'); if (el && live()) el.textContent = `Citesc arbitrii meciurilor din competiție (${k} din ${n})…`; }); } catch (e) {}
-    R.busy = false;
-    R.msg = got ? `Am citit ${plural(got, 'meci nou', 'meciuri noi')} din competiție.` : R.name ? 'Nu am găsit meciuri noi de citit în competiție.' : '';
+    if (R.sfBusy) return;
+    R.sfBusy = true; R.sfNote = ''; R.sfMsg = 'Caut arbitrul și meciurile lui pe Sofascore…'; draw('rf');
+    try {
+      const m = await sofaMatch().catch(e => { if (xOff('sofa')) throw e; plErr('Sofascore, meciul', e); return null; });
+      let r = m ? sofaRefOf(m.e) : null;
+      // meciul nu are încă arbitrul la Sofascore (sau meciul nu e găsit), dar îl știu din altă sursă: îl caut după nume
+      if (!r && R.name) r = await sofaRefSearch(R.name, R.country).catch(e => { if (xOff('sofa')) throw e; return null; });
+      if (!r) R.sfNote = !m ? 'Meciul nu a fost găsit pe Sofascore.' : 'Sofascore nu are încă arbitrul acestui meci.';
+      else if (R.name && !sameRef(R.name, r.name)) R.sfNote = `Sofascore are alt arbitru la acest meci (${r.name}), așa că nu îi folosesc datele.`;
+      else {
+        // numele scris cu diacritice, dacă Sofascore îl are așa
+        if (R.name && r.name !== R.name && pnorm(r.name) === pnorm(R.name) && /[^\x00-\x7F]/.test(r.name)) R.name = r.name;
+        if (!R.name || !R.country) {
+          if (!R.name) { R.name = r.name; R.src = 'Sofascore'; }
+          R.country = R.country || refCountry(ev.slug, r.ctry);
+          R.from = seasonFrom(ev.date, R.country); R.to = ev.state === 'pre' ? new Date() : new Date(new Date(ev.date).getTime() - 3600e3); R.tiers = refScope(ev.slug || '', R.country);
+        }
+        R.sf = r; R.sfMsg = 'Caut meciurile lui din sezon pe Sofascore…'; draw('rf');
+        try {
+          R.sfSt = await sofaRefSeason(r.id, R.from, R.to, m?.id, (d, n) => { const el = $('#refp'); if (el && live() && n) el.textContent = `Citesc cartonașele din meciurile lui pe Sofascore (${d} din ${n})…`; });
+        } catch (e) {
+          plErr('Sofascore, meciurile arbitrului', e);
+          R.sfNote = e.status === 404 ? 'Sofascore nu are lista meciurilor lui.' : `Lista meciurilor lui de la Sofascore nu s-a putut citi${XS.sofa.ok === false ? ': ' + XS.sofa.err : ''}.`;
+        }
+      }
+    } catch (e) { plErr('Sofascore, arbitru', e); R.sfNote = `Sofascore nu a putut fi citit${XS.sofa.ok === false ? `: ${XS.sofa.err}` : ''}.`; }
+    R.sfBusy = false; R.sfMsg = '';
+    if (!live()) return;
+    try { odds(); } catch (e) { plErr('arbitru', e); }
+    draw('rf', 'pk', 'dg');
+    if (!R.sfSt && R.name) season();
+  };
+  // valorile de piață (și vârsta, înălțimea unde lipsesc): Transfermarkt și Sofascore, în paralel
+  const vals = async () => {
+    S.mvState = 'load'; draw('lu', 'rf', 'dg');
+    const nat = NAT.has(ev.slug);
+    await Promise.all([
+      Promise.all([S.A, S.B].map(T => tmTeam(T, nat).catch(e => { plErr('Transfermarkt', e); return { fail: true, L: [] }; })))
+        .then(L => { S.ext.tm = L; attachExt(S); if (live()) draw('lu', 'dg'); }).catch(e => plErr('Transfermarkt', e)),
+      sofaMatch().then(m => (m ? sofaValues(m) : null))
+        .then(L => { if (L) { S.ext.sf = L; attachExt(S); if (live()) draw('lu', 'dg'); } }).catch(e => plErr('Sofascore, valori', e))
+    ]);
+    S.mvState = '';
+    if (live()) draw('lu', 'st', 'rf', 'dg');
+  };
+  // după prima afișare: fișele jucătorilor (valoare, note, înălțime) și arbitrul se completează pe parcurs
+  const after = () => {
+    const [sa, sb] = S.side, ids = [...sa.xi, ...sb.xi, ...sa.bench, ...sb.bench].map(e => e.p.x).concat(S.team.flatMap(t => [...t.M.values()].filter(p => p.a).map(p => p.x))).filter(Boolean);
+    if (ids.some(id => !apFresh(id))) {
+      S.apState = 'load'; draw('lu', 'dg');
+      profiles(ids).catch(() => 0).then(() => { S.apState = ''; draw('lu', 'st', 'dg'); });
+    }
+    refRun(); vals();
+  };
+  // toate meciurile arbitrului din sezon: lista fiecărei competiții, apoi arbitrul fiecărui meci necitit încă
+  const season = async () => {
+    const R = S.ref;
+    if (R.busy || !R.name || !ev.slug) return;
+    R.busy = true; R.msg = `Caut meciurile sezonului ${seasonName(R.from, R.country)} în competițiile în care arbitrează…`; draw('rf');
+    let sc = null;
+    try {
+      sc = await refSeasonScan(R, ev.id, (st, step) => {
+        if (!live()) return;
+        if (step) { try { odds(); } catch (e) {} R.msg = st.total > st.done ? '' : R.msg; draw('rf', 'pk'); }
+        const el = $('#refp');
+        if (el && st.total) el.textContent = `Citesc arbitrii meciurilor din sezon (${st.done} din ${st.total})…`;
+      });
+    } catch (e) { plErr('arbitru', e); }
+    R.busy = false; R.scan = sc;
+    // competițiile UEFA, când sunt multe, le spun pe scurt
+    const EU = [...UEFA_MAIN, ...UEFA_QUAL], lab = L => { L = uniq(L); const eu = L.filter(q => EU.includes(q)), rest = L.filter(q => !EU.includes(q)).map(refLbl); return listRo(eu.length >= 4 ? [...rest, 'competițiile UEFA (cupe europene și echipe naționale)'] : [...rest, ...eu.map(refLbl)]); };
+    R.msg = !sc ? 'Nu am putut citi meciurile sezonului.' : [sc.listed.length ? `Am căutat în ${lab(sc.listed)}.` : '', sc.failed.length ? `Nu am putut citi ${lab(sc.failed)}.` : '',
+      sc.skipped.length ? `Cupele europene și meciurile echipelor naționale nu au fost citite: ESPN nu a răspuns la cererile scurte, iar foile întregi ar fi prea multe.` : ''].filter(Boolean).join(' ');
     try { odds(); } catch (e) { plErr('arbitru', e); }
     draw('rf', 'pk', 'dg');
   };
@@ -2992,6 +3805,339 @@ async function playersRun(ev, sum, live, opt) {
   else srcJob.then(s => { if (!live()) return; try { build(s); } catch (e) { plErr('surse', e); return; } draw(); after(); });
 }
 
+
+/* ---------- fila Clasament: clasamentul competiției, acasă și în deplasare, forma și statistici pe echipe ---------- */
+// Clasamentul total (locuri, puncte, zonele de calificare și retrogradare) e cel oficial: ESPN, iar pentru Liga 1, Liga 2 și
+// Cupa României 365Scores. Forma (ultimele 5 meciuri), clasamentele acasă și în deplasare și statisticile pe echipe le calculez
+// din meciurile jucate în sezon în aceeași competiție: rezultatele și, unde sursa le are, cornerele, cartonașele, șuturile pe
+// poartă, posesia și faulturile (din listele de meciuri ESPN; la competițiile românești, din statisticile 365Scores ale fiecărui meci).
+
+// un meci, compact: [id, ms, idGazde, idOaspeți, golGazde, golOaspeți, statGazde, statOaspeți]
+// stat = [cornere, galbene, roșii, șuturi pe poartă, posesie, șuturi, faulturi]
+// lunile încheiate se păstrează pe telefon, ca la o vizită nouă să cer doar luna curentă
+const TBL = store.get('lgc', {});
+let tbDirty = false;
+function tbFlush() {
+  if (!tbDirty) return;
+  tbDirty = false;
+  const at = o => Math.max(0, ...Object.values(o || {}).map(m => (Array.isArray(m) ? m[0] || 0 : 0)));
+  const ks = Object.keys(TBL);
+  if (ks.length > 14) ks.sort((a, b) => at(TBL[a]) - at(TBL[b])).slice(0, ks.length - 10).forEach(k => delete TBL[k]);
+  store.cache('lgc', TBL);
+}
+setInterval(tbFlush, 6000);
+addEventListener('pagehide', tbFlush);
+const tbErr = (where, e) => { LOG.unshift(`${new Date().toLocaleTimeString('ro-RO')}  fila Clasament, ${where}: ${e?.message || e}`); LOG.length = Math.min(LOG.length, 40); };
+
+// de când citesc meciurile: începutul sezonului (1 iulie; în ligile pe an calendaristic 1 ianuarie);
+// la echipele naționale, ultimele 11 luni (o campanie de calificare sau un turneu final)
+const TB_CAL = new Set(['usa.1', 'bra.1', 'arg.1']);
+function tbFrom(slug, now = new Date()) {
+  if (NAT.has(slug)) return new Date(now.getTime() - 330 * 864e5);
+  if (TB_CAL.has(slug)) return new Date(now.getFullYear(), 0, 1);
+  return new Date(now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1, 6, 1);
+}
+// campionat (are clasament pe tot sezonul), nu cupă, supercupă, amical sau preliminarii
+const tbIsLeague = s => !!s && !NAT.has(s) && !/cup|pokal|copa|coppa|coupe|taca|beker|\.fa$|super|charity|shield|friendly|qual/.test(s) && COMP[s]?.g !== 'eu';
+const tbSt = o => (o && typeof o === 'object' ? [o.c, o.y, o.r, o.st, o.p, o.sh, o.f].map(v => (fin(v) ? v : null)) : null);
+function tbRow(e) {
+  const s = STATS[e.id]?.[1], t = s?.ok ? s.t : null;
+  return [String(e.id), Date.parse(e.date) || 0, String(e.home.id), String(e.away.id), e.home.score, e.away.score, tbSt(t?.[e.home.id]), tbSt(t?.[e.away.id])];
+}
+// meciurile terminate ale competiției, lună de lună (aceleași liste ca la arbitru)
+async function tbSeason(slug, from, to, onProg) {
+  const months = [];
+  for (let a = new Date(from.getFullYear(), from.getMonth(), 1); a <= to; a = new Date(a.getFullYear(), a.getMonth() + 1, 1)) months.push(a);
+  const got = new Map();
+  let done = 0, bad = 0;
+  await Promise.all(months.map(a => lim(async () => {
+    const mk = `${a.getFullYear()}-${a.getMonth() + 1}`, end = new Date(a.getFullYear(), a.getMonth() + 1, 0, 23, 59, 59);
+    const closed = end.getTime() < Date.now() - 3 * 864e5, hit = TBL[slug]?.[mk];
+    try {
+      let rows;
+      if (closed && Array.isArray(hit?.[1])) rows = hit[1];
+      else {
+        const L = await once(`lg:${slug}:${mk}`, 20 * 60e3, () => monthGames(slug, a < from ? from : a, end < to ? end : to));
+        rows = arr(L).map(g => g?.e).filter(e => e && e.done && e.home && e.away && fin(e.home.score) && fin(e.away.score)).map(tbRow);
+        if (closed) { (TBL[slug] ||= {})[mk] = [Date.now(), rows]; tbDirty = true; }
+      }
+      for (const r of rows) if (Array.isArray(r) && r.length >= 6) got.set(r[0], r);
+    } catch (e) { bad++; }
+    onProg?.(++done, months.length);
+  })));
+  return { rows: [...got.values()].sort((x, y) => x[1] - y[1]), bad, months: months.length };
+}
+// la competițiile 365Scores, statisticile se citesc meci cu meci (o singură dată: rămân în memoria aplicației)
+async function tbStats365(rows, onProg) {
+  const need = rows.filter(r => is365(r[0]) && (!r[6] || !r[7])).slice(-220);
+  let done = 0;
+  await Promise.all(need.map(r => lim365(async () => {
+    try {
+      const s = await matchStats({ id: r[0], done: true });
+      if (s?.ok) { const h = tbSt(s.t?.[r[2]]), a = tbSt(s.t?.[r[3]]); if (h && a) { r[6] = h; r[7] = a; tbDirty = true; } }
+    } catch (e) {}
+    onProg?.(++done, need.length);
+  })));
+  return need.length;
+}
+
+/* calculele: meciurile unei echipe, clasamentul unei grupe, statisticile pe echipe */
+function tbGames(rows, id) {
+  const G = [];
+  for (const r of arr(rows)) {
+    // un rând stricat (de exemplu din memoria telefonului) se sare
+    if (!Array.isArray(r) || !fin(r[4]) || !fin(r[5])) continue;
+    const h = r[2] === id, a = r[3] === id;
+    if (!h && !a) continue;
+    const gf = h ? r[4] : r[5], ga = h ? r[5] : r[4];
+    G.push({ m: r[0], t: fin(r[1]) ? r[1] : 0, home: h, gf, ga, hs: r[4], as: r[5], opp: h ? r[3] : r[2], r: gf > ga ? 'W' : gf < ga ? 'L' : 'D', s: h ? r[6] : r[7], so: h ? r[7] : r[6] });
+  }
+  return G;
+}
+function tbRec(G) {
+  const o = { gp: G.length, w: 0, d: 0, l: 0, gf: 0, ga: 0 };
+  for (const g of G) { o[g.r === 'W' ? 'w' : g.r === 'D' ? 'd' : 'l']++; o.gf += g.gf; o.ga += g.ga; }
+  o.gd = o.gf - o.ga; o.pts = 3 * o.w + o.d; o.form = G.slice(-5);
+  return o;
+}
+// side: all (clasamentul oficial, cu forma calculată), home sau away (calculate din meciuri)
+function tbGroup(g, rows, side) {
+  const per = g.rows.map(r => { const G = tbGames(rows, r.team.id); return { r, G, rec: tbRec(side === 'home' ? G.filter(x => x.home) : side === 'away' ? G.filter(x => !x.home) : G) }; });
+  const v = (a, b) => (fin(a) ? a : b);
+  if (side === 'all') return per.map(({ r, rec }) => ({ team: r.team, rank: r.rank, gp: v(r.gp, rec.gp), w: v(r.w, rec.w), d: v(r.d, rec.d), l: v(r.l, rec.l), gf: v(r.gf, rec.gf), ga: v(r.ga, rec.ga),
+    gd: v(r.gd, fin(r.gf) && fin(r.ga) ? r.gf - r.ga : rec.gd), pts: v(r.pts, rec.pts), note: r.note, nc: r.nc, form: rec.gp ? rec.form : arr(r.rf) }));
+  return per.map(({ r, rec }) => ({ team: r.team, gp: rec.gp, w: rec.w, d: rec.d, l: rec.l, gf: rec.gf, ga: rec.ga, gd: rec.gd, pts: rec.pts, form: rec.form }))
+    .sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || String(a.team.name).localeCompare(String(b.team.name), 'ro')).map((x, i) => ({ ...x, rank: i + 1 }));
+}
+// statisticile unei echipe în competiție
+function tbTeamStats(rows, id) {
+  const G = tbGames(rows, id), s = { gp: G.length, gf: 0, ga: 0, cs: 0, btts: 0, o25: 0, sum: Array(7).fill(0), n: Array(7).fill(0), sumO: Array(7).fill(0), nO: Array(7).fill(0) };
+  for (const g of G) {
+    s.gf += g.gf; s.ga += g.ga;
+    if (!g.ga) s.cs++;
+    if (g.gf && g.ga) s.btts++;
+    if (g.gf + g.ga >= 3) s.o25++;
+    if (Array.isArray(g.s)) g.s.forEach((x, i) => { if (fin(x)) { s.sum[i] += x; s.n[i]++; } });
+    if (Array.isArray(g.so)) g.so.forEach((x, i) => { if (fin(x)) { s.sumO[i] += x; s.nO[i]++; } });
+  }
+  return s;
+}
+const tbAvg = (s, i) => (s.n[i] ? s.sum[i] / s.n[i] : null);
+const tbAvgO = (s, i) => (s.nO[i] ? s.sumO[i] / s.nO[i] : null);
+const tbPct = v => (fin(v) ? Math.round(v * 100) + '%' : '–');
+// clasamentele pe statistici; n: câte meciuri au datele (cele cu prea puține meciuri nu intră în clasament)
+const TB_BOARDS = [
+  { k: 'att', l: 'Atac', h: 'Goluri marcate pe meci', v: s => (s.gp ? s.gf / s.gp : null), n: s => s.gp, f: v => nf2.format(v), sub: s => `${plural(s.gf, 'gol', 'goluri')} în ${plural(s.gp, 'meci', 'meciuri')}` },
+  { k: 'def', l: 'Apărare', h: 'Goluri primite pe meci (cele mai puține)', asc: true, v: s => (s.gp ? s.ga / s.gp : null), n: s => s.gp, f: v => nf2.format(v), sub: s => `${plural(s.ga, 'gol primit', 'goluri primite')}; fără gol primit în ${plural(s.cs, 'meci', 'meciuri')}` },
+  { k: 'cor', l: 'Cornere', h: 'Cornere obținute pe meci', st: 1, v: s => tbAvg(s, 0), n: s => s.n[0], f: f1, sub: s => `adversarii: ${f1(tbAvgO(s, 0))} pe meci; din ${plural(s.n[0], 'meci', 'meciuri')}` },
+  { k: 'card', l: 'Cartonașe', h: 'Cartonașe primite pe meci', st: 1, v: s => (s.n[1] ? (s.sum[1] + s.sum[2]) / s.n[1] : null), n: s => s.n[1], f: f1, sub: s => `galbene: ${s.sum[1]}, roșii: ${s.sum[2]}; din ${plural(s.n[1], 'meci', 'meciuri')}` },
+  { k: 'sot', l: 'Șuturi pe poartă', h: 'Șuturi pe poartă pe meci', st: 1, v: s => tbAvg(s, 3), n: s => s.n[3], f: f1, sub: s => `șuturi în total: ${f1(tbAvg(s, 5))} pe meci; adversarii pe poartă: ${f1(tbAvgO(s, 3))}` },
+  { k: 'pos', l: 'Posesie', h: 'Posesia medie', st: 1, v: s => tbAvg(s, 4), n: s => s.n[4], f: v => Math.round(v) + '%', sub: s => `din ${plural(s.n[4], 'meci', 'meciuri')}` },
+  { k: 'o25', l: 'Peste 2,5 goluri', h: 'Meciuri cu cel puțin 3 goluri', v: s => (s.gp ? s.o25 / s.gp : null), n: s => s.gp, f: tbPct, sub: s => `${s.o25} din ${plural(s.gp, 'meci', 'meciuri')}` },
+  { k: 'btts', l: 'Ambele marchează', h: 'Meciuri în care au marcat ambele echipe', v: s => (s.gp ? s.btts / s.gp : null), n: s => s.gp, f: tbPct, sub: s => `${s.btts} din ${plural(s.gp, 'meci', 'meciuri')}` },
+  { k: 'cs', l: 'Fără gol primit', h: 'Meciuri fără gol primit', v: s => (s.gp ? s.cs / s.gp : null), n: s => s.gp, f: tbPct, sub: s => `${s.cs} din ${plural(s.gp, 'meci', 'meciuri')}` },
+  { k: 'foul', l: 'Faulturi', h: 'Faulturi comise pe meci', st: 1, v: s => tbAvg(s, 6), n: s => s.n[6], f: f1, sub: s => `faulturile adversarilor: ${f1(tbAvgO(s, 6))} pe meci` }
+];
+// clasamentul echipelor la o statistică: doar cele cu destule meciuri (cel puțin 40% din cele ale echipei cu cele mai multe)
+function tbRank(B, teams) {
+  const L = teams.map(t => ({ t: t.team, s: t.s, v: B.v(t.s), n: B.n(t.s) })).filter(x => fin(x.v) && x.n > 0);
+  const need = Math.max(1, Math.round(Math.max(0, ...L.map(x => x.n)) * 0.4));
+  return L.filter(x => x.n >= need).sort((a, b) => (B.asc ? a.v - b.v : b.v - a.v) || String(a.t.name).localeCompare(String(b.t.name), 'ro')).map((x, i) => ({ ...x, rank: i + 1 }));
+}
+
+/* afișare */
+// zonele de calificare și retrogradare, în română, cu aceleași culori la toate competițiile
+const TB_ZONES = [
+  [/(champions league|liga campionilor).*(qualif|prelim|play-?off)/i, 'Liga Campionilor – preliminarii', '#7DAEF0'],
+  [/champions league|liga campionilor/i, 'Liga Campionilor', '#2F7BE5'],
+  [/europa league.*(qualif|prelim|play-?off)/i, 'Europa League – preliminarii', '#F5B26B'],
+  [/europa league/i, 'Europa League', '#EE7D1A'],
+  [/conference league.*(qualif|prelim|play-?off)/i, 'Conference League – preliminarii', '#7CCB9C'],
+  [/conference league/i, 'Conference League', '#2E9E5B'],
+  [/round of 16|last 16|optimi/i, 'Optimi de finală', '#2F7BE5'],
+  [/round of 32|last 32|șaisprezecimi/i, 'Șaisprezecimi de finală', '#2F7BE5'],
+  [/knockout.*play-?off|play-?off.*knockout|knockout round|baraj pentru optimi/i, 'Baraj pentru optimi', '#7DAEF0'],
+  [/quarter-?final|sferturi/i, 'Sferturi de finală', '#2F7BE5'],
+  [/relegation play-?off|baraj de menținere/i, 'Baraj de menținere', '#F2A33A'],
+  [/play-?out|relegation round/i, 'Play-out', '#F2A33A'],
+  [/relegat|retrograd/i, 'Retrogradare', '#D9433B'],
+  [/promotion play-?off|baraj de promovare/i, 'Baraj de promovare', '#7CCB9C'],
+  [/promot/i, 'Promovare', '#2E9E5B'],
+  [/championship round|^play-?off$/i, 'Play-off', '#2F7BE5'],
+  [/eliminat/i, 'Eliminată', ''],
+  [/next round|advance|qualif|calific/i, 'Se califică mai departe', '#2F7BE5']
+];
+function tbZone(note, nc) {
+  const n = String(note || '').trim();
+  if (!n) return null;
+  const z = TB_ZONES.find(([r]) => r.test(n));
+  return z ? { l: z[1], c: z[2] } : { l: n, c: nc ? '#' + nc : '' };
+}
+const tbGName = n => String(n || '').replace(/\bGroup\b/gi, 'Grupa').replace(/\bLeague ([A-D])\b/g, 'Liga $1').replace(/championship round/i, 'Play-off').replace(/relegation round/i, 'Play-out').replace(/regular season/i, 'Sezonul regulat');
+const TB_SVG = { W: '<path d="M4.2 8.4l2.6 2.6 5-5.4"/>', D: '<path d="M4.6 8h6.8"/>', L: '<path d="M5.2 5.2l5.6 5.6M10.8 5.2l-5.6 5.6"/>' };
+const TB_RES = { W: 'Victorie', D: 'Remiză', L: 'Înfrângere' };
+const tbName = (id, fb) => { const t = TEAMS.get(String(id)); return t?.short || t?.name || fb || ''; };
+// forma: de la cel mai vechi la cel mai recent meci; fiecare bulină se poate atinge (scorul, adversarul, data)
+function tbFormHTML(F, who) {
+  const L = arr(F).filter(g => g && TB_SVG[g.r]);
+  if (!L.length) return '<span class="fis none">–</span>';
+  return `<span class="fis">${L.map((g, i) => {
+    const op = tbName(g.opp, g.oppName), d = new Date(fin(g.t) && g.t > 0 ? g.t : NaN);
+    const txt = `${TB_RES[g.r]} ${fin(g.gf) ? g.gf : '?'}-${fin(g.ga) ? g.ga : '?'} ${g.home ? 'acasă' : 'în deplasare'}${op ? ` cu ${op}` : ''}${isNaN(d) ? '' : `, ${nodot(fDM.format(d))}`}`;
+    return `<button type="button" class="fi ${g.r}${i === L.length - 1 ? ' last' : ''}" data-fi="${esc(who ? `${who}: ${txt}` : txt)}" aria-label="${esc(txt)}"><svg viewBox="0 0 16 16" aria-hidden="true">${TB_SVG[g.r]}</svg></button>`;
+  }).join('')}</span>`;
+}
+function tbTableHTML(S, rows, slug, label) {
+  const me = id => (id === S.A.id ? 'a' : id === S.B.id ? 'b' : ''), n = v => (fin(v) ? v : '–');
+  const head = `<thead><tr><th class="c0" scope="col"><span class="ps">#</span>${NAT.has(slug) ? 'Echipă' : 'Club'}</th><th scope="col" title="meciuri jucate">MJ</th><th scope="col" title="victorii">V</th><th scope="col" title="egaluri">E</th><th scope="col" title="înfrângeri">Î</th><th scope="col" title="puncte">Pct.</th><th scope="col" title="goluri marcate și primite">G</th><th scope="col" title="golaveraj">GD</th><th class="fm" scope="col">Ultimele 5</th></tr></thead>`;
+  const body = rows.map(r => {
+    const z = S.side === 'all' ? tbZone(r.note, r.nc) : null, m = me(r.team.id);
+    return `<tr${m ? ` class="me" style="--mc:var(--c${m})"` : ''}><th class="c0" scope="row"${z?.c ? ` style="--nc:${z.c}"` : ''}><a href="#/t/${esc(r.team.id)}${slug ? '/' + esc(slug) : ''}"${z ? ` title="${esc(z.l)}"` : ''}><span class="ps">${n(r.rank)}</span>${crest(r.team)}<span class="tn">${esc(r.team.short || r.team.name)}</span></a></th>`
+      + `<td>${n(r.gp)}</td><td>${n(r.w)}</td><td>${n(r.d)}</td><td>${n(r.l)}</td><td class="tpt"><b>${n(r.pts)}</b></td><td class="gg">${fin(r.gf) && fin(r.ga) ? `${r.gf}:${r.ga}` : '–'}</td><td>${fin(r.gd) ? (r.gd > 0 ? '+' + r.gd : r.gd < 0 ? '−' + -r.gd : '0') : '–'}</td><td class="fm">${tbFormHTML(r.form, r.team.short || r.team.name)}</td></tr>`;
+  }).join('');
+  return `<div class="ctab" role="region" tabindex="0" aria-label="${esc(label)}"><table class="stt">${head}<tbody>${body}</tbody></table></div>`;
+}
+// toate grupele unei competiții: întâi cele cu echipele meciului, celelalte strânse
+function tbCtxHTML(S, c, many) {
+  const ids = [S.A.id, S.B.id], has = g => g.rows.some(r => ids.includes(r.team.id));
+  const mine = c.groups.filter(has), rest = c.groups.filter(g => !has(g)), show = mine.length ? mine : c.groups.slice(0, 1), hide = mine.length ? rest : c.groups.slice(1);
+  const rowsOf = g => tbGroup(g, c.rows || [], S.side);
+  const lab = g => [compLabel(c.slug), c.groups.length > 1 ? tbGName(g.name) : '', S.side === 'home' ? 'acasă' : S.side === 'away' ? 'în deplasare' : ''].filter(Boolean).join(', ');
+  const one = g => `${c.groups.length > 1 ? `<div class="gname">${esc(tbGName(g.name) || compLabel(c.slug))}</div>` : ''}${tbTableHTML(S, rowsOf(g), c.slug, lab(g))}`;
+  return `${many ? `<div class="sec"><h2>${esc(compLabel(c.slug))}</h2><span class="aside">${esc([S.A, S.B].filter(t => c.groups.some(g => g.rows.some(r => r.team.id === t.id))).map(t => t.short || t.name).join(', '))}</span></div>` : ''}
+    ${show.map(one).join('')}
+    ${hide.length ? `<details class="tbo"><summary>Celelalte grupe (${hide.length})</summary>${hide.map(one).join('')}</details>` : ''}`;
+}
+function tbLegendHTML(S) {
+  const z = new Map();
+  if (S.side === 'all') for (const c of S.ctxs) for (const g of c.groups) for (const r of g.rows) { const q = tbZone(r.note, r.nc); if (q?.c && !z.has(q.l)) z.set(q.l, q.c); }
+  const fi = r => `<span class="fi ${r}" aria-hidden="true"><svg viewBox="0 0 16 16">${TB_SVG[r]}</svg></span>`;
+  // la fel ca în tabel: cel mai recent meci încercuit
+  return `<div class="tleg">${z.size ? `<h3>Calificare / retrogradare</h3>${[...z].map(([l, c]) => `<p><i class="zq" style="background:${c}"></i>${esc(l)}</p>`).join('')}` : ''}
+    <h3>Ultimele cinci meciuri</h3><p>${fi('W')}Victorie</p><p>${fi('D')}Remiză</p><p>${fi('L')}Înfrângere</p><p class="sm">Cel mai recent meci e ultimul din dreapta, încercuit. Atinge o bulină ca să vezi scorul și adversarul.</p></div>`;
+}
+// cele două echipe ale meciului, față în față, cu locul fiecăreia în competiție la fiecare statistică
+function tbCmpHTML(S, c) {
+  const T = c.teams, a = T.find(t => t.team.id === S.A.id), b = T.find(t => t.team.id === S.B.id);
+  if (!a || !b || !c.rows?.length) return '';
+  const all = c.groups.flatMap(g => g.rows), ra = all.find(r => r.team.id === S.A.id), rb = all.find(r => r.team.id === S.B.id);
+  const row = (label, va, vb, fmt, ka, kb, bar = true) => {
+    const v = (x, k, r) => `<span class="v${r ? ' r' : ''}">${fin(x) ? fmt(x) : '–'}${k ? `<small>locul ${k}</small>` : ''}</span>`;
+    const t = (va || 0) + (vb || 0), wa = t ? va / t * 100 : 50;
+    return `<div class="sb${fin(va) && fin(vb) ? '' : ' na'}">${v(va, ka)}<span class="l">${esc(label)}</span>${v(vb, kb, 1)}${bar && fin(va) && fin(vb) ? `<div class="two z"><i style="--w:${wa};background:var(--ca)"></i><i style="--w:${100 - wa};background:var(--cb)"></i></div>` : ''}</div>`;
+  };
+  const same = c.groups.some(g => g.rows.some(r => r.team.id === S.A.id) && g.rows.some(r => r.team.id === S.B.id));
+  const out = [row('Locul în clasament', ra?.rank, rb?.rank, v => v + '.', null, null, false), row('Puncte pe meci', ra && ra.gp ? ra.pts / ra.gp : null, rb && rb.gp ? rb.pts / rb.gp : null, v => nf2.format(v))];
+  for (const B of TB_BOARDS) {
+    const R = c.rank[B.k], xa = R.find(x => x.t.id === S.A.id), xb = R.find(x => x.t.id === S.B.id);
+    if (!xa && !xb) continue;
+    out.push(row(B.h.replace(' (cele mai puține)', ''), xa?.v, xb?.v, B.f, xa?.rank, xb?.rank));
+  }
+  return `<div class="sec"><h2>Față în față</h2><span class="aside">${esc(compLabel(c.slug))}${same ? '' : ', grupe diferite'}</span></div>
+    <div class="panel"><div class="lg" aria-hidden="true"><span><i style="background:var(--ca)"></i><b>${esc(S.A.short || S.A.name)}</b></span><span></span><span><b>${esc(S.B.short || S.B.name)}</b><i style="background:var(--cb)"></i></span></div>${out.join('')}
+    <p class="note">Sub fiecare cifră, locul echipei în ${esc(compLabel(c.slug))} la acea statistică${c.teams.length ? `, din ${plural(c.teams.length, 'echipă', 'echipe')}` : ''}.</p></div>`;
+}
+function tbBoardHTML(S, c) {
+  const B = TB_BOARDS.find(x => x.k === S.board) || TB_BOARDS[0], R = c.rank[B.k] || [], ids = [S.A.id, S.B.id];
+  const top = R.slice(0, 10), extra = R.filter(x => x.rank > 10 && ids.includes(x.t.id));
+  const line = x => { const m = x.t.id === S.A.id ? 'a' : x.t.id === S.B.id ? 'b' : ''; return `<a class="lr${m ? ' me' : ''}" href="#/t/${esc(x.t.id)}/${esc(c.slug)}"${m ? ` style="--mc:var(--c${m})"` : ''}><span class="k">${x.rank}</span>${crest(x.t)}<span class="n"><b>${esc(x.t.short || x.t.name)}</b><small>${esc(B.sub(x.s))}</small></span><span class="v">${B.f(x.v)}</span></a>`; };
+  const noSt = B.st && !c.withSt;
+  return `<div class="sec"><h2>Statistici pe echipe</h2><span class="aside">${esc(compLabel(c.slug))}</span></div>
+    <div class="pmc" role="group" aria-label="Ce statistică arăt">${TB_BOARDS.map(x => `<button type="button" data-tb="${x.k}" aria-pressed="${x.k === B.k}">${x.l}</button>`).join('')}</div>
+    <div class="grp lb"><p class="lbh">${esc(B.h)}</p>${R.length ? top.map(line).join('') + (extra.length ? `<p class="gap" aria-hidden="true">···</p>${extra.map(line).join('')}` : '') : `<p class="note">${noSt ? `${c.ro ? '365Scores' : 'ESPN'} nu are statistici pe meci pentru această competiție (cornere, cartonașe, șuturi, posesie).` : 'Încă nu sunt destule meciuri jucate.'}</p>`}</div>`;
+}
+function tbCovHTML(S, c) {
+  if (!c.rows) return '';
+  const n = c.rows.length, k = c.rows.filter(r => r[6] && r[7]).length;
+  return `<p class="note">${n ? `Calculat din ${plural(n, 'meci jucat', 'meciuri jucate')} în ${esc(compLabel(c.slug))} de la ${esc(fFull.format(c.from))}; cornerele, cartonașele, șuturile pe poartă și posesia sunt cunoscute la ${k === n ? 'toate' : `${k} dintre ele`}.` : `Nu am găsit meciuri jucate în ${esc(compLabel(c.slug))} de la ${esc(fFull.format(c.from))}.`}${c.bad ? ` ${plural(c.bad, 'lună nu s-a putut citi', 'luni nu s-au putut citi')}; încearcă din nou mai târziu.` : ''}</p>`;
+}
+
+async function tables(ev, sum, live) {
+  try { await tablesRun(ev, live); }
+  catch (e) { tbErr('afișare', e); if (live()) $('#mb').innerHTML = errBox('Fila Clasament nu a putut fi afișată. Detaliul erorii este în Setări, la Jurnal tehnic.'); }
+}
+async function tablesRun(ev, live) {
+  const mb = $('#mb'), A = ev.home, B = ev.away, now = new Date();
+  const [ca, cb] = teamColors(A, B);
+  mb.style.setProperty('--ca', ca); mb.style.setProperty('--cb', cb);
+  mb.innerHTML = `<div class="sec"><h2>Clasament</h2></div><div class="panel"><p class="note">Se încarcă clasamentul…</p></div>`;
+  const comp = async slug => { try { const g = await standings(slug); return g.length ? { slug, groups: g, ro: !!RO_CID[slug] } : null; } catch (e) { tbErr('clasament ' + slug, e); return null; } };
+  // competiția meciului; dacă nu are clasament (cupă eliminatorie), campionatele celor două echipe
+  let ctxs = [], why = '';
+  const main = ev.slug ? await comp(ev.slug) : null;
+  if (!live()) return;
+  if (main) ctxs = [main];
+  else {
+    const lgs = [];
+    for (const t of [A, B]) {
+      let lg = TEAMS.get(String(t.id))?.lg;
+      if (!tbIsLeague(lg)) { try { await schedule(t.id); } catch (e) {} lg = TEAMS.get(String(t.id))?.lg; }
+      if (tbIsLeague(lg) && lg !== ev.slug && !lgs.includes(lg)) lgs.push(lg);
+    }
+    for (const sl of lgs) { const c = await comp(sl); if (c) ctxs.push(c); }
+    if (!live()) return;
+    why = ev.slug ? `${compLabel(ev.slug)} nu are clasament (se joacă eliminatoriu), așa că arăt campionatul ${ctxs.length > 1 ? 'fiecărei echipe' : 'echipelor'}.` : '';
+  }
+  if (!ctxs.length) {
+    mb.innerHTML = `<div class="sec"><h2>Clasament</h2></div><p class="empty">${ev.slug ? `${esc(compLabel(ev.slug))} nu are clasament la ${RO_CID[ev.slug] ? '365Scores' : 'ESPN'}` : 'Nu știu competiția acestui meci'}, iar campionatele echipelor nu le-am găsit.</p>`;
+    return;
+  }
+  const S = { ev, A, B, side: ['all', 'home', 'away'].includes(settings.tbs) ? settings.tbs : 'all', board: TB_BOARDS.some(b => b.k === settings.tbb) ? settings.tbb : 'att', ctxs, why, msg: '' };
+  for (const c of ctxs) { c.from = tbFrom(c.slug, now); c.rows = null; c.teams = []; c.rank = {}; c.withSt = false; c.bad = 0; }
+  const one = ctxs.length === 1 ? ctxs[0] : null;
+  const calc = c => {
+    if (!c.rows) return;
+    const seen = new Set();
+    c.teams = c.groups.flatMap(g => g.rows).filter(r => r.team && !seen.has(r.team.id) && seen.add(r.team.id)).map(r => ({ team: r.team, s: tbTeamStats(c.rows, r.team.id) }));
+    c.withSt = c.rows.some(r => r[6] && r[7]);
+    for (const Bd of TB_BOARDS) c.rank[Bd.k] = tbRank(Bd, c.teams);
+  };
+  const SEC = {
+    t: () => `<div class="sec"><h2>Clasament</h2><span class="aside">${esc(one ? compLabel(one.slug) : 'campionatele echipelor')}</span></div>
+      ${S.why ? `<p class="lnote">${esc(S.why)}</p>` : ''}
+      <div class="tbs"><div class="seg wide" role="group" aria-label="Ce clasament arăt">${[['all', 'Total'], ['home', 'Acasă'], ['away', 'Deplasare']].map(([k, l]) => `<button type="button" data-ts="${k}" aria-pressed="${S.side === k}">${l}</button>`).join('')}</div></div>
+      ${S.side !== 'all' && ctxs.every(c => c.rows && !c.rows.length) ? '<p class="lnote">Fără meciurile sezonului nu pot calcula clasamentul acasă și în deplasare.</p>' : ''}
+      ${ctxs.map(c => tbCtxHTML(S, c, ctxs.length > 1)).join('')}`,
+    l: () => tbLegendHTML(S),
+    c: () => (one && one.rows ? tbCmpHTML(S, one) : ''),
+    b: () => (one && one.rows ? tbBoardHTML(S, one) + tbCovHTML(S, one) : ''),
+    p: () => esc(S.msg)
+  };
+  const draw = (...ks) => {
+    if (!live()) return;
+    for (const k of ks.length ? ks : Object.keys(SEC)) { const el = $('#tb-' + k); if (!el) continue; try { el.innerHTML = SEC[k](); } catch (e) { tbErr('secțiunea ' + k, e); el.innerHTML = '<p class="note">Această secțiune nu a putut fi afișată.</p>'; } }
+    grow(mb);
+  };
+  mb.innerHTML = `<div id="tb-t"></div><p class="pinfo" id="tb-fi" aria-live="polite"></p><div id="tb-l"></div><p class="note" id="tb-p" role="status"></p><div id="tb-c"></div><div id="tb-b"></div>
+    <p class="method"><b>Cum calculez.</b> Clasamentul total e cel oficial (${ctxs.some(c => c.ro) ? '365Scores' : 'ESPN'}), cu zonele de calificare și retrogradare. Clasamentele acasă și în deplasare, forma din ultimele 5 meciuri și statisticile pe echipe le calculez din meciurile jucate în sezon în aceeași competiție: rezultatele și, unde sursa le are, cornerele, cartonașele, șuturile pe poartă, posesia și faulturile. La egalitate de puncte ordonez după golaveraj, apoi după golurile marcate; unele competiții folosesc întâi meciurile directe, așa că ordinea de acasă sau din deplasare poate diferi puțin de cea a unui site oficial.</p>`;
+  draw();
+  restoreScroll();
+  mb.onclick = e => {
+    const f = e.target.closest('[data-fi]');
+    if (f) { const el = $('#tb-fi'); if (el) el.textContent = f.dataset.fi; return; }
+    const s = e.target.closest('[data-ts]');
+    if (s) { S.side = settings.tbs = s.dataset.ts; saveSettings(); const el = $('#tb-fi'); if (el) el.textContent = ''; draw('t', 'l'); return; }
+    const b = e.target.closest('[data-tb]');
+    if (b) { S.board = settings.tbb = b.dataset.tb; saveSettings(); draw('b'); }
+  };
+  // meciurile sezonului: forma, acasă/deplasare, statisticile; la 365Scores și statisticile fiecărui meci
+  for (const c of ctxs) {
+    S.msg = `Citesc meciurile din sezon (${compLabel(c.slug)})…`; draw('p');
+    try {
+      const r = await tbSeason(c.slug, c.from, now, (d, n) => { const el = $('#tb-p'); if (el && live()) el.textContent = `Citesc meciurile din sezon (${d} din ${n} luni)…`; });
+      c.rows = r.rows; c.bad = r.bad;
+    } catch (e) { tbErr('meciuri ' + c.slug, e); c.rows = []; }
+    if (!live()) return;
+    calc(c); draw();
+    if (c.ro && one === c && c.rows.length) {
+      S.msg = 'Citesc statisticile meciurilor…'; draw('p');
+      await tbStats365(c.rows, (d, n) => { const el = $('#tb-p'); if (el && live() && n) el.textContent = `Citesc statisticile meciurilor (${d} din ${n})…`; });
+      if (!live()) return;
+      calc(c);
+    }
+  }
+  S.msg = ''; draw();
+}
 /* ---------- ecran: Favorite ---------- */
 function viewFav(live) {
   const F = favs();
@@ -3280,10 +4426,10 @@ function openSettings() {
     <label class="field col"><span>Proxy pentru cereri (opțional)</span><input type="url" id="px" value="${esc(settings.proxy)}" placeholder="https://proxy-ul-tău/?url=" autocomplete="off" autocapitalize="off"><span class="note" style="margin:0">Lasă gol. Completează doar dacă rețeaua ta blochează ESPN și ai un proxy propriu; URL-ul cererii se adaugă la final.</span></label>
     <div class="acts"><button class="btn" type="button" id="clr">Golește datele din cache</button></div>
     <details><summary>Jurnal tehnic (${LOG.length})</summary><div class="log">${LOG.length ? LOG.map(esc).join('\n') : 'Nicio eroare de rețea.'}</div></details>
-    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub; Liga 1, Liga 2 și Cupa României vin de la 365Scores, la fel și cotele (ca rezervă, cele din ESPN); aplicația le folosește doar în calcul, nu le afișează și nu trimite către case de pariuri. În fila Jucători, foile de joc și loturile vin de la ESPN, iar formațiile probabile, indisponibilii, antrenorii, arbitrul și valoarea de piață de la 365Scores. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele, pronosticurile și ce învață modelul rămân doar pe acest dispozitiv.</p>`);
+    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub; Liga 1, Liga 2 și Cupa României vin de la 365Scores, la fel și cotele (ca rezervă, cele din ESPN); aplicația le folosește doar în calcul, nu le afișează și nu trimite către case de pariuri. În fila Jucători, foile de joc și loturile vin de la ESPN, formațiile probabile, indisponibilii și antrenorii de la 365Scores, valorile de piață de la Transfermarkt (completate din Sofascore și 365Scores), iar mediile arbitrului din meciurile lui din sezon, de la Sofascore. În fila Clasament, clasamentul e cel oficial (ESPN, pentru competițiile românești 365Scores), iar forma, clasamentele acasă/deplasare și statisticile pe echipe sunt calculate din meciurile sezonului. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele, pronosticurile și ce învață modelul rămân doar pe acest dispozitiv.</p>`);
   $('#shin').setAttribute('aria-labelledby', 'sht');
   $('#px').addEventListener('change', e => { settings.proxy = e.target.value.trim(); saveSettings(); MEM.clear(); });
-  $('#clr').addEventListener('click', e => { store.clearCache(); MEM.clear(); ONCE.clear(); IDXP = null; for (const o of [STATS, BOX, REFS.m, REFS.n, MV]) for (const k of Object.keys(o)) delete o[k]; e.target.textContent = 'Cache golit'; });
+  $('#clr').addEventListener('click', e => { store.clearCache(); MEM.clear(); ONCE.clear(); IDXP = null; for (const o of [STATS, BOX, REFS.m, REFS.n, AP, SOFA.e, SOFA.c, SOFA.u, SOFA.t, TMC, TBL]) for (const k of Object.keys(o)) delete o[k]; e.target.textContent = 'Cache golit'; });
 }
 function openCompare(id) {
   const t = TEAMS.get(id) || { name: 'echipa' };
