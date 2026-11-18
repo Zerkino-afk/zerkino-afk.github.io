@@ -274,7 +274,10 @@ summary{padding:10px 16px;font-weight:600;cursor:pointer}
 .mt .mrw.q{grid-template-columns:1fr 66px 66px 74px;gap:6px}
 .mt .mrw.v4{grid-template-columns:1fr 46px 52px 74px;gap:6px}
 .bgrid{display:grid;grid-template-columns:1fr 1fr}
-.seg.mk{display:grid;grid-template-columns:repeat(5,1fr)}
+.field[hidden]{display:none!important}
+.lnin{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:4px;font-weight:600}
+.lnin input{width:90px;border:0;border-radius:10px;background:var(--surface-2);color:var(--ink);padding:9px 10px;font:500 15px var(--fa);text-align:right}
+.seg.mk{display:grid;grid-template-columns:repeat(5,1fr);row-gap:2px}
 .seg.mk button{padding:6px 2px;font-size:12.5px;line-height:1.15;min-width:0}
 .seg button small.cnt{display:block;font-size:10.5px;font-weight:500;opacity:.7}
 .mt .mrw.on{background:color-mix(in srgb,var(--ink) 5%,transparent)}
@@ -1099,7 +1102,11 @@ function devig(odds) {
   return s > 0.97 && s < 1.45 ? q.map(v => v / s) : null;
 }
 const halfLine = s => { const v = parseFloat(s); return fin(v) && v > 0 && Math.abs(v % 1 - 0.5) < 1e-9 ? v : null; };
-const emptyMk = src => ({ src, x12: null, ou: [], btts: null, c: [], t: [], k: [], s: [] });
+const emptyMk = src => ({ src, x12: null, ou: [], btts: null, c: [], t: [], k: [], s: [], hg: [], ag: [] });
+// piețele 365Scores pe care aplicația nu le citește încă: le țin minte (doar numele), ca să se vadă ce s-ar mai putea adăuga
+const UNK365 = store.get('l365', {});
+let unkT = 0;
+function noteUnk(id, nm) { const k = String(nm || `#${id}`).slice(0, 60); if (UNK365[k]) return; UNK365[k] = 1; clearTimeout(unkT); unkT = setTimeout(() => store.cache('l365', UNK365), 2000); }
 // live: în timpul meciului (și după el) cotele curente țin cont de scor, așa că iau cotele de deschidere
 function lines365(lines, live, swap) {
   const m = emptyMk('365Scores');
@@ -1115,13 +1122,15 @@ function lines365(lines, live, swap) {
       continue;
     }
     if (id === 12 || /^both teams to score$/i.test(nm)) { const p = two(l, /^yes$/i, /^no$/i); if (p) m.btts = p[0]; continue; }
-    const key = id === 3 || /^total goals( in match)?$/i.test(nm) ? 'ou' : id === 137 || /^total corners$/i.test(nm) ? 'c'
+    // goluri pe echipă: numele exacte nu le știu sigur, așa că recunosc „home/away” sau „team 1/2” împreună cu „goals”
+    const tm = /goals/i.test(nm) && !/both|half|exact|odd|even|handicap|asian|corner|card/i.test(nm) ? (/\b(home|team ?1)\b/i.test(nm) && !/\b(away|team ?2)\b/i.test(nm) ? 'hg' : /\b(away|team ?2)\b/i.test(nm) && !/\b(home|team ?1)\b/i.test(nm) ? 'ag' : null) : null;
+    const key = tm ? (swap ? (tm === 'hg' ? 'ag' : 'hg') : tm) : id === 3 || /^total goals( in match)?$/i.test(nm) ? 'ou' : id === 137 || /^total corners$/i.test(nm) ? 'c'
       : id === 139 || /^total shots on (target|goal)$/i.test(nm) ? 't' : /^total (cards|bookings)$/i.test(nm) ? 'k' : /^total shots$/i.test(nm) ? 's' : null;
-    if (!key) continue;
+    if (!key) { noteUnk(id, nm); continue; }
     const L = halfLine(l.internalOption), p = two(l, /^over$/i, /^under$/i);
     if (L != null && p && !m[key].some(x => x[0] === L)) m[key].push([L, p[0]]);
   }
-  ['ou', 'c', 't', 'k', 's'].forEach(k => m[k].sort((a, b) => a[0] - b[0]));
+  ['ou', 'c', 't', 'k', 's', 'hg', 'ag'].forEach(k => m[k].sort((a, b) => a[0] - b[0]));
   return m;
 }
 function espnOdds(sum) {
@@ -1242,14 +1251,16 @@ function block(la, lb, max, rho = 0, phi = 1, dl = 0) {
   if (dl) for (let i = 0; i <= max; i++) M[i][i] *= 1 + dl;
   let s = 0; M.forEach(r => r.forEach(v => { s += v; }));
   let a = 0, dr = 0, b = 0, btts = 0;
-  const T = new Array(2 * max + 1).fill(0);
+  const T = new Array(2 * max + 1).fill(0), RA = new Array(max + 1).fill(0), CB = new Array(max + 1).fill(0);
   M.forEach((r, i) => r.forEach((v, j) => {
     v /= s; r[j] = v;
     if (i > j) a += v; else if (i === j) dr += v; else b += v;
     if (i > 0 && j > 0) btts += v;
-    T[i + j] += v;
+    T[i + j] += v; RA[i] += v; CB[j] += v;
   }));
-  return { la, lb, M, p: [a, dr, b], btts, over: L => T.reduce((acc, v, k) => acc + (k > L ? v : 0), 0) };
+  const gt = (X, L) => X.reduce((acc, v, k) => acc + (k > L ? v : 0), 0);
+  // over: totalul peste linie; oa / ob: doar gazdele / doar oaspeții peste linie
+  return { la, lb, M, p: [a, dr, b], btts, over: L => gt(T, L), oa: L => gt(RA, L), ob: L => gt(CB, L) };
 }
 const linesAround = t => { const c = Math.max(0.5, Math.round(t) - 0.5); return [c - 1, c, c + 1].filter(x => x > 0); };
 function topScores(M, k) {
@@ -1865,7 +1876,16 @@ const REL_EDGES = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1.0001];
    Fiecare pariu posibil se ține ca [valoare, cotă, câștigat, competiție, probabilitate], în ordinea meciurilor. */
 const VT = [-1, 0, 0.03, 0.06, 0.1, 0.15];   // pragurile de valoare așteptată (−1 = orice meci)
 const VM = [0.02, 0.05];                      // marja presupusă a casei
-const VMK = [['x', '1X2'], ['g', 'Goluri'], ['c', 'Cornere'], ['k', 'Cartonașe'], ['t', 'Pe poartă']];
+const VMK = [['x', '1X2'], ['dc', 'Șansă dublă'], ['b', 'GG / NG'], ['g', 'Goluri'], ['hg', 'Gol. gazde'], ['ag', 'Gol. oaspeți'], ['c', 'Cornere'], ['k', 'Cartonașe'], ['s', 'Șuturi'], ['t', 'Pe poartă']];
+const DCP = [[0, 1], [1, 2], [0, 2]];
+function addDC(arrs, p, q, o, sl) {
+  const P = DCP.map(([a, b]) => p[a] + p[b]), Qd = DCP.map(([a, b]) => q[a] + q[b]);
+  VM.forEach((m, mi) => {
+    let best = null;
+    DCP.forEach((pr, i) => { const od = 1 / (Qd[i] * (1 + m)); if (od <= 1.01) return; const ev = P[i] * od - 1; if (!best || ev > best[0]) best = [ev, od, pr.includes(o) ? 1 : 0, sl, P[i]]; });
+    if (best) arrs[mi].push(best);
+  });
+}
 const newVal = () => Object.fromEntries(['mdl', 'mix'].map(src => [src, Object.fromEntries(VMK.map(([k]) => [k, VM.map(() => [])]))]));
 const mktX = (s, fb) => Array.isArray(s.K) && [6, 7, 8].every(i => fin(s.K[i]) && s.K[i] > 0) ? s.K.slice(6, 9) : fb;
 function addVal(arrs, p, q, o, sl) {
@@ -1882,12 +1902,12 @@ function addOU(arrs, lines, over, tot, sl) {
     for (const [L, q] of lines) {
       if (!(q > 0.03 && q < 0.97) || tot === L) continue;
       const po = over(L);
-      for (const [pp, qq, w] of [[po, q, tot > L], [1 - po, 1 - q, tot < L]]) { const o = 1 / (qq * (1 + m)), ev = pp * o - 1; if (!best || ev > best[0]) best = [ev, o, w ? 1 : 0, sl, pp]; }
+      for (const [pp, qq, w] of [[po, q, tot > L], [1 - po, 1 - q, tot < L]]) { const o = 1 / (qq * (1 + m)), ev = pp * o - 1; if (o <= 1.01) continue; if (!best || ev > best[0]) best = [ev, o, w ? 1 : 0, sl, pp]; }
     }
     if (best) arrs[mi].push(best);
   });
 }
-const mkOfQ = s => ({ src: '', x12: mktX(s, null), ou: s.Q?.ou || [], btts: null, c: s.Q?.c || [], t: s.Q?.t || [], k: s.Q?.k || [], s: [] });
+const mkOfQ = s => ({ src: '', x12: mktX(s, null), ou: s.Q?.ou || [], btts: s.Q?.b ?? null, c: s.Q?.c || [], t: s.Q?.t || [], k: s.Q?.k || [], s: s.Q?.s || [], hg: s.Q?.hg || [], ag: s.Q?.ag || [] });
 const sumR = (R, i) => fin(R[i]) && fin(R[i + 1]) ? R[i] + R[i + 1] : null;
 function evaluateCV(S) {
   const K = 5, def = newAcc(), cal = newAcc(), bins = REL_EDGES.slice(1).map((hi, j) => ({ lo: REL_EDGES[j], hi: Math.min(1, hi), p: 0, o: 0, n: 0 }));
@@ -1909,15 +1929,24 @@ function evaluateCV(S) {
         const ps = { mdl: g.p, mkt: mktX(s, p1x2(s.K[0], s.K[1], rho)), mix: p1x2(mixl(g.la, s.K[0], w), mixl(g.lb, s.K[1], w), rho, g.dl * (1 - w)) };
         mk.n++;
         addVal(val.mdl.x, ps.mdl, ps.mkt, o, s.sl); addVal(val.mix.x, ps.mix, ps.mkt, o, s.sl);
+        addDC(val.mdl.dc, ps.mdl, ps.mkt, o, s.sl); addDC(val.mix.dc, ps.mix, ps.mkt, o, s.sl);
         for (const k in ps) { mk[k][0] -= Math.log(Math.max(1e-6, ps[k][o])); mk[k][1] += argmax(ps[k]) === o ? 1 : 0; }
       }
       // celelalte piețe: total goluri, cornere, cartonașe, șuturi pe poartă; „finale” = estimarea cu tot cu cote
       if (s.Q) {
         const px = predict(A, B, !!s.neu, prm, mkOfQ(s));
-        for (const [key, lines, b0, b1, ri] of [['g', s.Q.ou, pr.goals, px.goals, 0], ['c', s.Q.c, pr.corners, px.corners, 2], ['k', s.Q.k, pr.cards, px.cards, 4], ['t', s.Q.t, pr.sot, px.sot, 8]]) {
-          const tot = sumR(s.R, ri);
-          if (!lines?.length || !b0 || !b1 || tot == null) continue;
-          addOU(val.mdl[key], lines, L => b0.over(L), tot, s.sl); addOU(val.mix[key], lines, L => b1.over(L), tot, s.sl);
+        const ov = b => b && (L => b.over(L)), gg = s.R[0] > 0 && s.R[1] > 0 ? 1 : 0;
+        for (const [key, lines, f0, f1, tot] of [
+          ['g', s.Q.ou, ov(pr.goals), ov(px.goals), sumR(s.R, 0)],
+          ['b', fin(s.Q.b) ? [[0.5, s.Q.b]] : null, () => pr.goals.btts, () => px.goals.btts, gg],
+          ['hg', s.Q.hg, L => pr.goals.oa(L), L => px.goals.oa(L), s.R[0]],
+          ['ag', s.Q.ag, L => pr.goals.ob(L), L => px.goals.ob(L), s.R[1]],
+          ['c', s.Q.c, ov(pr.corners), ov(px.corners), sumR(s.R, 2)],
+          ['k', s.Q.k, ov(pr.cards), ov(px.cards), sumR(s.R, 4)],
+          ['s', s.Q.s, ov(pr.shots), ov(px.shots), sumR(s.R, 6)],
+          ['t', s.Q.t, ov(pr.sot), ov(px.sot), sumR(s.R, 8)]]) {
+          if (!lines?.length || !f0 || !f1 || !fin(tot)) continue;
+          addOU(val.mdl[key], lines, f0, tot, s.sl); addOU(val.mix[key], lines, f1, tot, s.sl);
         }
       }
       pr.goals.p.forEach((p, i) => { const j = REL_EDGES.findIndex((e, x) => p >= e && p < REL_EDGES[x + 1]); if (j >= 0) { bins[j].p += p; bins[j].o += i === o ? 1 : 0; bins[j].n++; } });
@@ -2631,13 +2660,15 @@ async function analysis(ev, sum, live, opt = {}) {
   const pre = ev.state === 'pre' && !/POSTPONED|CANCEL/.test(ev.status);
   const ig = P.mk?.ig, K = ig ? [ig.la, ig.lb, P.corners?.mkT, P.sot?.mkT, P.cards?.mkT, P.shots?.mkT].map(r2).concat(P.mk.x12 ? P.mk.x12.map(r3) : []) : null;
   const qOf = a => (a || []).map(([L, q]) => [L, r3(q)]);
-  const Q = mk && (mk.ou.length || mk.c.length || mk.t.length || mk.k.length) ? { ou: qOf(mk.ou), c: qOf(mk.c), t: qOf(mk.t), k: qOf(mk.k) } : null;
+  const hasQ = mk && ([mk.ou, mk.c, mk.t, mk.k, mk.s, mk.hg, mk.ag].some(a => a?.length) || fin(mk.btts));
+  const Q = hasQ ? { ou: qOf(mk.ou), c: qOf(mk.c), t: qOf(mk.t), k: qOf(mk.k), s: qOf(mk.s), hg: qOf(mk.hg), ag: qOf(mk.ag), b: fin(mk.btts) ? r3(mk.btts) : null } : null;
   if (!opt.vs && (pre || ev.state !== 'pre')) record({ ...ev, home: A, away: B }, SA, SB, pre ? P : null, ev.done ? actualOf(ev, opt.st || STATS[ev.id]?.[1]) : null, pre ? 'live' : 'bt', K, Q);
   if (!opt.vs && pre && mk) noteOdds(ev.id, mk, kick);
   paint(A, B);
   const who = $('#who');
   who.innerHTML = `${legend(A, B)}${triRow('Rezultat (goluri)', P.goals, A, B)}${triRow('Mai multe șuturi pe poartă', P.sot, A, B)}${triRow('Mai multe șuturi', P.shots, A, B)}${triRow('Mai multe cornere', P.corners, A, B)}${triRow('Mai multe cartonașe', P.cards, A, B)}
     ${mkBlock(P, A, B, pre, { ...opt, mkFail })}
+    ${mk ? valueBlock(predict(SA, SB, ev.neutral, params(ev.slug)), mk, A, B) : ''}
     ${extraNote(A, B, SA, SB, ab, pre)}
     <p class="note">${pre ? 'Salvez estimarea și o compar cu rezultatul după fluier. ' : ''}${esc(calLine(ev.slug))} <a href="#/model">Vezi ce a învățat</a></p>`;
   const rest = $('#rest');
@@ -4890,6 +4921,29 @@ function viewModel(live) {
 
 /* ---------- foi: setări și comparație ---------- */
 let needsRender = false;
+// pe fiecare piață cu cote: probabilitatea modelului (doar formă, odihnă, absențe) față de cea a pieței, fără marjă
+function valueRows(P0, mk, A, B) {
+  const rows = [], g = P0.goals, an = esc(A.short || A.name), bn = esc(B.short || B.name);
+  const add = (lab, p, q) => { if (fin(p) && fin(q) && q > 0.03 && q < 0.97) rows.push({ lab, p, q, v: p / q - 1 }); };
+  if (mk.x12) {
+    [`1 · ${an}`, 'X · egal', `2 · ${bn}`].forEach((l, i) => add(l, g.p[i], mk.x12[i]));
+    DCP.forEach(([a, b], i) => add(`Șansă dublă ${['1X', 'X2', '12'][i]}`, g.p[a] + g.p[b], mk.x12[a] + mk.x12[b]));
+  }
+  if (fin(mk.btts)) { add('GG', g.btts, mk.btts); add('NG', 1 - g.btts, 1 - mk.btts); }
+  const ou = (lab, lines, f) => { if (!f) return; for (const [L, q] of lines || []) { const po = f(L); add(`${lab} peste ${fmtL(L)}`, po, q); add(`${lab} sub ${fmtL(L)}`, 1 - po, 1 - q); } };
+  const ov = b => b && (L => b.over(L));
+  ou('Goluri', mk.ou, ov(g)); ou(`Goluri ${an}`, mk.hg, L => g.oa(L)); ou(`Goluri ${bn}`, mk.ag, L => g.ob(L));
+  ou('Cornere', mk.c, ov(P0.corners)); ou('Cartonașe', mk.k, ov(P0.cards)); ou('Șuturi', mk.s, ov(P0.shots)); ou('Șuturi pe poartă', mk.t, ov(P0.sot));
+  return rows;
+}
+function valueBlock(P0, mk, A, B) {
+  const rows = valueRows(P0, mk, A, B);
+  if (!rows.length) return '';
+  const top = rows.filter(r => r.v > 0.03).sort((a, b) => b.v - a.v).slice(0, 10);
+  return `<details class="mkt"><summary>Unde vede modelul valoare (${top.length} din ${rows.length} pariuri cu cote)</summary><div class="mt">
+    ${top.length ? `<div class="grp mt"><div class="mrw q hd"><span></span><span class="v">Model</span><span class="v">Piața</span><span class="v">Diferență</span></div>${top.map(r => `<div class="mrw q"><span>${r.lab}</span><span class="v">${pct(r.p)}</span><span class="v">${pct(r.q)}</span><span class="v b">${sgnPct(r.v)}</span></div>`).join('')}</div>` : '<p class="note">Pe nicio piață cu cote modelul nu vede o diferență de peste 3% față de piață.</p>'}
+    </div><p class="note" style="margin-top:0">„Model” e estimarea doar din formă, odihnă și absențe, fără cote; „Piața” e probabilitatea din cote, fără marja casei. O diferență mare înseamnă mai des că modelul nu știe ceva decât că piața greșește. În fila Model → Pariuri vezi dacă astfel de pariuri au câștigat pe meciurile trecute, pe fiecare piață.</p></details>`;
+}
 // nota despre odihnă, absențe și xG de sub pronostic
 function extraNote(A, B, SA, SB, ab, pre) {
   const out = [], q = params().g, z = v => fin(v) ? (v >= 14 ? 'peste două săptămâni' : plural(Math.round(v), 'zi', 'zile')) : null;
@@ -4913,16 +4967,75 @@ const parseNum = s => { const v = parseFloat(String(s ?? '').replace(',', '.'));
 const sgn1 = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${nf1.format(Math.abs(v) * 100)}%`;
 const sgnMoney = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${nf2.format(Math.abs(v))} lei`;
 let valM = 1, valS = 'mdl', draft = null;
-const newDraft = () => ({ id: '', pm: null, pk: null });
-// pariurile notate pe un pronostic al aplicației (1/X/2) se decid singure când aplicația află rezultatul
+const newDraft = () => ({ id: '', ty: '1x2', o: 0, L: null });
+/* tipurile de pariu din jurnal. ri: unde e în rezultatul salvat [goluri G, O, cornere G, O, cartonașe G, O, șuturi G, O, pe poartă G, O];
+   L: linia propusă la peste/sub */
+const BTY = [
+  ['1x2', 'Rezultat final', { opts: ['1', 'X', '2'], ri: [0, 1] }],
+  ['dc', 'Șansă dublă', { opts: ['1X', 'X2', '12'] }],
+  ['gg', 'Ambele marchează (GG / NG)', { opts: ['GG', 'NG'] }],
+  ['tg', 'Total goluri', { ri: [0, 1], L: 2.5 }],
+  ['hg', 'Goluri marcate de gazde', { ri: [0], L: 1.5 }],
+  ['ag', 'Goluri marcate de oaspeți', { ri: [1], L: 1.5 }],
+  ['c', 'Total cornere', { ri: [2, 3], L: 9.5 }],
+  ['k', 'Total cartonașe', { ri: [4, 5], L: 4.5 }],
+  ['s', 'Total șuturi', { ri: [6, 7], L: 24.5 }],
+  ['t', 'Total șuturi pe poartă', { ri: [8, 9], L: 8.5 }],
+  ['c3', 'Cine are mai multe cornere', { opts: ['1', 'X', '2'], ri: [2, 3] }],
+  ['k3', 'Cine are mai multe cartonașe', { opts: ['1', 'X', '2'], ri: [4, 5] }],
+  ['t3', 'Cine are mai multe șuturi pe poartă', { opts: ['1', 'X', '2'], ri: [8, 9] }],
+  ['free', 'Altul (scrii tu)', {}]
+];
+const BTM = Object.fromEntries(BTY.map(x => [x[0], x]));
+const fmtL = L => String(L).replace('.', ',');
+const three = k => k === '1x2' || /3$/.test(k);
+function selLabel(mk, hn, an) {
+  const [k, l, d] = BTM[mk.t];
+  if (k === 'gg') return mk.o ? 'NG (nu marchează ambele)' : 'GG (marchează ambele)';
+  if (d.opts) return `${k === '1x2' ? 'Rezultat' : k === 'dc' ? 'Șansă dublă' : l}: ${d.opts[mk.o]}`;
+  const who = k === 'hg' ? `Goluri ${hn || 'gazde'}` : k === 'ag' ? `Goluri ${an || 'oaspeți'}` : l;
+  return `${who} ${mk.o ? 'sub' : 'peste'} ${fmtL(mk.L)}`;
+}
+// probabilitatea aplicației pentru un pariu, refăcută din datele salvate ale pronosticului (formă, odihnă, absențe și cote, ca în estimarea finală)
+function probFor(s, mk) {
+  if (!s?.A || !s?.B || !BTM[mk.t] || mk.t === 'free') return null;
+  const [A, B] = AB(s);
+  if (!A.n || !B.n) return null;
+  const P = predict(A, B, !!s.neu, params(s.sl), s.Q || hasK(s) ? mkOfQ(s) : null), g = P.goals, o = mk.o;
+  const part = { tg: g, hg: g, ag: g, c: P.corners, k: P.cards, s: P.shots, t: P.sot, c3: P.corners, k3: P.cards, t3: P.sot }[mk.t];
+  if (mk.t === '1x2') return g.p[o];
+  if (mk.t === 'dc') return g.p[DCP[o][0]] + g.p[DCP[o][1]];
+  if (mk.t === 'gg') return o ? 1 - g.btts : g.btts;
+  if (!part) return null;
+  if (three(mk.t)) return part.p[o];
+  if (!(mk.L > 0)) return null;
+  const f = mk.t === 'hg' ? part.oa : mk.t === 'ag' ? part.ob : part.over;
+  return o ? 1 - f(Math.ceil(mk.L) - 1) : f(mk.L);
+}
+// după rezultat: câștigat, pierdut sau anulat (linie întreagă egală cu totalul); null dacă lipsesc statisticile
+function settleBet(R, mk) {
+  const d = BTM[mk?.t]?.[2];
+  if (!d || mk.t === 'free') return null;
+  const v = i => fin(R[i]) ? R[i] : null;
+  if (mk.t === 'dc') return DCP[mk.o].includes(outc(R[0], R[1])) ? 'w' : 'l';
+  if (mk.t === 'gg') return (R[0] > 0 && R[1] > 0) === !mk.o ? 'w' : 'l';
+  const xs = d.ri.map(v);
+  if (xs.some(x => x == null)) return null;
+  if (three(mk.t)) return outc(xs[0], xs[1]) === mk.o ? 'w' : 'l';
+  const tot = xs.reduce((a, b) => a + b, 0);
+  return tot === mk.L ? 'v' : (tot > mk.L) === !mk.o ? 'w' : 'l';
+}
+// pariurile notate pe un pronostic al aplicației se decid singure când aplicația află rezultatul (la cornere, cartonașe și șuturi, dacă are statisticile)
 function autoSettle() {
   let ch = false;
   for (const b of BETS) {
     const c = b.mid ? LEARN.s[b.mid]?.C : null;
     if (b.pk != null && b.close == null && c && fin(c[4 + b.pk]) && c[4 + b.pk] > 1 && Date.now() > new Date(LEARN.s[b.mid].d).getTime()) { b.close = c[4 + b.pk]; b.ca = 1; ch = true; }
-    if (b.res || b.pk == null || !b.mid) continue;
+    if (b.res || !b.mid) continue;
     const s = LEARN.s[b.mid];
-    if (s?.R && !s.x) { b.res = outc(s.R[0], s.R[1]) === b.pk ? 'w' : 'l'; ch = true; }
+    if (!s?.R || s.x) continue;
+    const r = b.mk ? settleBet(s.R, b.mk) : b.pk != null ? (outc(s.R[0], s.R[1]) === b.pk ? 'w' : 'l') : null;
+    if (r) { b.res = r; ch = true; }
   }
   if (ch) saveBets();
 }
@@ -4946,6 +5059,7 @@ function ensureEval(SG) {
   }
   return EVC.m;
 }
+const unkHTML = () => { const k = Object.keys(UNK365); return k.length ? `<p class="note">Alte piețe pe care sursa de cote le-a avut la meciurile deschise, încă necitite de aplicație: ${esc(k.slice(0, 25).join(', '))}${k.length > 25 ? ' și altele' : ''}.</p>` : ''; };
 const statOf = L => { let n = 0, h = 0, pf = 0, sq = 0; for (const x of L) { const r = x[2] ? x[1] - 1 : -1; n++; h += x[2]; pf += r; sq += r * r; } const roi = n ? pf / n : 0; return { n, hit: n ? h / n : 0, roi, se: n ? Math.sqrt(Math.max(0, sq / n - roi * roi) / n) : 0 }; };
 const thLab = t => t < 0 ? 'Orice meci' : t === 0 ? 'Valoare peste 0%' : `Valoare peste ${Math.round(t * 100)}%`;
 const roiCell = (x, lo) => `<span class="v${lo ? ' lo' : ''}">${sgnPct(x.roi)}<small>±${Math.round(196 * x.se)}%</small></span>`;
@@ -4984,8 +5098,8 @@ function valueHTML(m, nK) {
       <div class="field" style="padding-top:0"><span>Marja casei<small>cu cât scade cota față de cea corectă a pieței</small></span><div class="seg sm" role="group" aria-label="Marja casei">${VM.map((x, i) => `<button type="button" data-vm="${i}" aria-pressed="${valM === i}">${Math.round(x * 100)}%</button>`).join('')}</div></div>
       <div class="field" style="padding-top:0"><span>Probabilitățile<small>modelul singur sau estimarea finală, cu cote</small></span><div class="seg sm" role="group" aria-label="Probabilitățile">${[['mdl', 'Model'], ['mix', 'Finale']].map(([k, l]) => `<button type="button" data-vs="${k}" aria-pressed="${valS === k}">${l}</button>`).join('')}</div></div>
     </div><div style="height:10px"></div>`;
-  const mkName = { x: 'rezultatul final (1X2)', g: 'totalul de goluri', c: 'cornere', k: 'cartonașe', t: 'șuturi pe poartă' }[valK];
-  if (all.length < 30) return `${head}${ctl}<p class="note">La ${mkName} sunt ${plural(all.length, 'meci testat', 'meciuri testate')} cu cote; simularea apare de la 30. ${valK === 'x' ? 'Cotele 1X2 vin din listele de rezultate (365Scores) și din meciurile deschise.' : 'Pentru piața asta cotele se salvează doar când deschizi un meci în aplicație (înainte sau după ce s-a jucat), iar la cornere, cartonașe și șuturi e nevoie și de statisticile meciurilor (antrenamentul cu bifa „Cu cornere, cartonașe și șuturi”).'}</p>`;
+  const mkName = { x: 'rezultatul final (1X2)', dc: 'șansă dublă', b: 'GG / NG', g: 'totalul de goluri', hg: 'golurile gazdelor', ag: 'golurile oaspeților', c: 'cornere', k: 'cartonașe', s: 'șuturi', t: 'șuturi pe poartă' }[valK];
+  if (all.length < 30) return `${head}${ctl}<p class="note">La ${mkName} sunt ${plural(all.length, 'meci testat', 'meciuri testate')} cu cote; simularea apare de la 30. ${valK === 'x' || valK === 'dc' ? 'Cotele 1X2 vin din listele de rezultate (365Scores) și din meciurile deschise; șansa dublă se calculează din ele.' : valK === 'hg' || valK === 'ag' ? 'Golurile pe echipă apar doar dacă sursa de cote le are pentru meciurile deschise de tine; dacă rămân la 0, sursa le numește altfel (vezi lista de piețe de mai jos, după ce deschizi câteva meciuri).' : 'Pentru piața asta cotele se salvează doar când deschizi un meci în aplicație (înainte sau după ce s-a jucat), iar la cornere, cartonașe și șuturi e nevoie și de statisticile meciurilor (antrenamentul cu bifa „Cu cornere, cartonașe și șuturi”).'}</p>`;
   const rows = VT.map((t, ti) => {
     const x = statOf(all.filter(b => b[0] > t)), lo = x.n < 30;
     if (!x.n) return `<div class="mrw v4"><span>${thLab(t)}</span><span class="v lo">0</span><span class="v lo">–</span><span class="v lo">–</span></div>`;
@@ -5013,7 +5127,8 @@ function valueHTML(m, nK) {
     <div class="sec"><h3>Pe competiții</h3></div>${compHTML}
     <p class="note">Unde casele investesc mai puțin (ligile mici, cupele), cotele sunt mai des greșite; dar sub 100 de pariuri, diferențele dintre competiții sunt în mare parte hazard.</p>
     ${sel.length ? `<div class="sec"><h3>Simularea băncii</h3></div>${bankHTML}<p class="note">Banca pornește de la 100 și pariază la fiecare meci, în ordinea datei, ${KF[valKF][1]} din miza Kelly (cât spune formula Kelly după probabilitatea ${valS === 'mdl' ? 'modelului' : 'finală'}), cel mult 5% din bancă. Arată cât de mari pot fi scăderile pe drum, nu doar media. Kelly întreg e prea riscant când probabilitățile au erori.</p>` : ''}
-    <p class="note">Cum e făcută: la fiecare meci terminat cu cote, modelul (care a învățat doar din meciurile de dinainte) caută pariul cu cea mai mare valoare, adică probabilitatea lui × cota − 1${valK === 'x' ? '' : ', pe toate liniile peste/sub cu cote ale pieței alese'}. Dacă valoarea trece de prag, pariez 1 unitate. Cota e cea corectă a pieței, fără marjă, micșorată cu ${Math.round(mg * 100)}%; nu sunt cotele reale ale unei case, așa că ROI-ul adevărat poate ieși mai bun sau mai prost. Cifra de după ± arată cât poate greși ROI-ul din hazard (interval de 95%). „Orice meci” arată ce pierzi, în medie, dacă pariezi la întâmplare.</p>`;
+    ${unkHTML()}
+    <p class="note">Cum e făcută: la fiecare meci terminat cu cote, modelul (care a învățat doar din meciurile de dinainte) caută pariul cu cea mai mare valoare, adică probabilitatea lui × cota − 1${valK === 'x' || valK === 'dc' || valK === 'b' ? '' : ', pe toate liniile peste/sub cu cote ale pieței alese'}. Dacă valoarea trece de prag, pariez 1 unitate. Cota e cea corectă a pieței, fără marjă, micșorată cu ${Math.round(mg * 100)}%; nu sunt cotele reale ale unei case, așa că ROI-ul adevărat poate ieși mai bun sau mai prost. Cifra de după ± arată cât poate greși ROI-ul din hazard (interval de 95%). „Orice meci” arată ce pierzi, în medie, dacă pariezi la întâmplare.</p>`;
 }
 // cum s-au mișcat cotele între prima privire și închidere, pe pronosticurile salvate înainte de meci
 function moveHTML() {
@@ -5049,12 +5164,14 @@ function betListHTML() {
   }).join('')}</div>`;
 }
 function betFormHTML() {
-  const saved = Object.entries(LEARN.s).filter(([, s]) => s.src === 'live' && s.P).sort((a, b) => new Date(b[1].d) - new Date(a[1].d)).slice(0, 40);
+  const now = Date.now();
+  const saved = Object.entries(LEARN.s).filter(([, s]) => s.A && ((s.src === 'live' && s.P) || Math.abs(new Date(s.d).getTime() - now) < 3 * 864e5)).sort((a, b) => new Date(b[1].d) - new Date(a[1].d)).slice(0, 40);
   return `<div class="panel">
-    ${saved.length ? `<label class="field"><span>Din pronosticurile aplicației<small>opțional: ia meciul și probabilitățile lui</small></span><select id="bm"><option value="">— alt meci —</option>${saved.map(([id, s]) => `<option value="${esc(id)}">${esc(s.hn)} – ${esc(s.an)}</option>`).join('')}</select></label>
-    <div class="field col" id="bpk" hidden style="padding-top:0"></div>` : ''}
+    ${saved.length ? `<label class="field"><span>Din meciurile deschise<small>opțional: aplicația îți spune ce probabilitate dă pariului și îl decide singură după meci</small></span><select id="bm"><option value="">— alt meci —</option>${saved.map(([id, s]) => `<option value="${esc(id)}">${esc(s.hn)} – ${esc(s.an)}</option>`).join('')}</select></label>` : ''}
     <label class="field col"><span>Meciul</span><input type="text" id="bev" placeholder="ex. Rapid – FCSB" autocomplete="off" maxlength="80"></label>
-    <label class="field col" style="padding-top:0"><span>Selecția</span><input type="text" id="bsel" placeholder="ex. 1, X, 2, Peste 2,5" autocomplete="off" maxlength="40"></label>
+    <label class="field" style="padding-top:0"><span>Tipul pariului</span><select id="bty">${BTY.map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('')}</select></label>
+    <div class="field col" id="bopt" style="padding-top:0"></div>
+    <label class="field col" id="bselw" hidden style="padding-top:0"><span>Selecția</span><input type="text" id="bsel" placeholder="ex. Pauză/Final 1/1, scor exact 2-1" autocomplete="off" maxlength="60"></label>
     <div class="bgrid"><label class="field col" style="padding-top:0"><span>Cota</span><input type="text" inputmode="decimal" id="bod" placeholder="2,10" autocomplete="off" maxlength="8"></label>
     <label class="field col" style="padding-top:0"><span>Miza (lei)</span><input type="text" inputmode="decimal" id="bst" placeholder="20" autocomplete="off" maxlength="8"></label></div>
     <p class="note" id="bval" role="status" style="margin:0 16px 8px"></p>
@@ -5068,7 +5185,7 @@ function openBet(id, after) {
   openSheet(`<div class="sh-top"><h2 id="sht">${esc(b.ev)}</h2><button class="ico" type="button" data-act="close" aria-label="Închide">${ICON.x}</button></div>
     <p class="note" style="margin:0 16px 8px">${esc(b.sel)} la ${nf2.format(b.odds)}, miza ${money(b.stake)}${b.pm != null ? `; aplicația dădea ${pct(b.pm)}` : ''}.</p>
     <label class="field col"><span>Cota de închidere<small>cota la care se închide piața, chiar înainte de meci; ideal de la aceeași casă sau de la Pinnacle</small></span><input type="text" inputmode="decimal" id="bcl" value="${fin(b.close) ? String(b.close).replace('.', ',') : ''}" placeholder="ex. 1,95" autocomplete="off" maxlength="8"></label>
-    <div class="field col" style="padding-top:0"><span>Rezultat${b.pk != null && b.res ? '<small>decis automat din rezultatul aplicației; îl poți schimba</small>' : ''}</span><div class="seg wide sm" role="group" aria-label="Rezultat">${[['', 'Așteaptă'], ['w', 'Câștigat'], ['l', 'Pierdut'], ['v', 'Anulat']].map(([k, l]) => `<button type="button" data-res="${k}" aria-pressed="${res === k}">${l}</button>`).join('')}</div></div>
+    <div class="field col" style="padding-top:0"><span>Rezultat${(b.mk || b.pk != null) && b.mid && b.res ? '<small>decis automat din rezultatul aplicației; îl poți schimba</small>' : ''}</span><div class="seg wide sm" role="group" aria-label="Rezultat">${[['', 'Așteaptă'], ['w', 'Câștigat'], ['l', 'Pierdut'], ['v', 'Anulat']].map(([k, l]) => `<button type="button" data-res="${k}" aria-pressed="${res === k}">${l}</button>`).join('')}</div></div>
     <div class="acts"><button class="btn pri" type="button" id="bsv">Salvează</button><button class="btn" type="button" id="bdl">Șterge pariul</button></div>`);
   $('#shin').setAttribute('aria-labelledby', 'sht');
   $$('#shin [data-res]').forEach(el => el.addEventListener('click', () => { res = el.dataset.res; $$('#shin [data-res]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.res === res))); }));
@@ -5106,7 +5223,7 @@ function viewBets(live) {
     ${betFormHTML()}
     <div class="sec"><h2>Pariurile tale</h2></div>
     <div id="blist">${betListHTML()}</div>
-    <p class="method"><b>Despre jurnal.</b> Aplicația nu plasează pariuri, nu arată cotele caselor și nu trimite către ele: aici rămâne doar ce scrii tu, pe acest dispozitiv, și se păstrează și când golești cache-ul. Profitul și ROI-ul se calculează din pariurile decise (câștigat sau pierdut; cele anulate nu intră). CLV = cota ta împărțită la cota de închidere, minus 1. Un pariu notat dintr-un pronostic al aplicației, cu 1, X sau 2, se decide singur după rezultat și primește singur cota de închidere, dacă aplicația a citit-o (o poți corecta). Pariază doar sume pe care ți le permiți să le pierzi.</p>`;
+    <p class="method"><b>Despre jurnal.</b> Aplicația nu plasează pariuri, nu arată cotele caselor și nu trimite către ele: aici rămâne doar ce scrii tu, pe acest dispozitiv, și se păstrează și când golești cache-ul. Profitul și ROI-ul se calculează din pariurile decise (câștigat sau pierdut; cele anulate nu intră). CLV = cota ta împărțită la cota de închidere, minus 1. Un pariu legat de un meci deschis în aplicație se decide singur după rezultat (la cornere, cartonașe și șuturi, când aplicația are statisticile meciului); la 1, X, 2 primește singur și cota de închidere, dacă aplicația a citit-o. Le poți corecta oricând. La „Altul” scrii tu selecția și îl decizi tu. Pariază doar sume pe care ți le permiți să le pierzi.</p>`;
   const drawLists = () => { $('#bsum').innerHTML = betSumHTML(); $('#blist').innerHTML = betListHTML(); };
   const drawVal = m => {
     const box = $('#val'); if (!box) return;
@@ -5121,44 +5238,53 @@ function viewBets(live) {
     $('#val').innerHTML = '<div class="sec"><h2>Ar fi câștigat modelul?</h2></div><p class="note">Calculez simularea…</p>';
     later(() => { if (live()) drawVal(ensureEval(SG)); }, 40);
   } else drawVal(null);
+  const cur = () => draft.ty === 'free' ? null : { t: draft.ty, o: draft.o, L: draft.L };
   const hint = () => {
     const el = $('#bval'); if (!el) return;
-    const od = parseNum($('#bod').value), pm = draft.pm;
-    if (pm == null || !(od > 1)) { el.textContent = ''; return; }
+    const od = parseNum($('#bod').value), mk = cur(), pm = draft.id && mk ? probFor(LEARN.s[draft.id], mk) : null;
+    if (pm == null || !(od > 1)) { el.textContent = draft.id && mk && pm == null ? 'Pentru acest pariu aplicația nu are o estimare (îi lipsesc statisticile echipelor la piața asta).' : ''; return; }
     const ev = pm * od - 1;
     el.textContent = ev > 0
-      ? `După aplicație, valoarea e ${sgnPct(ev)}: ea dă ${pct(pm)}, iar cota implică ${pct(1 / od)}. Dacă probabilitatea ei e corectă, un sfert de Kelly ar fi ${nf1.format(Math.max(0, ev / (od - 1) / 4 * 100))}% din bancă. Nu uita că piața vede accidentările, iar modelul nu.`
+      ? `După aplicație, valoarea e ${sgnPct(ev)}: ea dă ${pct(pm)}, iar cota implică ${pct(1 / od)}. Dacă probabilitatea ei e corectă, un sfert de Kelly ar fi ${nf1.format(Math.max(0, ev / (od - 1) / 4 * 100))}% din bancă. Piața vede și lucruri pe care modelul nu le vede (formații de ultim moment, motivație).`
       : `După aplicație, aici nu e valoare: ea dă ${pct(pm)}, iar cota implică ${pct(1 / od)}.`;
   };
-  $('#bm')?.addEventListener('change', e => {
-    const id = e.target.value, s = LEARN.s[id], box = $('#bpk');
-    draft = newDraft();
-    if (!s) { box.hidden = true; box.innerHTML = ''; hint(); return; }
-    draft.id = id;
-    $('#bev').value = `${s.hn} – ${s.an}`;
-    const lab = [`1 · ${s.hn}`, 'X · egal', `2 · ${s.an}`];
+  const renderOpt = () => {
+    const [k, , d] = BTM[draft.ty], box = $('#bopt'), s0 = draft.id ? LEARN.s[draft.id] : null;
+    $('#bselw').hidden = k !== 'free';
+    if (k === 'free') { box.hidden = true; box.innerHTML = ''; hint(); return; }
     box.hidden = false;
-    box.innerHTML = `<span>Pe ce pariezi</span><div class="seg wide sm" role="group" aria-label="Pe ce pariezi">${lab.map((l, i) => `<button type="button" data-pk="${i}" aria-pressed="false">${esc(l)} ${pct(s.P[i])}</button>`).join('')}</div>`;
-    $$('[data-pk]', box).forEach(el => el.addEventListener('click', () => {
-      draft.pk = +el.dataset.pk; draft.pm = s.P[draft.pk];
-      $$('[data-pk]', box).forEach(x => x.setAttribute('aria-pressed', String(+x.dataset.pk === draft.pk)));
-      $('#bsel').value = ['1', 'X', '2'][draft.pk];
-      hint();
-    }));
+    const names = three(k) ? [`1 · ${s0?.hn || 'gazde'}`, 'X · egal', `2 · ${s0?.an || 'oaspeți'}`] : d.opts || ['Peste', 'Sub'];
+    const probs = s0 ? names.map((_, i) => probFor(s0, { t: k, o: i, L: draft.L })) : [];
+    box.innerHTML = `<span>Alegerea</span><div class="seg wide sm" role="group" aria-label="Alegerea">${names.map((l, i) => `<button type="button" data-bo="${i}" aria-pressed="${draft.o === i}">${esc(l)}${fin(probs[i]) ? `<small class="cnt">aplicația: ${pct(probs[i])}</small>` : ''}</button>`).join('')}</div>
+      ${d.L != null ? `<label class="lnin"><span>Linia</span><input type="text" inputmode="decimal" id="bln" value="${fmtL(draft.L)}" autocomplete="off" maxlength="5"></label>` : ''}`;
+    $$('[data-bo]', box).forEach(el => el.addEventListener('click', () => { draft.o = +el.dataset.bo; renderOpt(); }));
+    $('#bln')?.addEventListener('change', e => { const v = parseNum(e.target.value); if (v > 0 && v < 100) draft.L = v; renderOpt(); });
     hint();
+  };
+  $('#bty').addEventListener('change', e => { draft.ty = e.target.value; draft.o = 0; draft.L = BTM[draft.ty][2].L ?? null; renderOpt(); });
+  $('#bm')?.addEventListener('change', e => {
+    const id = e.target.value, s0 = LEARN.s[id];
+    draft.id = s0 ? id : '';
+    if (s0) $('#bev').value = `${s0.hn} – ${s0.an}`;
+    renderOpt();
   });
   $('#bod').addEventListener('input', hint);
+  renderOpt();
   $('#badd').addEventListener('click', () => {
-    const msg = $('#bmsg'), ev = $('#bev').value.trim(), sel = $('#bsel').value.trim(), odds = parseNum($('#bod').value), stake = parseNum($('#bst').value);
-    const err = !ev ? 'Scrie meciul.' : !sel ? 'Scrie selecția.' : !(odds > 1) ? 'Cota trebuie să fie peste 1.' : !(stake > 0) ? 'Scrie miza.' : '';
+    const lnv = $('#bln') ? parseNum($('#bln').value) : null;
+    if (lnv > 0 && lnv < 100) draft.L = lnv;
+    const msg = $('#bmsg'), ev = $('#bev').value.trim(), mk = cur(), s0 = draft.id ? LEARN.s[draft.id] : null;
+    const sel = mk ? selLabel(mk, s0?.hn, s0?.an) : $('#bsel').value.trim(), odds = parseNum($('#bod').value), stake = parseNum($('#bst').value);
+    const err = !ev ? 'Scrie meciul.' : !sel ? 'Scrie selecția.' : mk && BTM[mk.t][2].L != null && !(mk.L > 0) ? 'Scrie linia.' : !(odds > 1) ? 'Cota trebuie să fie peste 1.' : !(stake > 0) ? 'Scrie miza.' : '';
     if (err) { msg.textContent = err; return; }
-    const s = draft.id ? LEARN.s[draft.id] : null, id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    BETS.push({ id, t: Date.now(), d: s?.d || new Date().toISOString(), ev, sel, odds, stake, close: null, res: null, pm: draft.pm, pk: draft.pk, mid: draft.pk != null ? draft.id : null });
+    const id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), pm = s0 && mk ? probFor(s0, mk) : null;
+    BETS.push({ id, t: Date.now(), d: s0?.d || new Date().toISOString(), ev, sel, odds, stake, close: null, res: null, pm: fin(pm) ? r3(pm) : null, mk, pk: mk?.t === '1x2' ? mk.o : null, mid: s0 ? draft.id : null });
     autoSettle();
     if (!saveBets()) { BETS.pop(); msg.textContent = 'Nu am putut salva: stocarea telefonului e plină.'; return; }
     ['#bev', '#bsel', '#bod', '#bst'].forEach(x => { $(x).value = ''; });
-    const bm = $('#bm'); if (bm) { bm.value = ''; $('#bpk').hidden = true; $('#bpk').innerHTML = ''; }
-    draft = newDraft(); hint();
+    const bm = $('#bm'); if (bm) bm.value = '';
+    $('#bty').value = '1x2';
+    draft = newDraft(); renderOpt();
     msg.textContent = 'Salvat.';
     drawLists();
   });
