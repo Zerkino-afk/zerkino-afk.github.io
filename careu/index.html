@@ -277,6 +277,7 @@ summary{padding:10px 16px;font-weight:600;cursor:pointer}
 .field[hidden]{display:none!important}
 .lnin{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:4px;font-weight:600}
 .lnin input{width:90px;border:0;border-radius:10px;background:var(--surface-2);color:var(--ink);padding:9px 10px;font:500 15px var(--fa);text-align:right}
+.mrw small.bk{display:block;margin-top:2px;font-size:11.5px;color:var(--muted);font-weight:500}
 .seg.mk{display:grid;grid-template-columns:repeat(5,1fr);row-gap:2px}
 .seg.mk button{padding:6px 2px;font-size:12.5px;line-height:1.15;min-width:0}
 .seg button small.cnt{display:block;font-size:10.5px;font-weight:500;opacity:.7}
@@ -468,6 +469,7 @@ details.tbo>summary{margin:0 16px 4px;padding:8px 0;font-weight:600;color:var(--
   <a href="#/" data-tab="meciuri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m12 8.2 3.1 2.3-1.2 3.6h-3.8l-1.2-3.6z"/><path d="M12 3v5.2M15.1 10.5l5.3-1.6M13.9 14.1l3.3 4.6M10.1 14.1l-3.3 4.6M8.9 10.5 3.6 8.9"/></svg>Meciuri</a>
   <a href="#/ligi" data-tab="ligi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4.5v1A3.5 3.5 0 0 0 8 10.5M17 6h2.5v1A3.5 3.5 0 0 1 16 10.5M12 13v4M8.5 20h7M9.5 17h5v3h-5z"/></svg>Ligi</a>
   <a href="#/fav" data-tab="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>Favorite</a>
+  <a href="#/pariuri" data-tab="pariuri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v3a2 2 0 0 0 0 4v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a2 2 0 0 0 0-4z"/><path d="M14.5 6.5v11" stroke-dasharray="1.6 2.2" stroke-linecap="round"/></svg>Pariuri</a>
   <a href="#/model" data-tab="model"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16"/><path d="m7.5 15.5 3.5-4.5 3 2.5 5-6.5"/><circle cx="11" cy="11" r=".6" fill="currentColor"/><circle cx="14" cy="13.5" r=".6" fill="currentColor"/></svg>Model</a>
 </div></nav>
 <div class="sheet" id="sheet" hidden><div class="sh-in" role="dialog" aria-modal="true" id="shin"></div></div>
@@ -1212,28 +1214,155 @@ async function find365(ev) {
   if (errs === paths.length) throw new Error('365Scores nu răspunde');
   return null;
 }
-// întoarce cotele meciului, null dacă nu există încă, sau { fail } dacă sursa n-a putut fi citită
-async function marketFor(ev, sum) {
-  const has = x => !!(x && (x.x12 || x.ou.length));
-  let m = null, fail = false;
+// cote fracționale („13/10”) sau zecimale, ca la Sofascore
+const fracDec = v => { if (v == null) return null; const t = String(v).trim(), m = /^(\d+)\/(\d+)$/.exec(t); if (m) return +m[2] ? 1 + +m[1] / +m[2] : null; const d = parseFloat(t.replace(',', '.')); return fin(d) && d > 1 ? d : null; };
+// Sofascore: rezultat, GG, total goluri, cornere, cartonașe și șuturi; în timpul meciului (și după) iau cotele de deschidere
+function sofaLines(d, live, swap) {
+  const m = emptyMk('Sofascore');
+  for (const k of arr(d?.markets)) {
+    const nm = String(k?.marketName || '').trim(), ch = arr(k?.choices);
+    if (!nm || /half|1st|2nd|player|minute|interval|exact|correct/i.test(nm)) continue;
+    const val = c => fracDec(live ? (c?.initialFractionalValue ?? c?.fractionalValue) : c?.fractionalValue);
+    const by = re => ch.find(c => re.test(String(c?.name || '').trim()));
+    if (/^(full ?time|1x2|match winner|final result|full time result)$/i.test(nm)) {
+      const raw = [by(/^1$/), by(/^x$/i), by(/^2$/)].map(val), p = devig(raw);
+      if (p && !m.x12) { m.x12 = swap ? [p[2], p[1], p[0]] : p; m.x12o = swap ? [raw[2], raw[1], raw[0]] : raw; }
+      continue;
+    }
+    if (/both teams to score/i.test(nm)) { const p = devig([val(by(/^yes$/i)), val(by(/^no$/i))]); if (p) m.btts = p[0]; continue; }
+    if (/double chance|draw no bet/i.test(nm)) continue;   // se calculează din 1X2
+    const L = halfLine(String(k?.choiceGroup ?? '').replace(',', '.'));
+    const key = /corner/i.test(nm) ? (/1x2|3-?way|handicap|race|first|last/i.test(nm) ? null : 'c') : /card|booking/i.test(nm) ? (/1x2|3-?way|handicap|first|player/i.test(nm) ? null : 'k')
+      : /shots on (target|goal)/i.test(nm) ? 't' : /^(total )?shots$/i.test(nm) ? 's' : /^(match goals|total goals|goals|goals over\/under)$/i.test(nm) ? 'ou' : null;
+    if (!key || L == null) { noteUnk('sf', `${nm} (Sofascore)`); continue; }
+    const p = devig([val(by(/^over$/i)), val(by(/^under$/i))]);
+    if (p && !m[key].some(x => x[0] === L)) m[key].push([L, p[0]]);
+  }
+  ['ou', 'c', 't', 'k', 's'].forEach(k => m[k].sort((a, b) => a[0] - b[0]));
+  return m;
+}
+async function sofaOdds(ev) {
+  if (xOff('sofa')) return null;
+  const f = await sofaFind(ev);
+  if (!f) return null;
+  return sofa(`/event/${f.id}/odds/1/all`, ev.done ? 864e5 : 5 * 60e3, d => sofaLines(d, ev.state !== 'pre', f.swap));
+}
+/* The Odds API (opțional, cu cheia ta gratuită de pe the-odds-api.com): cotele Pinnacle, casa cu cea mai mică marjă, și cea mai bună cotă
+   dintre casele europene. O cerere aduce toate meciurile unei competiții și costă 2 credite (1X2 și total goluri), așa că se ține 4 ore. */
+const TOA = Object.assign({ left: null, sp: null, at: 0, err: '' }, store.get('toa', {}));
+const saveToa = () => store.set('toa', { left: TOA.left, sp: TOA.sp, at: TOA.at });
+const TOA_KEYS = { 'eng.1': 'soccer_epl', 'esp.1': 'soccer_spain_la_liga', 'ita.1': 'soccer_italy_serie_a', 'ger.1': 'soccer_germany_bundesliga', 'fra.1': 'soccer_france_ligue_one',
+  'por.1': 'soccer_portugal_primeira_liga', 'ned.1': 'soccer_netherlands_eredivisie', 'bel.1': 'soccer_belgium_first_div', 'tur.1': 'soccer_turkey_super_league', 'gre.1': 'soccer_greece_super_league',
+  'uefa.champions': 'soccer_uefa_champs_league', 'uefa.europa': 'soccer_uefa_europa_league', 'uefa.europa.conf': 'soccer_uefa_europa_conference_league' };
+async function toaGet(path) {
+  const url = `https://api.the-odds-api.com/v4/${path}${path.includes('?') ? '&' : '?'}apiKey=${encodeURIComponent(settings.toa || '')}`;
+  const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 15000);
+  try {
+    const r = await fetch(settings.proxy ? settings.proxy + encodeURIComponent(url) : url, { signal: ctrl.signal });
+    const left = r.headers.get('x-requests-remaining');
+    if (left != null && fin(+left)) { TOA.left = +left; saveToa(); }
+    if (!r.ok) throw Object.assign(new Error('HTTP ' + r.status), { status: r.status });
+    TOA.err = '';
+    return await r.json();
+  } catch (e) { TOA.err = e.status === 401 ? 'cheia nu e acceptată' : e.status === 429 ? 's-au terminat creditele lunii' : e.status ? `răspuns ${e.status}` : 'browserul nu ajunge la server (rețea sau CORS)'; logErr('The Odds API ' + path.split('?')[0], e); throw e; }
+  finally { clearTimeout(t); }
+}
+// competițiile de fotbal pe care le are (lista e gratuită, nu consumă credite); se reîmprospătează săptămânal
+async function toaSports(force = false) {
+  if (!force && TOA.sp && Date.now() - TOA.at < 7 * 864e5) return TOA.sp;
+  const L = await toaGet('sports');
+  TOA.sp = arr(L).filter(x => /soccer/i.test(String(x?.group || x?.key || ''))).map(x => [x.key, String(x.description || x.title || '')]);
+  TOA.at = Date.now(); saveToa();
+  return TOA.sp;
+}
+async function toaKey(slug) {
+  const L = await toaSports(), ks = new Set(L.map(x => x[0]));
+  if (TOA_KEYS[slug] && ks.has(TOA_KEYS[slug])) return TOA_KEYS[slug];
+  const en = COMP[slug]?.en || MORE[slug]?.[0] || '';
+  let best = null;
+  for (const [k, d] of L) { const v = en ? nameSim(en, d) : 0; if (v >= 0.8 && (!best || v > best[1])) best = [k, v]; }
+  return best ? best[0] : null;
+}
+const toaMem = new Map();
+async function toaBoard(key) {
+  const hit = toaMem.get(key) || store.get('toa:' + key);
+  if (hit && Date.now() - hit.t < 4 * 3600e3) return hit.d;
+  const L = await toaGet(`sports/${key}/odds?regions=eu&markets=h2h,totals&oddsFormat=decimal`);
+  const d = arr(L).map(e => ({ t: new Date(e.commence_time).getTime(), h: e.home_team, a: e.away_team, b: arr(e.bookmakers).map(k => {
+    const mk = id => arr(k.markets).find(x => x.key === id), h2 = mk('h2h'), to = mk('totals');
+    const o = n => arr(h2?.outcomes).find(x => x.name === n)?.price;
+    const tot = {};
+    arr(to?.outcomes).forEach(x => { const Lp = halfLine(x.point); if (Lp == null) return; (tot[Lp] ||= [null, null])[/^over$/i.test(x.name) ? 0 : 1] = x.price; });
+    return { k: k.key, n: k.title, x: h2 ? [o(e.home_team), o('Draw'), o(e.away_team)] : null, tot };
+  }) })).filter(e => fin(e.t));
+  const v = { t: Date.now(), d };
+  toaMem.set(key, v); store.cache('toa:' + key, v);
+  return d;
+}
+async function toaOdds(ev) {
+  if (!settings.toa) return null;
+  const key = await toaKey(ev.slug);
+  if (!key) return null;
+  const B = await toaBoard(key);
+  const g = pick365(ev, B.map((e, i) => ({ id: i, t: e.t, h: { n: [e.h] }, a: { n: [e.a] } })));
+  if (!g) return null;
+  const e = B[g.id], sw = g.swap, fix = a => (sw && a ? [a[2], a[1], a[0]] : a);
+  const m = emptyMk('The Odds API');
+  m.best = { x12: [null, null, null], ou: {} };
+  const pin = e.b.find(k => k.k === 'pinnacle');
+  m.pin = !!(pin?.x && devig(pin.x));
+  // fără Pinnacle: media probabilităților tuturor caselor, fiecare fără marjă
+  const fairX = m.pin ? devig(pin.x) : (() => { const L = e.b.map(k => k.x && devig(k.x)).filter(Boolean); return L.length ? [0, 1, 2].map(i => mean(L.map(p => p[i]))) : null; })();
+  if (fairX) { m.x12 = fix(fairX); m.x12o = m.pin ? fix(pin.x) : null; }
+  for (const k of e.b) if (k.x) fix(k.x).forEach((o, i) => { if (fin(o) && o > 1 && (!m.best.x12[i] || o > m.best.x12[i][0])) m.best.x12[i] = [o, k.n]; });
+  const lines = new Set(e.b.flatMap(k => Object.keys(k.tot).map(Number)));
+  for (const Lp of lines) {
+    const src = m.pin && pin.tot[Lp] ? [pin.tot[Lp]] : e.b.map(k => k.tot[Lp]).filter(Boolean);
+    const ps = src.map(x => devig(x)).filter(Boolean);
+    if (ps.length) m.ou.push([Lp, mean(ps.map(p => p[0]))]);
+    const bo = [null, null];
+    for (const k of e.b) { const x = k.tot[Lp]; if (!x) continue; [0, 1].forEach(i => { if (fin(x[i]) && x[i] > 1 && (!bo[i] || x[i] > bo[i][0])) bo[i] = [x[i], k.n]; }); }
+    m.best.ou[Lp] = bo;
+  }
+  m.ou.sort((a, b) => a[0] - b[0]);
+  return m;
+}
+// adaugă dintr-o sursă doar piețele care lipsesc
+function fillFrom(m, x) {
+  if (!x) return false;
+  let used = false;
+  if (!m.x12 && x.x12) { m.x12 = x.x12; m.x12o = x.x12o || null; used = true; }
+  if (!fin(m.btts) && fin(x.btts)) { m.btts = x.btts; used = true; }
+  for (const k of ['ou', 'c', 't', 'k', 's', 'hg', 'ag']) for (const l of x[k] || []) if (!m[k].some(y => y[0] === l[0])) { m[k].push(l); used = true; }
+  if (used) ['ou', 'c', 't', 'k', 's', 'hg', 'ag'].forEach(k => m[k].sort((a, b) => a[0] - b[0]));
+  return used;
+}
+// întoarce cotele meciului din toate sursele (365Scores, ESPN, Sofascore și, cu cheie, The Odds API), null dacă nu există încă,
+// sau { fail } dacă nicio sursă n-a putut fi citită. o.noToa: fără The Odds API (de exemplu la reîmprospătarea din fundal, ca să nu consume credite)
+async function marketFor(ev, sum, o = {}) {
+  const any = x => !!(x && (x.x12 || fin(x.btts) || ['ou', 'c', 't', 'k', 's', 'hg', 'ag'].some(k => x[k].length)));
+  const capd = (p, ms) => Promise.race([Promise.resolve(p).catch(() => null), new Promise(r => setTimeout(r, ms, null))]);
+  const sfJob = capd(sofaOdds(ev), 6500), taJob = !o.noToa && settings.toa ? capd(toaOdds(ev), 6500) : Promise.resolve(null);
+  const m = emptyMk(''), used = [];
+  let fail = false;
   try {
     let gid = null, swap = false;
     if (is365(ev.id)) gid = String(ev.id).slice(1);
     else { const f = await find365(ev); if (f) { gid = f.id; swap = f.swap; } }
-    if (gid) m = lines365(await w365(`bets/lines/?games=${gid}`, ev.done ? 864e5 : 5 * 60e3, x => (x?.lines || []).filter(l => ![126, 127].includes(l.lineTypeId))), ev.state !== 'pre', swap);
+    if (gid && fillFrom(m, lines365(await w365(`bets/lines/?games=${gid}`, ev.done ? 864e5 : 5 * 60e3, x => (x?.lines || []).filter(l => ![126, 127].includes(l.lineTypeId))), ev.state !== 'pre', swap))) used.push('365Scores');
   } catch (e) { fail = true; }
-  if (!has(m) && ev.x12) { m = m || emptyMk('365Scores'); m.x12 = ev.x12; }
-  const e2 = sum ? espnOdds(sum) : null;
-  if (e2) {
-    if (!m) m = e2;
-    else {
-      const before = has(m);
-      if (!m.x12 && e2.x12) { m.x12 = e2.x12; m.x12o = e2.x12o; }
-      if (!m.ou.length && e2.ou.length) m.ou = e2.ou;
-      if (!before && has(m)) m.src = m.c.length || m.t.length || m.k.length || m.s.length ? '365Scores și ESPN' : 'ESPN';
-    }
+  if (!m.x12 && ev.x12) { m.x12 = ev.x12; if (!used.includes('365Scores')) used.push('365Scores'); }
+  if (fillFrom(m, sum ? espnOdds(sum) : null)) used.push('ESPN');
+  const [sf, ta] = await Promise.all([sfJob, taJob]);
+  if (fillFrom(m, sf)) used.push('Sofascore');
+  if (ta) {
+    // Pinnacle are cea mai mică marjă și cotele cele mai apropiate de adevăr: la rezultat are prioritate
+    if (ta.pin && ta.x12) { m.x12 = ta.x12; m.x12o = ta.x12o; }
+    if (fillFrom(m, ta) || ta.pin) used.push(ta.pin ? 'Pinnacle (The Odds API)' : 'The Odds API');
+    m.best = ta.best;
   }
-  return m && (has(m) || m.c.length || m.t.length || m.k.length || m.s.length) ? m : fail ? { fail: true } : null;
+  m.src = used.join(', ') || '–';
+  return any(m) ? m : fail && !sf && !ta ? { fail: true } : null;
 }
 
 /* ---------- model ---------- */
@@ -1614,7 +1743,7 @@ async function refreshCloses() {
     const L = Object.entries(LEARN.s).filter(([, s]) => s.src === 'live' && s.O && !s.R && !s.x).filter(([, s]) => { const k = new Date(s.d).getTime(); return k > now + 60e3 && k - now < 4 * 3600e3 && now - (s.C?.[0] || 0) > 9 * 60e3; });
     await Promise.all(L.map(([id, s]) => lim365(async () => {
       const ev = { id, date: s.d, slug: s.sl, state: 'pre', done: false, status: '', home: { id: null, name: s.hn, short: s.hn }, away: { id: null, name: s.an, short: s.an } };
-      try { const mk = await marketFor(ev, null); if (mk && !mk.fail) noteOdds(id, mk, new Date(s.d).getTime()); } catch (e) {}
+      try { const mk = await marketFor(ev, null, { noToa: true }); if (mk && !mk.fail) noteOdds(id, mk, new Date(s.d).getTime()); } catch (e) {}
     })));
   } finally { closing = false; }
 }
@@ -2190,7 +2319,7 @@ function route(opt = {}) {
   else if (p[0] === 'ligi') { tab = 'ligi'; viewLeagues(live); }
   else if (p[0] === 'fav') { tab = 'fav'; viewFav(live); }
   else if (p[0] === 'model') { tab = 'model'; viewModel(live); }
-  else if (p[0] === 'pariuri') { tab = 'model'; viewBets(live); }
+  else if (p[0] === 'pariuri') { tab = 'pariuri'; viewBets(live); }
   else if (p[0] === 'c' && p[1]) { tab = 'ligi'; viewComp(p[1], p[2] === 'meciuri' ? 'meciuri' : 'clasament', live); }
   else if (p[0] === 't' && p[1]) viewTeam(p[1], p[2], live);
   else if (p[0] === 'm' && p[2]) viewMatch(p[1], p[2], p[3], live);
@@ -2203,7 +2332,7 @@ function route(opt = {}) {
 // schimbarea filei unui meci înlocuiește adresa, ca „Înapoi” să ducă tot la lista din care ai venit
 let skipNav = false;
 addEventListener('hashchange', () => { SCROLL.set(curHash, window.scrollY); curHash = location.hash; if (skipNav) skipNav = false; else NAVS++; route(); });
-function goBack() { if (NAVS > 0) history.back(); else location.hash = lastTab === 'ligi' ? '#/ligi' : lastTab === 'fav' ? '#/fav' : lastTab === 'model' ? '#/model' : '#/'; }
+function goBack() { if (NAVS > 0) history.back(); else location.hash = lastTab === 'ligi' ? '#/ligi' : lastTab === 'fav' ? '#/fav' : lastTab === 'model' ? '#/model' : lastTab === 'pariuri' ? '#/pariuri' : '#/'; }
 const topBar = (title, right = '') => `<div class="bar"><button class="back" type="button" data-act="back">${ICON.back}<span>Înapoi</span></button><span class="ttl">${esc(title)}</span><span class="rt">${right}</span></div>`;
 const hero = (title, right = '') => `<header class="hero"><h1>${esc(title)}</h1>${right}</header>`;
 const gearBtn = () => `<button class="ico" type="button" data-act="settings" aria-label="Setări">${ICON.gear}</button>`;
@@ -4850,8 +4979,6 @@ function viewModel(live) {
     ${oldN ? `<p class="note">${plural(oldN, 'meci învățat e calculat', 'meciuri învățate sunt calculate')} cu modelul de dinainte (doar forma scurtă), așa că nu intră în modelul de goluri. Antrenează pe toate competițiile, mai jos, ca să le refac cu modelul nou.</p>` : ''}
     <div id="perf">${SG.length >= 30 ? '<p class="note">Calculez scorurile…</p>' : perfHTML(null, SG.length)}</div>
     <div id="mkc">${mkCompareHTML(null, SG.length >= 30)}</div>
-    <div class="sec"><h2>Pariuri</h2></div>
-    <div class="grp plain"><a class="row" href="#/pariuri"><span class="grow"><b>Valoare față de cote și jurnal de pariuri</b><small>Ar fi câștigat modelul pe meciurile trecute? Notează-ți pariurile și urmărește CLV și ROI.</small></span><span class="chev" aria-hidden="true">›</span></a></div>
     <div id="pars">${parsHTML(f)}</div>
     ${extrasHTML(f, S)}
     ${trainPanel()}
@@ -4924,15 +5051,16 @@ let needsRender = false;
 // pe fiecare piață cu cote: probabilitatea modelului (doar formă, odihnă, absențe) față de cea a pieței, fără marjă
 function valueRows(P0, mk, A, B) {
   const rows = [], g = P0.goals, an = esc(A.short || A.name), bn = esc(B.short || B.name);
-  const add = (lab, p, q) => { if (fin(p) && fin(q) && q > 0.03 && q < 0.97) rows.push({ lab, p, q, v: p / q - 1 }); };
+  const add = (lab, p, q, best) => { if (fin(p) && fin(q) && q > 0.03 && q < 0.97) rows.push({ lab, p, q, best, v: best ? p * best[0] - 1 : p / q - 1 }); };
+  const BX = mk.best?.x12 || [], BO = mk.best?.ou || {};
   if (mk.x12) {
-    [`1 · ${an}`, 'X · egal', `2 · ${bn}`].forEach((l, i) => add(l, g.p[i], mk.x12[i]));
+    [`1 · ${an}`, 'X · egal', `2 · ${bn}`].forEach((l, i) => add(l, g.p[i], mk.x12[i], BX[i]));
     DCP.forEach(([a, b], i) => add(`Șansă dublă ${['1X', 'X2', '12'][i]}`, g.p[a] + g.p[b], mk.x12[a] + mk.x12[b]));
   }
   if (fin(mk.btts)) { add('GG', g.btts, mk.btts); add('NG', 1 - g.btts, 1 - mk.btts); }
   const ou = (lab, lines, f) => { if (!f) return; for (const [L, q] of lines || []) { const po = f(L); add(`${lab} peste ${fmtL(L)}`, po, q); add(`${lab} sub ${fmtL(L)}`, 1 - po, 1 - q); } };
   const ov = b => b && (L => b.over(L));
-  ou('Goluri', mk.ou, ov(g)); ou(`Goluri ${an}`, mk.hg, L => g.oa(L)); ou(`Goluri ${bn}`, mk.ag, L => g.ob(L));
+  for (const [L, q] of mk.ou || []) { const po = g.over(L); add(`Goluri peste ${fmtL(L)}`, po, q, BO[L]?.[0]); add(`Goluri sub ${fmtL(L)}`, 1 - po, 1 - q, BO[L]?.[1]); } ou(`Goluri ${an}`, mk.hg, L => g.oa(L)); ou(`Goluri ${bn}`, mk.ag, L => g.ob(L));
   ou('Cornere', mk.c, ov(P0.corners)); ou('Cartonașe', mk.k, ov(P0.cards)); ou('Șuturi', mk.s, ov(P0.shots)); ou('Șuturi pe poartă', mk.t, ov(P0.sot));
   return rows;
 }
@@ -4941,8 +5069,8 @@ function valueBlock(P0, mk, A, B) {
   if (!rows.length) return '';
   const top = rows.filter(r => r.v > 0.03).sort((a, b) => b.v - a.v).slice(0, 10);
   return `<details class="mkt"><summary>Unde vede modelul valoare (${top.length} din ${rows.length} pariuri cu cote)</summary><div class="mt">
-    ${top.length ? `<div class="grp mt"><div class="mrw q hd"><span></span><span class="v">Model</span><span class="v">Piața</span><span class="v">Diferență</span></div>${top.map(r => `<div class="mrw q"><span>${r.lab}</span><span class="v">${pct(r.p)}</span><span class="v">${pct(r.q)}</span><span class="v b">${sgnPct(r.v)}</span></div>`).join('')}</div>` : '<p class="note">Pe nicio piață cu cote modelul nu vede o diferență de peste 3% față de piață.</p>'}
-    </div><p class="note" style="margin-top:0">„Model” e estimarea doar din formă, odihnă și absențe, fără cote; „Piața” e probabilitatea din cote, fără marja casei. O diferență mare înseamnă mai des că modelul nu știe ceva decât că piața greșește. În fila Model → Pariuri vezi dacă astfel de pariuri au câștigat pe meciurile trecute, pe fiecare piață.</p></details>`;
+    ${top.length ? `<div class="grp mt"><div class="mrw q hd"><span></span><span class="v">Model</span><span class="v">Piața</span><span class="v">Valoare</span></div>${top.map(r => `<div class="mrw q"><span>${r.lab}${r.best ? `<small class="bk">cea mai bună cotă ${nf2.format(r.best[0])} · ${esc(r.best[1])}</small>` : ''}</span><span class="v">${pct(r.p)}</span><span class="v">${pct(r.q)}</span><span class="v b">${sgnPct(r.v)}</span></div>`).join('')}</div>` : '<p class="note">Pe nicio piață cu cote modelul nu vede o diferență de peste 3% față de piață.</p>'}
+    </div><p class="note" style="margin-top:0">„Model” e estimarea doar din formă, odihnă și absențe, fără cote; „Piața” e probabilitatea din cote, fără marja casei (sursa: ${esc(mk.src)}). „Valoare” e probabilitatea modelului × cota − 1 la cea mai bună cotă găsită, unde o știu (cu cheia The Odds API), altfel diferența față de piață. O diferență mare înseamnă mai des că modelul nu știe ceva decât că piața greșește. În fila Pariuri vezi dacă astfel de pariuri au câștigat pe meciurile trecute, pe fiecare piață, și pe cote reale.</p></details>`;
 }
 // nota despre odihnă, absențe și xG de sub pronostic
 function extraNote(A, B, SA, SB, ab, pre) {
@@ -5060,7 +5188,7 @@ function ensureEval(SG) {
   return EVC.m;
 }
 const unkHTML = () => { const k = Object.keys(UNK365); return k.length ? `<p class="note">Alte piețe pe care sursa de cote le-a avut la meciurile deschise, încă necitite de aplicație: ${esc(k.slice(0, 25).join(', '))}${k.length > 25 ? ' și altele' : ''}.</p>` : ''; };
-const statOf = L => { let n = 0, h = 0, pf = 0, sq = 0; for (const x of L) { const r = x[2] ? x[1] - 1 : -1; n++; h += x[2]; pf += r; sq += r * r; } const roi = n ? pf / n : 0; return { n, hit: n ? h / n : 0, roi, se: n ? Math.sqrt(Math.max(0, sq / n - roi * roi) / n) : 0 }; };
+const statOf = L => { let n = 0, h = 0, pf = 0, sq = 0; for (const x of L) { const r = x[5] != null ? x[5] : x[2] ? x[1] - 1 : -1; n++; h += x[2]; pf += r; sq += r * r; } const roi = n ? pf / n : 0; return { n, hit: n ? h / n : 0, roi, se: n ? Math.sqrt(Math.max(0, sq / n - roi * roi) / n) : 0 }; };
 const thLab = t => t < 0 ? 'Orice meci' : t === 0 ? 'Valoare peste 0%' : `Valoare peste ${Math.round(t * 100)}%`;
 const roiCell = (x, lo) => `<span class="v${lo ? ' lo' : ''}">${sgnPct(x.roi)}<small>±${Math.round(196 * x.se)}%</small></span>`;
 let valK = 'x', valT = 1, valKF = 1;
@@ -5129,6 +5257,97 @@ function valueHTML(m, nK) {
     ${sel.length ? `<div class="sec"><h3>Simularea băncii</h3></div>${bankHTML}<p class="note">Banca pornește de la 100 și pariază la fiecare meci, în ordinea datei, ${KF[valKF][1]} din miza Kelly (cât spune formula Kelly după probabilitatea ${valS === 'mdl' ? 'modelului' : 'finală'}), cel mult 5% din bancă. Arată cât de mari pot fi scăderile pe drum, nu doar media. Kelly întreg e prea riscant când probabilitățile au erori.</p>` : ''}
     ${unkHTML()}
     <p class="note">Cum e făcută: la fiecare meci terminat cu cote, modelul (care a învățat doar din meciurile de dinainte) caută pariul cu cea mai mare valoare, adică probabilitatea lui × cota − 1${valK === 'x' || valK === 'dc' || valK === 'b' ? '' : ', pe toate liniile peste/sub cu cote ale pieței alese'}. Dacă valoarea trece de prag, pariez 1 unitate. Cota e cea corectă a pieței, fără marjă, micșorată cu ${Math.round(mg * 100)}%; nu sunt cotele reale ale unei case, așa că ROI-ul adevărat poate ieși mai bun sau mai prost. Cifra de după ± arată cât poate greși ROI-ul din hazard (interval de 95%). „Orice meci” arată ce pierzi, în medie, dacă pariezi la întâmplare.</p>`;
+}
+/* test pe cote reale: meciurile din 16 campionate europene (2019–2026) cu cotele Bet365 și cea mai bună cotă dintre ~17 case (Football-Data.co.uk).
+   Forma vine din ultimele 40 de meciuri de campionat ale fiecărei echipe din același set; se testează de la 1 iulie 2022. Folosește parametrii actuali. */
+const FD_LG = { 'eng.2': 'Championship (Anglia)', 'esp.2': 'LaLiga 2', 'ita.2': 'Serie B', 'ger.2': '2. Bundesliga', 'fra.2': 'Ligue 2' };
+const RMK = [['x', '1X2 Bet365'], ['xm', '1X2 cea mai bună'], ['g', 'Peste/sub 2,5 Bet365'], ['gm', 'Peste/sub cea mai bună'], ['ah', 'Handicap asiatic']];
+let HIST = null, HRES = null, rK = 'x', rT = 1;
+// câștigul pe 1 unitate la handicap asiatic, pentru diferența d (cu handicapul inclus); liniile de sfert se împart în două
+const halfRet = (d, o) => d > 1e-9 ? o - 1 : d < -1e-9 ? -1 : 0;
+const ahRet = (d, o) => { const q = Math.round(d * 4); return Math.abs(q % 2) === 1 ? (halfRet(d - 0.25, o) + halfRet(d + 0.25, o)) / 2 : halfRet(d, o); };
+async function loadHist() {
+  if (HIST) return HIST;
+  const r = await fetch('data/istoric.json', { cache: 'force-cache' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  HIST = await r.json();
+  return HIST;
+}
+function realTest(H, q) {
+  const t0 = Math.round((Date.UTC(2022, 6, 1) - Date.UTC(2000, 0, 1)) / 864e5), hist = new Map(), seq = Object.fromEntries(RMK.map(([k]) => [k, []]));
+  let n = 0, llM = 0, llB = 0, d0 = null, d1 = null;
+  const od = v => v > 100 ? v / 100 : null;
+  for (const r of H.m) {
+    const [li, day, h, a, hg, ag, oH, oD, oA, xH, xD, xA, o25, u25, xO, xU, ahq, ahH, ahA] = r, kh = li + ':' + h, ka = li + ':' + a;
+    const f = k => { const L = hist.get(k); if (!L || L.length < 10) return null; const W = L.slice(-40); let F = 0, A = 0; for (const x of W) { F += x[0]; A += x[1]; } return { F: F / W.length, A: A / W.length, n: W.length }; };
+    const A = f(kh), B = f(ka), sl = H.lg[li];
+    if (A && B && day >= t0) {
+      const [la, lb] = goalsAdj({ G: A }, { G: B }, false, q), b = block(la, lb, 10, q.rho, 1, q.dl ?? DEF.g.dl), p = b.p, o = outc(hg, ag);
+      d0 = d0 ?? day; d1 = day;
+      const bx = [od(oH), od(oD), od(oA)], mx = [od(xH), od(xD), od(xA)];
+      if (bx.every(Boolean)) {
+        const fair = devig(bx);
+        if (fair) { n++; llM -= Math.log(Math.max(1e-6, p[o])); llB -= Math.log(Math.max(1e-6, fair[o])); }
+        for (const [k, os] of [['x', bx], ['xm', mx]]) {
+          if (!os.every(Boolean)) continue;
+          let bi = 0, be = -9; for (let i = 0; i < 3; i++) { const e = p[i] * os[i] - 1; if (e > be) { be = e; bi = i; } }
+          seq[k].push([be, os[bi], bi === o ? 1 : 0, sl, p[bi]]);
+        }
+      }
+      const pO = b.over(2.5), tot = hg + ag;
+      for (const [k, os] of [['g', [od(o25), od(u25)]], ['gm', [od(xO), od(xU)]]]) {
+        if (!os.every(Boolean)) continue;
+        const e = [pO * os[0] - 1, (1 - pO) * os[1] - 1], i = e[0] > e[1] ? 0 : 1;
+        seq[k].push([e[i], os[i], (i ? tot < 2.5 : tot > 2.5) ? 1 : 0, sl, i ? 1 - pO : pO]);
+      }
+      if (ahq !== 99 && od(ahH) && od(ahA)) {
+        const hs = ahq / 4, oh = od(ahH), oa = od(ahA);
+        let eH = 0, eA = 0;
+        b.M.forEach((row, i) => row.forEach((v, j) => { eH += v * ahRet(i - j + hs, oh); eA += v * ahRet(j - i - hs, oa); }));
+        const home = eH >= eA, ret = home ? ahRet(hg - ag + hs, oh) : ahRet(ag - hg - hs, oa);
+        seq.ah.push([Math.max(eH, eA), home ? oh : oa, ret > 0 ? 1 : 0, sl, null, ret]);
+      }
+    }
+    for (const [k, gf, ga] of [[kh, hg, ag], [ka, ag, hg]]) { let L = hist.get(k); if (!L) hist.set(k, L = []); L.push([gf, ga]); if (L.length > 60) L.shift(); }
+  }
+  const dt = d => fFull.format(new Date(Date.UTC(2000, 0, 1) + d * 864e5));
+  return { n, llM: n ? llM / n : null, llB: n ? llB / n : null, seq, from: d0 != null ? dt(d0) : '', to: d1 != null ? dt(d1) : '', upd: H.upd, src: H.src };
+}
+function realHTML() {
+  const head = '<div class="sec"><h2>Test pe cote reale</h2></div>';
+  if (!HRES) return `${head}<div class="panel"><p class="note">Testez modelul pe aproape 21.000 de meciuri reale din 16 campionate europene (din iulie 2022), cu cotele Bet365 și cu cea mai bună cotă dintre aproximativ 17 case, la rezultat, peste/sub 2,5 goluri și handicap asiatic. Spre deosebire de simularea de mai sus, aici cotele sunt cele adevărate, cu tot cu marja caselor. Se descarcă o singură dată, cam 1 MB.</p>
+    <div class="acts" style="padding:0 16px 14px"><button class="btn pri" type="button" id="rgo">Rulează testul</button><span class="note" id="rmsg" role="status" style="margin:0 0 0 4px;align-self:center"></span></div></div>`;
+  const R = HRES, all = R.seq[rK], th = VT[rT];
+  const rows = VT.map((t, ti) => { const x = statOf(all.filter(b => b[0] > t)); return x.n ? `<div class="mrw v4${ti === rT ? ' on' : ''}"><span>${thLab(t)}</span><span class="v">${x.n}</span><span class="v">${pct(x.hit)}</span>${roiCell(x, x.n < 30)}</div>` : ''; }).join('');
+  const sel = all.filter(b => b[0] > th), by = new Map();
+  sel.forEach(b => { if (!by.has(b[3])) by.set(b[3], []); by.get(b[3]).push(b); });
+  const comp = [...by].map(([sl, L]) => [sl, statOf(L)]).sort((x, y) => y[1].roi - x[1].roi);
+  const sure = VT.map(t => ({ t, x: statOf(all.filter(b => b[0] > t)) })).filter(o => o.t >= 0 && o.x.n >= 200 && o.x.roi - 1.96 * o.x.se > 0);
+  return `${head}
+    <div class="tiles bt"><div class="tile"><span>Log loss la 1X2</span><b>${nf3.format(R.llM)}<small>modelul</small></b></div><div class="tile"><span>Bet365, fără marjă</span><b>${nf3.format(R.llB)}<small>${R.llB < R.llM ? 'casa prezice mai bine' : 'modelul prezice mai bine'}</small></b></div></div>
+    <p class="note">${plural(R.n, 'meci testat', 'meciuri testate')}, ${esc(R.from)} – ${esc(R.to)}. Mai mic e mai bine; o diferență de 0,01 e deja mare la log loss.</p>
+    <div class="panel"><div class="field col"><span>Piața și cotele</span><select id="rmk">${RMK.map(([k, l]) => `<option value="${k}"${k === rK ? ' selected' : ''}>${l}</option>`).join('')}</select></div></div>
+    <div style="height:10px"></div>
+    <div class="grp mt"><div class="mrw v4 hd"><span></span><span class="v">Pariuri</span><span class="v">Nimerite</span><span class="v">ROI</span></div>${rows}</div>
+    <p class="note">${sure.length ? `La ${listRo(sure.map(o => thLab(o.t).toLowerCase()))}, ROI-ul rămâne peste zero și în capătul prost al intervalului de 95%, pe cel puțin 200 de pariuri. Pe meciuri reale e un semn serios; verifică-l pe competiții, mai jos, și în timp.` : 'Pe cotele reale, niciun prag nu aduce un câștig dovedit. Comparația dintre „Bet365” și „cea mai bună” arată cât contează să cauți cea mai bună cotă: de multe ori mai mult decât modelul.'}</p>
+    <div class="field" style="padding:2px 16px 0"><span>Pragul pentru competiții</span><select id="rth">${VT.map((t, i) => `<option value="${i}"${i === rT ? ' selected' : ''}>${thLab(t)}</option>`).join('')}</select></div>
+    <div class="grp mt">${comp.map(([sl, x]) => { const lo = x.n < 100; return `<div class="mrw v4"><span>${esc(compLabel(sl, FD_LG[sl]))}</span><span class="v${lo ? ' lo' : ''}">${x.n}</span><span class="v${lo ? ' lo' : ''}">${pct(x.hit)}</span>${roiCell(x, lo)}</div>`; }).join('')}</div>
+    <p class="note">Pariul de la fiecare meci e cel cu cea mai mare valoare după model (probabilitatea lui × cota − 1), cu miză de 1 unitate. La handicapul asiatic, liniile de sfert se decid pe jumătăți, ca la case. Forma echipelor vine doar din meciurile de campionat ale setului (fără cupe), așa că aici modelul e puțin mai slab decât în aplicație. Date: ${esc(R.src)}, actualizate până la ${esc(fFull.format(new Date(R.upd)))}; le reîmprospătez când apare o versiune nouă a setului.</p>`;
+}
+function wireReal(box, live) {
+  $('#rgo', box)?.addEventListener('click', async e => {
+    const b = e.currentTarget, m = $('#rmsg');
+    b.disabled = true; m.textContent = 'Descarc meciurile…';
+    try {
+      const H = await loadHist();
+      m.textContent = `Testez ${H.m.length.toLocaleString('ro-RO')} de meciuri…`;
+      await new Promise(r => setTimeout(r, 30));
+      HRES = realTest(H, params().g);
+    } catch (x) { b.disabled = false; m.textContent = 'Nu am putut descărca datele. Încearcă din nou.'; return; }
+    if (live()) { box.innerHTML = realHTML(); wireReal(box, live); }
+  });
+  $('#rmk', box)?.addEventListener('change', e => { rK = e.target.value; box.innerHTML = realHTML(); wireReal(box, live); });
+  $('#rth', box)?.addEventListener('change', e => { rT = +e.target.value; box.innerHTML = realHTML(); wireReal(box, live); });
 }
 // cum s-au mișcat cotele între prima privire și închidere, pe pronosticurile salvate înainte de meci
 function moveHTML() {
@@ -5205,7 +5424,7 @@ function openBet(id, after) {
 }
 function viewBets(live) {
   if (BT === 'load') {
-    V.innerHTML = `${topBar('Pariuri')}<p class="note">Încarc meciurile învățate…</p>`;
+    V.innerHTML = `${hero('Pariuri', gearBtn())}<p class="note">Încarc meciurile învățate…</p>`;
     btReady.then(() => { if (live()) route({ keep: true }); });
     return;
   }
@@ -5213,9 +5432,10 @@ function viewBets(live) {
   const S = learned(), SG = S.filter(hasG), nK = SG.filter(hasK).length;
   if (S.length && (!LEARN.fit || LEARN.fit.n !== S.length)) refit();
   draft = newDraft();
-  V.innerHTML = `${topBar('Pariuri')}
+  V.innerHTML = `${hero('Pariuri', gearBtn())}
     <p class="lead">Aici vezi dacă modelul ar fi bătut cotele pe meciurile trecute, pe fiecare piață și competiție, și îți notezi pariurile tale. Cotele caselor sunt greu de bătut; semnul cel mai sigur de avantaj e să prinzi constant cote mai bune decât cele de la închidere (CLV), pe câteva sute de pariuri.</p>
     <div id="val"></div>
+    <div id="real">${realHTML()}</div>
     ${moveHTML()}
     <div class="sec"><h2>Jurnalul tău</h2></div>
     <div id="bsum">${betSumHTML()}</div>
@@ -5225,6 +5445,7 @@ function viewBets(live) {
     <div id="blist">${betListHTML()}</div>
     <p class="method"><b>Despre jurnal.</b> Aplicația nu plasează pariuri, nu arată cotele caselor și nu trimite către ele: aici rămâne doar ce scrii tu, pe acest dispozitiv, și se păstrează și când golești cache-ul. Profitul și ROI-ul se calculează din pariurile decise (câștigat sau pierdut; cele anulate nu intră). CLV = cota ta împărțită la cota de închidere, minus 1. Un pariu legat de un meci deschis în aplicație se decide singur după rezultat (la cornere, cartonașe și șuturi, când aplicația are statisticile meciului); la 1, X, 2 primește singur și cota de închidere, dacă aplicația a citit-o. Le poți corecta oricând. La „Altul” scrii tu selecția și îl decizi tu. Pariază doar sume pe care ți le permiți să le pierzi.</p>`;
   const drawLists = () => { $('#bsum').innerHTML = betSumHTML(); $('#blist').innerHTML = betListHTML(); };
+  wireReal($('#real'), live);
   const drawVal = m => {
     const box = $('#val'); if (!box) return;
     box.innerHTML = valueHTML(m, nK);
@@ -5305,11 +5526,22 @@ function openSettings() {
     <div class="field"><span>Meciuri analizate</span>${nSeg()}</div>
     <div class="field"><span>Temă</span><div class="seg sm" role="group" aria-label="Temă">${th.map(([k, l]) => `<button type="button" data-th="${k}" aria-pressed="${settings.theme === k}">${l}</button>`).join('')}</div></div>
     <label class="field col"><span>Proxy pentru cereri (opțional)</span><input type="url" id="px" value="${esc(settings.proxy)}" placeholder="https://proxy-ul-tău/?url=" autocomplete="off" autocapitalize="off"><span class="note" style="margin:0">Lasă gol. Completează doar dacă rețeaua ta blochează ESPN și ai un proxy propriu; URL-ul cererii se adaugă la final.</span></label>
+    <label class="field col"><span>Cheie The Odds API (opțional)</span><input type="text" id="toa" value="${esc(settings.toa || '')}" placeholder="cheia gratuită de pe the-odds-api.com" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="note" style="margin:0">Cu ea, aplicația ia și cotele Pinnacle (casa cu cea mai mică marjă) și cea mai bună cotă dintre casele europene, pentru campionatele mari și cupele europene. Planul gratuit are 500 de credite pe lună; o competiție costă 2 credite și se ține 4 ore.${TOA.left != null ? ` Credite rămase: ${TOA.left}.` : ''}</span></label>
+    <div class="acts" style="padding-top:0"><button class="btn" type="button" id="toat"${settings.toa ? '' : ' disabled'}>Verifică cheia</button><span class="note" id="toam" role="status" style="margin:0 0 0 4px;align-self:center"></span></div>
     <div class="acts"><button class="btn" type="button" id="clr">Golește datele din cache</button></div>
     <details><summary>Jurnal tehnic (${LOG.length})</summary><div class="log">${LOG.length ? LOG.map(esc).join('\n') : 'Nicio eroare de rețea.'}</div></details>
-    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub; Liga 1, Liga 2 și Cupa României vin de la 365Scores, la fel și cotele (ca rezervă, cele din ESPN); aplicația le folosește doar în calcul, nu le afișează și nu trimite către case de pariuri. În fila Jucători, foile de joc și loturile vin de la ESPN, formațiile probabile, indisponibilii și antrenorii de la 365Scores, valorile de piață de la Transfermarkt (completate din Sofascore și 365Scores), iar mediile arbitrului din meciurile lui din sezon, de la Sofascore. În fila Clasament, clasamentul e cel oficial (ESPN, pentru competițiile românești 365Scores), iar forma, clasamentele acasă/deplasare și statisticile pe echipe sunt calculate din meciurile sezonului. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele, pronosticurile, pariurile notate în jurnal și ce învață modelul rămân doar pe acest dispozitiv.</p>`);
+    <p class="note">Date live din API-ul public ESPN (fără cheie), structurat după documentația comunitară de pe GitHub; Liga 1, Liga 2 și Cupa României vin de la 365Scores, la fel și cotele, completate cu cele de la Sofascore și ESPN și, dacă pui o cheie, cu cele de la The Odds API (Pinnacle și cea mai bună cotă dintre casele europene); aplicația nu trimite către case de pariuri. Testul pe cote reale din fila Pariuri folosește rezultatele, statisticile și cotele Bet365 și maxime de la Football-Data.co.uk, prin setul public xgabora/Club-Football-Match-Data (licență MIT). În fila Jucători, foile de joc și loturile vin de la ESPN, formațiile probabile, indisponibilii și antrenorii de la 365Scores, valorile de piață de la Transfermarkt (completate din Sofascore și 365Scores), iar mediile arbitrului din meciurile lui din sezon, de la Sofascore. În fila Clasament, clasamentul e cel oficial (ESPN, pentru competițiile românești 365Scores), iar forma, clasamentele acasă/deplasare și statisticile pe echipe sunt calculate din meciurile sezonului. Căutare cu Fuse.js, nume de țări din i18n-iso-countries. Favoritele, pronosticurile, pariurile notate în jurnal și ce învață modelul rămân doar pe acest dispozitiv.</p>`);
   $('#shin').setAttribute('aria-labelledby', 'sht');
   $('#px').addEventListener('change', e => { settings.proxy = e.target.value.trim(); saveSettings(); MEM.clear(); });
+  $('#toa').addEventListener('change', e => { settings.toa = e.target.value.trim(); saveSettings(); TOA.sp = null; TOA.at = 0; saveToa(); const b = $('#toat'); if (b) b.disabled = !settings.toa; });
+  $('#toat').addEventListener('click', async e => {
+    const b = e.currentTarget, m = $('#toam');
+    settings.toa = $('#toa').value.trim(); saveSettings();
+    b.disabled = true; m.textContent = 'Verific…';
+    try { const L = await toaSports(true); m.textContent = `Merge: ${plural(L.length, 'competiție de fotbal', 'competiții de fotbal')}${TOA.left != null ? `, ${TOA.left} credite rămase` : ''}.`; }
+    catch (x) { m.textContent = `Nu merge: ${TOA.err || 'eroare'}.`; }
+    b.disabled = false;
+  });
   $('#clr').addEventListener('click', e => { store.clearCache(); MEM.clear(); ONCE.clear(); IDXP = null; for (const o of [STATS, BOX, REFS.m, REFS.n, AP, SOFA.e, SOFA.c, SOFA.u, SOFA.t, TMC, TBL]) for (const k of Object.keys(o)) delete o[k]; e.target.textContent = 'Cache golit'; });
 }
 function openCompare(id) {
